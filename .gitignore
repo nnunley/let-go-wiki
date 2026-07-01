@@ -21,4 +21,6 @@ __pycache__/
 !/CLAUDE.md
 !.claude/
 !/docs/superpowers/
-!/docs/superpowers/**
+/docs/superpowers/**
+!/docs/superpowers/**/
+!/docs/superpowers/**/*.md
