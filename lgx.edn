@@ -1,0 +1,9 @@
+{:paths ["src"]
+ :tasks {"doctor" {:doc "Validate wiki pages against the schema"
+                   :shell "python tools/check_wiki.py ."}
+         "viz"    {:doc "Regenerate the OKF graph (viz.html)"
+                   :shell "python tools/viz/render_viz.py . viz.html"}
+         "build"  {:doc "Build the styled static site into site/"
+                   :shell "python tools/build_site.py"}
+         "serve"  {:doc "Local preview of the site"
+                   :shell "python tools/build_site.py --serve"}}}
