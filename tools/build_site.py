@@ -25,7 +25,7 @@ def _nav(docs_dir: Path) -> list:
         dd = docs_dir / d
         if not dd.exists():
             continue
-        pages = [f"{d}/{p.name}" for p in sorted(dd.rglob("*.md"))]
+        pages = [str(p.relative_to(docs_dir).as_posix()) for p in sorted(dd.rglob("*.md"))]
         if pages:
             nav.append({_TITLE_CAT[d]: pages})
     return nav
