@@ -1,6 +1,7 @@
 """Validate let-go-wiki pages: required frontmatter, relative links, known tags."""
 from __future__ import annotations
-import re, sys
+import re
+import sys
 from pathlib import Path
 import yaml
 

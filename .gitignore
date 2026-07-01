@@ -9,6 +9,10 @@ site/            # built static site (deployed via CI or a gh-pages branch)
 __pycache__/
 *.pyc
 .venv/
+.coverage
+htmlcov/
+.ruff_cache/
+.pytest_cache/
 
 # Re-include project files that a contributor's GLOBAL gitignore may drop.
 # Negations in a repo-root .gitignore outrank core.excludesFile, so these stay

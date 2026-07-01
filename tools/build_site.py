@@ -1,6 +1,9 @@
 """Stage content dirs into a MkDocs docs_dir and build the styled site."""
 from __future__ import annotations
-import shutil, subprocess, sys, tempfile
+import shutil
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 import yaml
 
@@ -53,7 +56,8 @@ def main(argv: list[str]) -> int:
         tmp = Path(tempfile.mkdtemp())
         _stage(root, tmp / "docs")
         base = yaml.safe_load((root / "mkdocs.base.yml").read_text(encoding="utf-8"))
-        base["docs_dir"] = str(tmp / "docs"); base["nav"] = _nav(tmp / "docs")
+        base["docs_dir"] = str(tmp / "docs")
+        base["nav"] = _nav(tmp / "docs")
         (tmp / "mkdocs.yml").write_text(yaml.safe_dump(base, sort_keys=False), encoding="utf-8")
         return subprocess.run(["mkdocs", "serve", "-f", str(tmp / "mkdocs.yml")], cwd=root).returncode
     out = build(root, root / "site")
