@@ -145,6 +145,44 @@ top-level dirs: **developing let-go → `concepts/`**; **using let-go →
 External doc seeds (for enrich pass 2): let-go README, clojure.org /
 clojuredocs (compat semantics), the jank clojure-test-suite, nooga's posts.
 
+### 5.1 Internal knowledge in the let-go repo (incl. gitignored)
+
+The `~/development/let-go` checkout carries substantial development knowledge
+beyond the code. Some is **gitignored**, so a fresh clone (and thus a
+public-repo crawl) would miss it — it must be ingested from the **local
+checkout**. Population applies a **shareability filter**: capture knowledge
+useful to *other* contributors; exclude personal config, local paths,
+machine/session state, and agent memory.
+
+**Ingest — tracked docs (normal sources):** `docs/guide/**` (usage, nREPL,
+embedding-in-go, pods, portability, clojure-compatibility, semver, resources),
+`docs/design/**` (vm-performance, go-aot-backend, value-representation,
+exec-context-threading, parallel-lowering, runtime-image/stdlib-cache, …),
+root `docs/*.md` (clojure-compat-roadmap, jvm-compat-plan,
+testing-and-conformance, clojurelike-refactor-plan, master-plan,
+xsofy-portability-gaps, contribution-policy, frontmatter-hook), and perf
+knowledge `docs/perf/{ratchet.md, microbench/README.md, historical/*}`.
+
+**Ingest — gitignored but shareable (read from the local checkout; a clone
+lacks these):** `docs/superpowers/specs/**/*.md` (~40 design docs: sem-IR
+passes, IR build coverage, deftype/defprotocol native lowering,
+incremental-lowering nREPL server, browser-inspector nREPL bridge, lambda-lift
+& higher-order specialization, concurrent namespaces & dynamic bindings,
+mergeable type-lattice cache, malli-on-let-go, …), `docs/superpowers/plans/**`
+(implementation plans: IR pipeline port, go-lowering codegen, print-method,
+cabi-interop, nREPL server, …), `docs/superpowers/iterations/**` +
+`requirements/EPIC-*.md` (the self-AOT walking-skeleton roadmap/epics),
+`docs/superpowers/deferred/*.md`, and `docs/superpowers/MALLI_PORT_ANALYSIS.md`.
+These map mostly to wiki `concepts/` (internals) and `references/` (design
+decisions), with `resource:` citing the repo path.
+
+**Exclude — personal/local/artifacts (not applicable to others):** all of
+`.agent/**` (the user's portable-brain harness + memory: PREFERENCES,
+WORKSPACE, episodic learnings, branch-triage/session notes), `docs/perf/.runs/**`
+(local perf run logs), every `.DS_Store`, and the `docs/superpowers/HANDOFF-*.md`
+session-handoff notes (mine only durable, verified technical findings from these
+if ever — they are mostly PR/branch/session state).
+
 ## 6. Maintenance tooling
 
 The "strong skills and tooling" requirement. Bookkeeping is owned by tools, not
