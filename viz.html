@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OKF Bundle Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<style>
+:root{
+  --bg:#f4ecdb; --fg:#1d180f; --muted:#877a5e; --rule:#d6c8a8; --accent:#b45309;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --serif:"Boldonse","Iowan Old Style",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1a1610; --fg:#ede1c4; --muted:#7a6d52; --rule:#34291c; --accent:#f5b041; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--mono);display:flex;flex-direction:column;height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-bottom:1px solid var(--rule)}
+header .title strong{font-family:var(--serif)}
+.muted{color:var(--muted)}
+.controls input,.controls select,.controls button{font-family:var(--mono);background:transparent;color:var(--fg);border:1px solid var(--rule);border-radius:4px;padding:.3rem .5rem;margin-left:.4rem}
+.controls button:hover{border-color:var(--accent);color:var(--accent)}
+main{display:flex;flex:1;min-height:0}
+#graph{flex:2;min-width:0}
+#detail{flex:1;max-width:420px;border-left:1px solid var(--rule);padding:1rem;overflow:auto}
+#detail h1{font-family:var(--serif);color:var(--accent);font-size:1.2rem}
+.type-chip{display:inline-block;padding:.1rem .4rem;border:1px solid var(--rule);border-radius:4px;color:var(--muted);font-size:.72rem}
+.frontmatter dt{color:var(--muted);font-size:.72rem;letter-spacing:.04em;margin-top:.5rem}
+a{color:var(--accent)}
+hr{border:0;border-top:1px solid var(--rule)}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <strong id="bundle-name"></strong>
+    <span class="muted">OKF bundle</span>
+  </div>
+  <div class="controls">
+    <input id="search" type="search" placeholder="Search title / id / tag">
+    <select id="filter-type">
+      <option value="">All types</option>
+    </select>
+    <select id="layout">
+      <option value="cose">cose (force)</option>
+      <option value="concentric">concentric</option>
+      <option value="breadthfirst">breadth-first</option>
+      <option value="circle">circle</option>
+      <option value="grid">grid</option>
+    </select>
+    <button id="reset">Reset view</button>
+  </div>
+</header>
+
+<main>
+  <section id="graph"></section>
+  <section id="detail">
+    <div id="detail-empty" class="muted">Click a node to see its details.</div>
+    <article id="detail-content" hidden>
+      <header class="detail-header">
+        <span class="type-chip" id="detail-type"></span>
+        <h1 id="detail-title"></h1>
+        <div class="muted" id="detail-id"></div>
+      </header>
+      <dl class="frontmatter">
+        <dt>Description</dt><dd id="detail-description"></dd>
+        <dt>Resource</dt><dd id="detail-resource"></dd>
+        <dt>Tags</dt><dd id="detail-tags"></dd>
+      </dl>
+      <hr>
+      <div id="detail-body"></div>
+      <section id="detail-backlinks" hidden>
+        <h2>Cited by</h2>
+        <ul id="backlinks-list"></ul>
+      </section>
+    </article>
+  </section>
+</main>
+
+<script>
+window.BUNDLE_NAME = "let-go-wiki";
+window.BUNDLE = {"nodes": [{"data": {"id": "concepts/stack-vm", "label": "Stack VM", "type": "Concept", "description": "The stack-based virtual machine that executes let-go bytecode.", "resource": "https://github.com/nooga/let-go/tree/main/pkg/vm", "tags": ["vm", "bytecode", "runtime"], "color": "#877a5e", "size": 32}}, {"data": {"id": "docs/superpowers/specs/2026-07-01-let-go-wiki-design", "label": "let-go-wiki \u2014 Design Spec", "type": "Unknown", "description": "", "resource": "", "tags": [], "color": "#877a5e", "size": 90}}, {"data": {"id": "entities/let-go", "label": "let-go", "type": "Entity", "description": "A Clojure dialect with a bytecode compiler and stack VM, written in Go.", "resource": "https://github.com/nooga/let-go", "tags": ["clojure", "go", "vm", "wasm"], "color": "#b45309", "size": 33}}], "edges": [{"data": {"id": "concepts/stack-vm__entities/let-go", "source": "concepts/stack-vm", "target": "entities/let-go"}}, {"data": {"id": "entities/let-go__concepts/stack-vm", "source": "entities/let-go", "target": "concepts/stack-vm"}}], "bodies": {"concepts/stack-vm": "\n# Stack VM\n\nThe let-go compiler emits bytecode that runs on a stack-based virtual machine.\nValues are pushed and popped from an operand stack; instructions operate on the\ntop of the stack. This is the execution substrate for [let-go](../entities/let-go.md)\nprograms after compilation.\n\n> status: speculative \u2014 verify details against `pkg/vm` before promoting to stable.\n\n# Citations\n\n[1] [pkg/vm](https://github.com/nooga/let-go/tree/main/pkg/vm)\n", "docs/superpowers/specs/2026-07-01-let-go-wiki-design": "\n# let-go-wiki \u2014 Design Spec\n\n## 1. Overview\n\nA standalone, git-tracked knowledge base at `~/development/let-go-wiki` for\n**developing and using** the [let-go](https://github.com/nooga/let-go)\necosystem. It follows the user's existing **llm_wiki pattern** (agent-authored,\nagent-maintained markdown wiki) **harmonized with Google's Open Knowledge\nFormat (OKF)** so a single corpus of markdown files works with the user's own\n`llm-wiki` tooling *and* with OKF tooling.\n\nAudience: **humans first, agent-consumable second.** Humans browse a styled\nstatic site; agents load the raw markdown into context and maintain it.\n\n### Goals\n\n- One canonical corpus of markdown + YAML frontmatter, authored/maintained by\n  agents, versioned in its own git repo, shareable with let-go contributors.\n- Strong maintenance tooling: reuse the user's `llm-wiki` CLI and\n  `~/pkm/.claude/skills/wiki/*`, plus a vendored OKF graph visualizer.\n- An automated authoring engine \u2014 `enrich`, recast for let-go \u2014 that mints one\n  structured doc per code/runtime concept, then crawls curated docs to enrich.\n- A published, **styled** human surface: a GitHub Pages site matching let-go's\n  own published-page fonts and colors.\n\n## 2. Architecture \u2014 three layers\n\nMirrors the `~/pkm/llm_wiki.md` model.\n\n1. **Raw sources (source of truth, read-only):** the upstream repos and\n   curated external docs. Never modified by the wiki. See \u00a75.\n2. **The canonical wiki (agent-owned):** `~/development/let-go-wiki/` \u2014 markdown\n   + frontmatter pages the agent creates and maintains. \u00a73, \u00a74.\n3. **Consumption / publication (generated):** local browse (Obsidian/editor),\n   the vendored OKF `viz.html` graph, and the styled GitHub Pages site. \u00a77, \u00a78.\n\nThe **schema layer** (per llm_wiki) is **model-agnostic**: the canonical\nmaintenance instructions live in a root **`AGENTS.md`** (the neutral,\ncross-tool standard read by Codex and others), with **`CLAUDE.md` a thin\npointer** (`See AGENTS.md`) so Claude Code picks it up too. Any coding agent \u2014\nClaude, Codex, Cursor, Gemini \u2014 gets the same instructions from one source.\n\n### 2.1 Multi-party repo hygiene\n\nThe repo is maintained by multiple parties and published as a static site, so a\nclone must be **self-contained** regardless of a contributor's *global* git\nignore. The authoring machine's `~/.config/git/ignore` excludes `/*.md` (all\nroot markdown: `index.md`, `log.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`),\n`.claude/`, and `docs/superpowers/`. Mitigation: an **authoritative repo-root\n`.gitignore` with negation rules** (`!/index.md`, `!/AGENTS.md`, \u2026) \u2014 negations\nin a repo-root `.gitignore` outrank `core.excludesFile`, so these files stay\ntrackable by a normal `git add` for everyone. Generated output (`site/`) stays\nignored and is deployed via CI / a `gh-pages` branch.\n\n## 3. Canonical format \u2014 llm_wiki \u2295 OKF\n\nOKF's SPEC \u00a710 explicitly names \"LLM wiki repositories\" as its closest sibling,\nso the formats harmonize. Every page carries **both** vocabularies so all\ntooling reads one file:\n\n```yaml\n---\ntype: Concept                 # OKF-required; capitalized concept kind\ncategory: concept             # llm_wiki: concept | entity | idea | project | source\ntitle: \"Stack VM\"\ndescription: \"One-sentence summary; used verbatim in generated index.md.\"\ntags: [vm, bytecode]          # from _meta/taxonomy.md (max 5)\nresource: \"https://github.com/nooga/let-go/tree/main/pkg/vm\"  # OKF canonical URI\nsources: [\"repo: nooga/let-go pkg/vm, 2026-07-01\"]            # llm_wiki provenance\ncreated: \"2026-07-01\"\nupdated: \"2026-07-01\"\nstatus: speculative           # speculative | active | stable | archived\n---\n```\n\n- `type` (OKF-required) is the capitalized form of `category`, or a finer kind\n  (`Function`, `Macro`, `Namespace`, `Package`, `Reference`, `Project`).\n- `resource` cites the exact source path/URI; `sources` carries llm_wiki-style\n  provenance. Both point back to code so every claim is traceable.\n- `status` starts `speculative` for agent-drafted pages; promoted to `stable`\n  only after review against the actual code/runtime.\n\n**Cross-links:** file-relative markdown links (e.g. `[stack vm](../concepts/stack-vm.md)`),\n**not** `/absolute` links \u2014 this keeps links working when browsed as plain\nfiles on GitHub and when rendered by the static-site generator. (This follows\nOKF's reference-agent link rule, which favors relative paths for GitHub\nrendering, over the SPEC's `/absolute` recommendation.)\n\n**Conformance:** every non-reserved `.md` file has parseable frontmatter with a\nnon-empty `type` \u2014 satisfying OKF v0.1 \u00a79 so the visualizer works unmodified.\n\n## 4. Directory structure\n\n```\nlet-go-wiki/\n  index.md                 # catalog by category (maintained by llm-wiki CLI)\n  log.md                   # append-only chronological log (llm-wiki CLI)\n  AGENTS.md                # CANONICAL schema/maintenance instructions (model-agnostic)\n  CLAUDE.md                # thin pointer: \"See AGENTS.md\"\n  lgx.edn                  # lgx project: enrich/build/viz/serve tasks (dogfoods lgx)\n  _meta/\n    taxonomy.md            # let-go-specific tag vocabulary (fresh, not PKM's)\n  concepts/                # HOW it works \u2014 implementation & language internals\n                           #   (developing let-go): compiler, bytecode, stack VM,\n                           #   runtime, persistent data structures, transducers,\n                           #   Go interop model, AOT\u2192binary, WASM build, core.async\n  entities/                # the THINGS: let-go, xsofy, lgx, let-go-lab, lgcr,\n                           #   nooga, Clojure, jank-test-suite, WASM, sixel, qmd\n  ideas/                   # roadmap & speculative: nREPL-in-browser,\n                           #   bytecode\u2192Go translation\n  projects/                # USAGE case studies (using let-go in anger):\n                           #   xsofy, lgx, let-go-lab\n  sources/                 # one page per ingested source repo + key external docs\n  references/              # OKF-style reference docs minted by enrich pass 2\n                           #   (clojure-compat, transducers, interop rules, \u2026)\n  tools/\n    viz/                   # vendored OKF viewer (generator.py + viz.html template)\n    letgo_source.py        # LetGoSource: enumerate concepts from repos + runtime\n    build_site.py          # render canonical markdown \u2192 styled GitHub Pages site\n  site/                    # generated static site output (gitignored or gh-pages)\n  docs/superpowers/specs/  # this spec and future ones\n```\n\nThe user's two branches map onto existing llm_wiki dirs rather than inventing\ntop-level dirs: **developing let-go \u2192 `concepts/`**; **using let-go \u2192\n`projects/` + `entities/`**. Only `references/` is added, matching OKF.\n\n## 5. Source catalog\n\n| Source | Repo | Role in wiki |\n|---|---|---|\n| let-go | github.com/nooga/let-go (local `~/development/let-go`) | The language/VM. Feeds `concepts/` (internals) and `entities/let-go`, plus the stdlib API in `concepts/`/`references/`. |\n| xsofy | github.com/nooga/xsofy (local `~/development/xsofy`) | A roguelike written *in* let-go. `projects/xsofy` \u2014 usage case study, idioms, WASM. |\n| let-go-lab | github.com/mparrett/let-go-lab | Sixel/terminal-graphics/WASM experiments on let-go. `projects/let-go-lab`. |\n| lgx | github.com/abogoyavlensky/lgx | Git-based package/project manager for let-go (`lgx.edn`: deps/run/test/build/scaffold). `projects/lgx` + `entities/lgx`; the \"how to manage a let-go project\" story. |\n| legmacs | github.com/nooga/legmacs | An Emacs-flavored terminal editor written in (~2.7k lines) and scripted with let-go \u2014 same language for implementation and config, no separate plugin API. `projects/legmacs` \u2014 a substantial \"using let-go in anger\" case study for interactive/TUI apps and self-hosted extensibility. |\n\nExternal doc seeds (for enrich pass 2): let-go README, clojure.org /\nclojuredocs (compat semantics), the jank clojure-test-suite, nooga's posts.\n\n### 5.1 Internal knowledge in the let-go repo (incl. gitignored)\n\nThe `~/development/let-go` checkout carries substantial development knowledge\nbeyond the code. Some is **gitignored**, so a fresh clone (and thus a\npublic-repo crawl) would miss it \u2014 it must be ingested from the **local\ncheckout**. Population applies a **shareability filter**: capture knowledge\nuseful to *other* contributors; exclude personal config, local paths,\nmachine/session state, and agent memory.\n\n**Ingest \u2014 tracked docs (normal sources):** `docs/guide/**` (usage, nREPL,\nembedding-in-go, pods, portability, clojure-compatibility, semver, resources),\n`docs/design/**` (vm-performance, go-aot-backend, value-representation,\nexec-context-threading, parallel-lowering, runtime-image/stdlib-cache, \u2026),\nroot `docs/*.md` (clojure-compat-roadmap, jvm-compat-plan,\ntesting-and-conformance, clojurelike-refactor-plan, master-plan,\nxsofy-portability-gaps, contribution-policy, frontmatter-hook), and perf\nknowledge `docs/perf/{ratchet.md, microbench/README.md, historical/*}`.\n\n**Ingest \u2014 gitignored but shareable (read from the local checkout; a clone\nlacks these):** `docs/superpowers/specs/**/*.md` (~40 design docs: sem-IR\npasses, IR build coverage, deftype/defprotocol native lowering,\nincremental-lowering nREPL server, browser-inspector nREPL bridge, lambda-lift\n& higher-order specialization, concurrent namespaces & dynamic bindings,\nmergeable type-lattice cache, malli-on-let-go, \u2026), `docs/superpowers/plans/**`\n(implementation plans: IR pipeline port, go-lowering codegen, print-method,\ncabi-interop, nREPL server, \u2026), `docs/superpowers/iterations/**` +\n`requirements/EPIC-*.md` (the self-AOT walking-skeleton roadmap/epics),\n`docs/superpowers/deferred/*.md`, and `docs/superpowers/MALLI_PORT_ANALYSIS.md`.\nThese map mostly to wiki `concepts/` (internals) and `references/` (design\ndecisions), with `resource:` citing the repo path.\n\n**Exclude \u2014 personal/local/artifacts (not applicable to others):** all of\n`.agent/**` (the user's portable-brain harness + memory: PREFERENCES,\nWORKSPACE, episodic learnings, branch-triage/session notes), `docs/perf/.runs/**`\n(local perf run logs), every `.DS_Store`, and the `docs/superpowers/HANDOFF-*.md`\nsession-handoff notes (mine only durable, verified technical findings from these\nif ever \u2014 they are mostly PR/branch/session state).\n\n## 6. Maintenance tooling\n\nThe \"strong skills and tooling\" requirement. Bookkeeping is owned by tools, not\nhand edits (per `llm_wiki.md`: hand-editing index/log/manifest is *not* the path).\n\n**Approach \u2014 content-first, lgx-fronted (v1).** To publish content fastest, v1\ntooling is Python (`LetGoSource`, vendored OKF viewer) + MkDocs Material (\u00a78).\nBut the **task-runner entrypoint is lgx** (dogfooding one of our own sources):\nthe repo is an **lgx project** (`lgx.edn`) exposing `enrich` / `build` / `viz` /\n`serve` tasks that wrap the underlying tools. So contributors drive everything\nthrough `lgx <task>` even while the implementations are Python. Migrating those\nimplementations to let-go is tracked, deferred work \u2014 see \u00a712.\n\n- **`llm-wiki` CLI** (`~/pkm/llm_wiki.py`, run via `uv run` from `~/pkm`):\n  `page register`, `index entry`, `log close-session`, `manifest show`. Wire\n  this new repo as an `llm-wiki` project (config/path) so the CLI maintains its\n  `index.md` / `log.md` / manifest. Verify subcommands with `--help` first;\n  fall back to direct markdown ops if a case isn't covered.\n- **`~/pkm/.claude/skills/wiki/*`**: reuse `wiki-check-name.py` (name-collision\n  guard \u2014 run before every new page), `wiki-doctor.py` (health/lint),\n  ingest/lint/query skill docs.\n- **Root `AGENTS.md`** (canonical, model-agnostic) + **`CLAUDE.md`** (pointer):\n  instruct agents here to (a) maintain via the CLI + wiki skills, (b) follow the\n  harmonized frontmatter, (c) run the enrich discipline (\u00a77) when authoring,\n  (d) never hand-edit index/log. Written once in `AGENTS.md` so Claude, Codex,\n  Cursor, Gemini, etc. all share one schema.\n- **qmd** (optional): hybrid BM25/vector search + MCP server; kicks in past a\n  few hundred pages. `llm-wiki index update` wraps it.\n- **Vendored OKF visualizer** (`tools/viz/`): copy\n  `okf/src/reference_agent/viewer/{generator.py, templates/viz.html}` (no GCP\n  deps) + a thin wrapper. Regenerates `viz.html` \u2014 a self-contained\n  force-directed graph \u2014 restyled with the let-go house style (\u00a78). Our dual\n  frontmatter makes every page OKF-conformant, so it works unmodified.\n\n## 7. Authoring engine \u2014 `enrich`, recast for let-go\n\nGoogle's `enrich` is a **source-pluggable, two-pass, guardrailed\nknowledge-authoring loop**. We drop its ADK/Gemini/BigQuery code and reuse its\n*shape* and *prompt discipline*, re-expressed in our stack. The `Source` ABC is\nthe seam where \"Google-specific\" lived; we replace it with `LetGoSource`.\n\n### Pass 1 \u2014 structured pass (system-of-record \u2192 one doc per concept)\n\n`LetGoSource` (`tools/letgo_source.py`) enumerates typed concepts from **the\nrepos + the running `let-go` runtime**:\n\n| enrich (`Source`) | `LetGoSource` |\n|---|---|\n| `list_concepts()` \u2192 BQ tables/datasets | namespaces (`Namespace`), functions/macros/special-forms (`Function`/`Macro`/`Special Form`), Go-interop bindings (`Go Interop`), internal packages `pkg/vm`,`pkg/compiler` (`Package`), example programs (`Project`) |\n| `read_concept()` \u2192 schema metadata | arglists + `:doc` docstring (let-go carries Clojure-style var metadata) + source location |\n| `sample_rows()` \u2192 query the table | **eval the form in the `let-go` REPL** and capture real output |\n\nPer concept, a **Claude subagent** (adapted `reference_instruction.md`) reads\nany existing doc (refine, don't rewrite), reads raw metadata, evals a sample,\nsees siblings for cross-linking, and writes exactly one doc:\nprose \"grain\" \u2192 `# Signature` \u2192 `# Examples` (real REPL transcripts) \u2192\n`# Citations`. Writes go through the `llm-wiki` CLI (`page register`,\n`index entry`) which regenerates index/log.\n\n**Eval backend for `# Examples` (live REPL, v1):** v1 shells out to the\n`let-go` binary to evaluate example forms and capture real output, each eval\nsandboxed with a timeout; a failed/hanging eval is recorded as\n\"example errored\" rather than blocking the doc. **Forward upgrade:** migrate to\n**nREPL** once the in-progress nREPL effort on let-go proper lands \u2014 a\npersistent session (evaluate many forms without per-call process spawn) with\nstructured values/stdout/error streams. The wiki does **not** block on nREPL;\nit's a soft dependency tracked in `ideas/nrepl` and swapped into `LetGoSource`\nbehind the same sampling interface when ready.\n\nThe initial population (\"parallel agents, one per repo\") **is** pass 1: dispatch\nread-only Claude subagents over let-go, xsofy, let-go-lab, lgx.\n\n### Pass 2 \u2014 web/docs pass (crawl curated docs to enrich)\n\nA Claude subagent (adapted `web_ingestion_instruction.md`) self-crawls from\nseed URLs under **hard guardrails** (max-pages, allowed-hosts, path-prefixes,\ndenied-substrings, max-depth). Per page it routes to: **enrich** an existing doc\n(strict augmentation \u2014 preserve every existing heading, add alongside),\n**mint** a `references/<slug>` doc (only past the **four gates**:\nreferenceable-by-name, not-meta, citation-test, reuse-test \u2014 bias to skip), or\n**skip**. Guardrails are enforced in the fetch wrapper (our `WebFetch`), not\njust the prompt.\n\n**let-go-shaped \"must-capture\" extractions** (the analog of enrich's\nmetric/dimension/join extractions that bypass the gates):\n\n- **Clojure-compat notes** \u2014 where let-go diverges from Clojure JVM \u2192\n  `references/clojure-compat/<slug>.md`, cited from affected function docs.\n- **Interop rules** \u2014 Go\u2194let-go calling conventions \u2192 `references/interop/\u2026`.\n- **Known limitations / edge-cases** \u2014 the README's \"Known limitations\" and\n  failing test-suite cases \u2192 `references/limitations/\u2026`.\n\n### What's actually reused vs. rebuilt\n\n- **Reused (ported near-verbatim):** the four-gate reference test, the strict\n  augmentation rules, the crawl-guardrail model, the OKF doc shape, the\n  `viz.html` viewer.\n- **Rebuilt for let-go:** `LetGoSource` (repo walk + REPL introspection), the\n  two prompts recast SQL\u2192Clojure, Claude subagents in place of ADK agents,\n  writes through the `llm-wiki` CLI.\n\n## 8. Published surface \u2014 styled GitHub Pages site\n\nPrimary human-facing surface (user preference: a `github.io` site, not a pure\nwiki). `tools/build_site.py` renders the canonical markdown \u2192 a static site\ndeployed to GitHub Pages.\n\n**House style** \u2014 matched to let-go's own published page (`let-go/wasm/index.html`):\n\n```css\n--serif: \"Boldonse\", \"Iowan Old Style\", Georgia, serif;   /* display/headings */\n--mono:  \"JetBrains Mono\", ui-monospace, \"SF Mono\", Menlo, monospace; /* body/code */\n\n/* light (warm off-white) */\n--bg:#f4ecdb; --fg:#1d180f; --muted:#877a5e; --rule:#d6c8a8; --accent:#b45309;\n--term-bg:#1a1610; --term-fg:#ede1c4; --term-cursor:#f5b041;\n/* dark */\n[data-theme=dark]: --bg:#1a1610; --fg:#ede1c4; --muted:#7a6d52; --rule:#34291c; --accent:#f5b041;\n```\n\nFonts via Google Fonts (`Boldonse`, `JetBrains Mono`); light/dark toggle with\n`prefers-color-scheme` + `localStorage`, same as let-go's page. The vendored\n`viz.html` graph is restyled with the same tokens and embedded/linked from the\nsite.\n\n**Generator \u2014 MkDocs Material (v1, decided).** Rationale: Python (matches the\n`llm-wiki`/viewer toolchain), trivial GitHub Pages deploy, custom CSS via\n`extra_css` for the house tokens, built-in client-side search, nav derived from\nthe directory tree, frontmatter-aware. Invoked via the `lgx site` task. The\n**bespoke let-go SSG** (goldmark via `lginterop`, sharing the WASM playground\ntoolchain) is the deferred dogfooding target that replaces MkDocs later \u2014 \u00a712.\n\nFrontmatter is consumed by the generator (title/description/tags/nav) and not\nshown as raw text. Relative `.md` links (\u00a73) resolve directly.\n\n**Runnable examples (WASM REPL playground):** let-go compiles *itself* to WASM,\nand its published page already embeds an xterm.js + WASM REPL terminal. The site\nreuses that widget so `# Examples` code blocks are **runnable in-browser** \u2014\nstatic REPL transcripts by default (from \u00a77 sampling), with a \"Run\" affordance\nas a progressive enhancement that boots the let-go VM in WASM and evaluates the\nform live. This directly matches let-go's own published-page tech and advances\nthe roadmap item *nREPL in the browser (let-go VM in WASM)*. Phase-2 relative to\nfirst content; the static transcripts stand alone without it.\n\n**What the site publishes:** only the wiki-content dirs \u2014 `concepts/`,\n`entities/`, `ideas/`, `projects/`, `sources/`, `references/` \u2014 plus `index.md`\n(landing). **Excluded from the rendered site** (machinery / internal process\ndocs, but still git-tracked for contributors): `docs/superpowers/` (design\nspecs & plans), `tools/`, `_meta/`, `.claude/`, `AGENTS.md`/`CLAUDE.md`. The\ngenerator's `docs_dir`/`nav` is scoped to the content dirs so process artifacts\nnever leak into the published output.\n\n## 9. Build sequence (this session)\n\nPer user choice, scaffold **and** generate in this session.\n\n1. `git init` the repo; create dirs (\u00a74); write `_meta/taxonomy.md` (fresh\n   let-go tags: `clojure`, `lisp`, `vm`, `bytecode`, `compiler`, `go`, `wasm`,\n   `interop`, `stdlib`, `roguelike`, `tooling`, plus type tags), `index.md`,\n   `log.md`, root `AGENTS.md` (canonical) + `CLAUDE.md` pointer.\n2. Wire the `llm-wiki` CLI to this repo as a project; verify `--help`. Add\n   `lgx.edn` with `enrich`/`build`/`viz`/`serve` tasks wrapping the tools.\n3. Vendor the OKF viewer into `tools/viz/`; restyle `viz.html` with \u00a78 tokens.\n4. Implement `LetGoSource` (pass-1 enumeration + live REPL sampling via `let-go`\n   binary shell-out, sandboxed with timeouts).\n5. **Pass 1:** dispatch parallel read-only Claude subagents (one per repo:\n   let-go, xsofy, let-go-lab, lgx) drafting `entities/`, `concepts/`,\n   `projects/` pages (`status: speculative`, `resource`/`sources` cited),\n   writing through the CLI.\n6. **Review pass:** validate drafted pages against actual code/runtime; promote\n   accurate ones to `status: stable`. Run `wiki-check-name.py` on every new page\n   and `wiki-doctor.py` for health.\n7. **Pass 2 (optional this session):** docs crawl to enrich + mint `references/`.\n8. Build `tools/build_site.py` (MkDocs Material scaffold + house-style CSS);\n   generate `site/`; regenerate `viz.html`.\n9. Regenerate `index.md`, append `log.md`, commit.\n\n## 10. Risks / open decisions\n\n- **`llm-wiki` CLI multi-project support** \u2014 confirm it can target a repo\n  outside `~/pkm/wiki`. If not, either point `WIKI` config at this repo or fall\n  back to direct markdown ops (always safe).\n- **REPL sampling** \u2014 DECIDED: live REPL in v1. Backend = `let-go` binary\n  shell-out now (sandboxed with timeouts; failures captured as \"example\n  errored\"), upgrading to **nREPL** when that effort lands. Soft dependency,\n  non-blocking (`ideas/nrepl`).\n- **WASM playground** \u2014 Phase-2 progressive enhancement reusing let-go's\n  existing WASM REPL widget; confirm licensing/vendoring of that widget from the\n  let-go repo when we build it.\n- **Accuracy of agent-drafted pages** \u2014 mitigated by `status: speculative` gate\n  + mandatory review before `stable`; every page cites `resource`.\n- **Static-site generator choice** \u2014 DECIDED: MkDocs Material for v1 (invoked\n  via `lgx site`); bespoke let-go SSG is the deferred dogfood target (\u00a712).\n- **Name collisions** \u2014 flat-ish page slugs across dirs; `wiki-check-name.py`\n  before each new page.\n\n## 11. Success criteria\n\n- `~/development/let-go-wiki` is a git repo with the \u00a74 structure, a fresh\n  taxonomy, and CLI-maintained `index.md`/`log.md`.\n- \u22651 accurate `stable` page per source repo, each citing its `resource`.\n- `viz.html` renders the graph in the let-go house style.\n- `tools/build_site.py` produces a styled GitHub Pages site (fonts/colors match\n  let-go's published page) with working nav, search, and relative links.\n- The enrich discipline (four gates + augmentation rules) is captured in\n  `AGENTS.md` (with `CLAUDE.md` pointing to it) so future authoring stays\n  consistent across any coding agent.\n- The repo is an `lgx` project: `lgx enrich` / `lgx site` / `lgx viz` /\n  `lgx serve` all work.\n\n## 12. Dogfooding roadmap (deferred)\n\nDogfooding let-go is a stated project goal. v1 is content-first (Python +\nMkDocs) to publish fast, but the task layer is already lgx, and the migration\nbelow is tracked so it isn't lost. Each step is independently shippable behind\nthe stable `lgx <task>` interface, so contributors see no churn. Capture as\n`ideas/dogfooding-tooling`.\n\n1. **`LetGoSource` \u2192 let-go** *(highest value \u2014 also a better design).*\n   Replace Python repo-scraping with native runtime introspection: `all-ns` /\n   `ns-publics` / `(meta (var \u2026))` / `:arglists` / `:doc`, and in-process eval\n   for `# Examples`. Self-introspection beats scraping the binary; this is where\n   dogfooding and correctness align. Confirmed feasible: `all-ns` is registered\n   and let-go passes the Clojure test suite.\n2. **Bespoke let-go SSG \u2192 replaces MkDocs.** Wrap a Go markdown lib (goldmark)\n   via `lginterop`; emit the house-styled HTML directly (pixel parity with\n   let-go's own page) and embed the WASM REPL from the same toolchain. let-go\n   already ships `net/http`, `io`/`os`, `json`, native `edn`, and a WASM host,\n   so an SSG + `lgx serve` dev server are in-domain.\n3. **OKF viz \u2192 let-go** *(optional polish).* Port `generator.py` (frontmatter +\n   link-graph walk \u2192 `viz.html`) to let-go; low value, do last.\n\nClaude subagent orchestration and the reused PKM Python (`llm-wiki` CLI,\n`wiki-doctor.py`, `wiki-check-name.py`) remain as-is.\n", "entities/let-go": "\n# let-go\n\nlet-go is a Clojure dialect implemented as a bytecode compiler and stack-based\nvirtual machine in Go. It produces a single ~12MB binary with ~8ms cold start,\nno JVM, and passes the jank-lang Clojure test suite. It supports AOT compilation\nto standalone binaries and self-contained WASM web pages, two-way Go interop, and\nmost of Clojure (persistent data structures, lazy seqs, transducers, protocols,\nrecords, multimethods, core.async, BigInts).\n\nSee the [stack VM](../concepts/stack-vm.md) for how compiled bytecode executes.\n\n# Citations\n\n[1] [let-go repository](https://github.com/nooga/let-go)\n"}, "types": ["Concept", "Entity", "Unknown"], "palette": {"Entity": "#b45309", "Concept": "#877a5e", "Reference": "#10b981", "Project": "#3b82f6", "Idea": "#8b5cf6", "Function": "#877a5e", "Macro": "#877a5e", "Namespace": "#b45309", "Package": "#3b82f6"}};
+</script>
+<script>
+(function () {
+  const bundle = window.BUNDLE;
+  const bundleName = window.BUNDLE_NAME;
+  document.title = `${bundleName} — OKF Viewer`;
+  document.getElementById("bundle-name").textContent = bundleName;
+
+  // Populate type filter
+  const typeSelect = document.getElementById("filter-type");
+  for (const t of bundle.types) {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.textContent = t;
+    typeSelect.appendChild(opt);
+  }
+
+  // Build reverse-link index for backlinks
+  const backlinks = {};
+  for (const edge of bundle.edges) {
+    const { source, target } = edge.data;
+    (backlinks[target] ||= []).push(source);
+  }
+
+  // Look up node label/type by id
+  const nodeIndex = {};
+  for (const n of bundle.nodes) nodeIndex[n.data.id] = n.data;
+
+  const cy = cytoscape({
+    container: document.getElementById("graph"),
+    elements: [...bundle.nodes, ...bundle.edges],
+    style: [
+      {
+        selector: "node",
+        style: {
+          "background-color": "data(color)",
+          "label": "data(label)",
+          "color": "#0f172a",
+          "font-size": 11,
+          "text-valign": "bottom",
+          "text-margin-y": 4,
+          "text-wrap": "wrap",
+          "text-max-width": 120,
+          "width": "data(size)",
+          "height": "data(size)",
+          "border-width": 1,
+          "border-color": "#0f172a",
+        },
+      },
+      {
+        selector: "node:selected",
+        style: {
+          "border-width": 3,
+          "border-color": "#f59e0b",
+        },
+      },
+      {
+        selector: "edge",
+        style: {
+          "width": 1.5,
+          "line-color": "#cbd5e1",
+          "target-arrow-color": "#cbd5e1",
+          "target-arrow-shape": "triangle",
+          "curve-style": "bezier",
+          "arrow-scale": 0.9,
+        },
+      },
+      {
+        selector: "edge:selected",
+        style: {
+          "line-color": "#f59e0b",
+          "target-arrow-color": "#f59e0b",
+          "width": 2.5,
+        },
+      },
+      {
+        selector: ".dim",
+        style: { "opacity": 0.15 },
+      },
+    ],
+    layout: { name: "cose", animate: false, padding: 30 },
+    wheelSensitivity: 0.2,
+  });
+
+  cy.on("tap", "node", (evt) => showDetail(evt.target.id()));
+  cy.on("tap", (evt) => {
+    if (evt.target === cy) clearSelection();
+  });
+
+  document.getElementById("layout").addEventListener("change", (e) => {
+    cy.layout({ name: e.target.value, animate: false, padding: 30 }).run();
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    cy.fit(null, 30);
+    clearSelection();
+  });
+
+  document.getElementById("search").addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    if (!q) {
+      cy.elements().removeClass("dim");
+      return;
+    }
+    cy.nodes().forEach((n) => {
+      const d = n.data();
+      const hay =
+        (d.label || "").toLowerCase() + " " +
+        d.id.toLowerCase() + " " +
+        (d.tags || []).join(" ").toLowerCase();
+      n.toggleClass("dim", !hay.includes(q));
+    });
+    cy.edges().forEach((edge) => {
+      const src = edge.source();
+      const tgt = edge.target();
+      edge.toggleClass("dim", src.hasClass("dim") || tgt.hasClass("dim"));
+    });
+  });
+
+  document.getElementById("filter-type").addEventListener("change", (e) => {
+    const t = e.target.value;
+    if (!t) {
+      cy.elements().removeClass("dim");
+      return;
+    }
+    cy.nodes().forEach((n) => {
+      n.toggleClass("dim", n.data("type") !== t);
+    });
+    cy.edges().forEach((edge) => {
+      edge.toggleClass("dim", edge.source().hasClass("dim") || edge.target().hasClass("dim"));
+    });
+  });
+
+  function clearSelection() {
+    cy.elements().unselect();
+    document.getElementById("detail-empty").hidden = false;
+    document.getElementById("detail-content").hidden = true;
+  }
+
+  function showDetail(conceptId) {
+    const data = nodeIndex[conceptId];
+    if (!data) return;
+    cy.elements().unselect();
+    const node = cy.getElementById(conceptId);
+    if (node) node.select();
+
+    document.getElementById("detail-empty").hidden = true;
+    const content = document.getElementById("detail-content");
+    content.hidden = false;
+
+    const chip = document.getElementById("detail-type");
+    chip.textContent = data.type;
+    chip.style.background = data.color;
+
+    document.getElementById("detail-title").textContent = data.label;
+    document.getElementById("detail-id").textContent = conceptId;
+    document.getElementById("detail-description").textContent = data.description || "—";
+
+    const resourceEl = document.getElementById("detail-resource");
+    resourceEl.innerHTML = "";
+    if (data.resource) {
+      const a = document.createElement("a");
+      a.href = data.resource;
+      a.textContent = data.resource;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.className = "external";
+      resourceEl.appendChild(a);
+    } else {
+      resourceEl.textContent = "—";
+    }
+
+    const tagsEl = document.getElementById("detail-tags");
+    tagsEl.innerHTML = "";
+    if (data.tags && data.tags.length) {
+      for (const t of data.tags) {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.textContent = t;
+        tagsEl.appendChild(span);
+      }
+    } else {
+      tagsEl.textContent = "—";
+    }
+
+    const body = bundle.bodies[conceptId] || "";
+    const html = marked.parse(body, { breaks: false, gfm: true });
+    const bodyEl = document.getElementById("detail-body");
+    bodyEl.innerHTML = html;
+    rewriteInternalLinks(bodyEl);
+
+    const bl = backlinks[conceptId] || [];
+    const blSection = document.getElementById("detail-backlinks");
+    const blList = document.getElementById("backlinks-list");
+    blList.innerHTML = "";
+    if (bl.length) {
+      blSection.hidden = false;
+      for (const src of bl) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.textContent = nodeIndex[src]?.label || src;
+        a.dataset.target = src;
+        a.addEventListener("click", () => showDetail(src));
+        li.appendChild(a);
+        const muted = document.createElement("span");
+        muted.className = "muted";
+        muted.textContent = ` (${src})`;
+        li.appendChild(muted);
+        blList.appendChild(li);
+      }
+    } else {
+      blSection.hidden = true;
+    }
+
+    cy.animate({ center: { eles: node }, zoom: Math.max(cy.zoom(), 1.0) }, { duration: 200 });
+  }
+
+  function rewriteInternalLinks(root) {
+    root.querySelectorAll("a[href]").forEach((a) => {
+      const href = a.getAttribute("href");
+      if (!href) return;
+      if (href.startsWith("/") && href.endsWith(".md")) {
+        const target = href.slice(1, -3);
+        if (nodeIndex[target]) {
+          a.className = "internal";
+          a.setAttribute("href", "javascript:void(0)");
+          a.addEventListener("click", (e) => {
+            e.preventDefault();
+            showDetail(target);
+          });
+          return;
+        }
+      }
+      a.className = "external";
+      a.setAttribute("target", "_blank");
+      a.setAttribute("rel", "noopener");
+    });
+  }
+
+  // Auto-show the first node (a dataset if available, else first concept)
+  const initial =
+    bundle.nodes.find((n) => n.data.type === "BigQuery Dataset") ||
+    bundle.nodes[0];
+  if (initial) showDetail(initial.data.id);
+})();
+
+</script>
+</body>
+</html>
