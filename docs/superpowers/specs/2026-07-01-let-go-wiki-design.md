@@ -30,16 +30,6 @@ static site; agents load the raw markdown into context and maintain it.
 - A published, **styled** human surface: a GitHub Pages site matching let-go's
   own published-page fonts and colors.
 
-### Non-goals
-
-- No GCP / BigQuery / Gemini / ADK dependency. We reuse OKF's *format*, its
-  *visualizer*, and the *workflow discipline* of `enrich` — not its cloud code.
-- No pure GitHub Wiki (Gollum) target. Superseded by the GitHub Pages site
-  (§8), which gives full control over style. (A wiki mirror could be added
-  later but is out of scope.)
-- Not a hand-authored wiki. The human curates sources and asks questions; the
-  agent writes and maintains pages.
-
 ## 2. Architecture — three layers
 
 Mirrors the `~/pkm/llm_wiki.md` model.
@@ -285,8 +275,6 @@ site.
 the directory tree, frontmatter-aware. Invoked via the `lgx build` task. The
 **bespoke let-go SSG** (goldmark via `lginterop`, sharing the WASM playground
 toolchain) is the deferred dogfooding target that replaces MkDocs later — §12.
-(Hugo was considered and dropped: no Python-toolchain fit, and the let-go SSG is
-the better long-term dogfood anyway.)
 
 Frontmatter is consumed by the generator (title/description/tags/nav) and not
 shown as raw text. Relative `.md` links (§3) resolve directly.
@@ -388,6 +376,5 @@ the stable `lgx <task>` interface, so contributors see no churn. Capture as
 3. **OKF viz → let-go** *(optional polish).* Port `generator.py` (frontmatter +
    link-graph walk → `viz.html`) to let-go; low value, do last.
 
-**Stays non-let-go by design:** Claude subagent orchestration (harness-level)
-and the reused PKM Python (`llm-wiki` CLI, `wiki-doctor.py`,
-`wiki-check-name.py`) — rewriting existing tools isn't dogfooding *this* wiki.
+Claude subagent orchestration and the reused PKM Python (`llm-wiki` CLI,
+`wiki-doctor.py`, `wiki-check-name.py`) remain as-is.
