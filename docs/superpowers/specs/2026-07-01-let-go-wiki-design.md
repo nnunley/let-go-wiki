@@ -198,11 +198,21 @@ repos + the running `let-go` runtime**:
 | `sample_rows()` → query the table | **eval the form in the `let-go` REPL** and capture real output |
 
 Per concept, a **Claude subagent** (adapted `reference_instruction.md`) reads
-any existing doc (refine, don't rewrite), reads raw metadata, optionally evals
-a sample, sees siblings for cross-linking, and writes exactly one doc:
+any existing doc (refine, don't rewrite), reads raw metadata, evals a sample,
+sees siblings for cross-linking, and writes exactly one doc:
 prose "grain" → `# Signature` → `# Examples` (real REPL transcripts) →
 `# Citations`. Writes go through the `llm-wiki` CLI (`page register`,
 `index entry`) which regenerates index/log.
+
+**Eval backend for `# Examples` (live REPL, v1):** v1 shells out to the
+`let-go` binary to evaluate example forms and capture real output, each eval
+sandboxed with a timeout; a failed/hanging eval is recorded as
+"example errored" rather than blocking the doc. **Forward upgrade:** migrate to
+**nREPL** once the in-progress nREPL effort on let-go proper lands — a
+persistent session (evaluate many forms without per-call process spawn) with
+structured values/stdout/error streams. The wiki does **not** block on nREPL;
+it's a soft dependency tracked in `ideas/nrepl` and swapped into `LetGoSource`
+behind the same sampling interface when ready.
 
 The initial population ("parallel agents, one per repo") **is** pass 1: dispatch
 read-only Claude subagents over let-go, xsofy, let-go-lab, lgx.
@@ -270,6 +280,15 @@ let-go's page) — more control, more work. *Decision point for review.*
 Frontmatter is consumed by the generator (title/description/tags/nav) and not
 shown as raw text. Relative `.md` links (§3) resolve directly.
 
+**Runnable examples (WASM REPL playground):** let-go compiles *itself* to WASM,
+and its published page already embeds an xterm.js + WASM REPL terminal. The site
+reuses that widget so `# Examples` code blocks are **runnable in-browser** —
+static REPL transcripts by default (from §7 sampling), with a "Run" affordance
+as a progressive enhancement that boots the let-go VM in WASM and evaluates the
+form live. This directly matches let-go's own published-page tech and advances
+the roadmap item *nREPL in the browser (let-go VM in WASM)*. Phase-2 relative to
+first content; the static transcripts stand alone without it.
+
 **What the site publishes:** only the wiki-content dirs — `concepts/`,
 `entities/`, `ideas/`, `projects/`, `sources/`, `references/` — plus `index.md`
 (landing). **Excluded from the rendered site** (machinery / internal process
@@ -306,9 +325,13 @@ Per user choice, scaffold **and** generate in this session.
 - **`llm-wiki` CLI multi-project support** — confirm it can target a repo
   outside `~/pkm/wiki`. If not, either point `WIKI` config at this repo or fall
   back to direct markdown ops (always safe).
-- **REPL sampling reliability** — evaluating arbitrary forms for `# Examples`
-  can error or hang; sandbox with timeouts, capture failures as
-  "example errored" rather than blocking the doc. May defer to v2.
+- **REPL sampling** — DECIDED: live REPL in v1. Backend = `let-go` binary
+  shell-out now (sandboxed with timeouts; failures captured as "example
+  errored"), upgrading to **nREPL** when that effort lands. Soft dependency,
+  non-blocking (`ideas/nrepl`).
+- **WASM playground** — Phase-2 progressive enhancement reusing let-go's
+  existing WASM REPL widget; confirm licensing/vendoring of that widget from the
+  let-go repo when we build it.
 - **Accuracy of agent-drafted pages** — mitigated by `status: speculative` gate
   + mandatory review before `stable`; every page cites `resource`.
 - **Static-site generator choice** — MkDocs Material (recommended) vs Hugo;
