@@ -114,6 +114,7 @@ let-go-wiki/
   log.md                   # append-only chronological log (llm-wiki CLI)
   AGENTS.md                # CANONICAL schema/maintenance instructions (model-agnostic)
   CLAUDE.md                # thin pointer: "See AGENTS.md"
+  lgx.edn                  # lgx project: enrich/build/viz/serve tasks (dogfoods lgx)
   _meta/
     taxonomy.md            # let-go-specific tag vocabulary (fresh, not PKM's)
   concepts/                # HOW it works — implementation & language internals
@@ -157,6 +158,14 @@ clojuredocs (compat semantics), the jank clojure-test-suite, nooga's posts.
 
 The "strong skills and tooling" requirement. Bookkeeping is owned by tools, not
 hand edits (per `llm_wiki.md`: hand-editing index/log/manifest is *not* the path).
+
+**Approach — content-first, lgx-fronted (v1).** To publish content fastest, v1
+tooling is Python (`LetGoSource`, vendored OKF viewer) + MkDocs Material (§8).
+But the **task-runner entrypoint is lgx** (dogfooding one of our own sources):
+the repo is an **lgx project** (`lgx.edn`) exposing `enrich` / `build` / `viz` /
+`serve` tasks that wrap the underlying tools. So contributors drive everything
+through `lgx <task>` even while the implementations are Python. Migrating those
+implementations to let-go is tracked, deferred work — see §12.
 
 - **`llm-wiki` CLI** (`~/pkm/llm_wiki.py`, run via `uv run` from `~/pkm`):
   `page register`, `index entry`, `log close-session`, `manifest show`. Wire
@@ -270,12 +279,14 @@ Fonts via Google Fonts (`Boldonse`, `JetBrains Mono`); light/dark toggle with
 `viz.html` graph is restyled with the same tokens and embedded/linked from the
 site.
 
-**Generator (recommended: MkDocs Material)** — rationale: Python (matches the
+**Generator — MkDocs Material (v1, decided).** Rationale: Python (matches the
 `llm-wiki`/viewer toolchain), trivial GitHub Pages deploy, custom CSS via
 `extra_css` for the house tokens, built-in client-side search, nav derived from
-the directory tree, frontmatter-aware. Alternative considered: **Hugo** (Go
-affinity with let-go, hand-rolled templates for pixel-exact parity with
-let-go's page) — more control, more work. *Decision point for review.*
+the directory tree, frontmatter-aware. Invoked via the `lgx build` task. The
+**bespoke let-go SSG** (goldmark via `lginterop`, sharing the WASM playground
+toolchain) is the deferred dogfooding target that replaces MkDocs later — §12.
+(Hugo was considered and dropped: no Python-toolchain fit, and the let-go SSG is
+the better long-term dogfood anyway.)
 
 Frontmatter is consumed by the generator (title/description/tags/nav) and not
 shown as raw text. Relative `.md` links (§3) resolve directly.
@@ -305,7 +316,8 @@ Per user choice, scaffold **and** generate in this session.
    let-go tags: `clojure`, `lisp`, `vm`, `bytecode`, `compiler`, `go`, `wasm`,
    `interop`, `stdlib`, `roguelike`, `tooling`, plus type tags), `index.md`,
    `log.md`, root `AGENTS.md` (canonical) + `CLAUDE.md` pointer.
-2. Wire the `llm-wiki` CLI to this repo as a project; verify `--help`.
+2. Wire the `llm-wiki` CLI to this repo as a project; verify `--help`. Add
+   `lgx.edn` with `enrich`/`build`/`viz`/`serve` tasks wrapping the tools.
 3. Vendor the OKF viewer into `tools/viz/`; restyle `viz.html` with §8 tokens.
 4. Implement `LetGoSource` (pass-1 enumeration + live REPL sampling via `let-go`
    binary shell-out, sandboxed with timeouts).
@@ -335,8 +347,8 @@ Per user choice, scaffold **and** generate in this session.
   let-go repo when we build it.
 - **Accuracy of agent-drafted pages** — mitigated by `status: speculative` gate
   + mandatory review before `stable`; every page cites `resource`.
-- **Static-site generator choice** — MkDocs Material (recommended) vs Hugo;
-  confirm at review.
+- **Static-site generator choice** — DECIDED: MkDocs Material for v1 (invoked
+  via `lgx build`); bespoke let-go SSG is the deferred dogfood target (§12).
 - **Name collisions** — flat-ish page slugs across dirs; `wiki-check-name.py`
   before each new page.
 
@@ -351,3 +363,31 @@ Per user choice, scaffold **and** generate in this session.
 - The enrich discipline (four gates + augmentation rules) is captured in
   `AGENTS.md` (with `CLAUDE.md` pointing to it) so future authoring stays
   consistent across any coding agent.
+- The repo is an `lgx` project: `lgx enrich` / `lgx build` / `lgx viz` /
+  `lgx serve` all work.
+
+## 12. Dogfooding roadmap (deferred)
+
+Dogfooding let-go is a stated project goal. v1 is content-first (Python +
+MkDocs) to publish fast, but the task layer is already lgx, and the migration
+below is tracked so it isn't lost. Each step is independently shippable behind
+the stable `lgx <task>` interface, so contributors see no churn. Capture as
+`ideas/dogfooding-tooling`.
+
+1. **`LetGoSource` → let-go** *(highest value — also a better design).*
+   Replace Python repo-scraping with native runtime introspection: `all-ns` /
+   `ns-publics` / `(meta (var …))` / `:arglists` / `:doc`, and in-process eval
+   for `# Examples`. Self-introspection beats scraping the binary; this is where
+   dogfooding and correctness align. Confirmed feasible: `all-ns` is registered
+   and let-go passes the Clojure test suite.
+2. **Bespoke let-go SSG → replaces MkDocs.** Wrap a Go markdown lib (goldmark)
+   via `lginterop`; emit the house-styled HTML directly (pixel parity with
+   let-go's own page) and embed the WASM REPL from the same toolchain. let-go
+   already ships `net/http`, `io`/`os`, `json`, native `edn`, and a WASM host,
+   so an SSG + `lgx serve` dev server are in-domain.
+3. **OKF viz → let-go** *(optional polish).* Port `generator.py` (frontmatter +
+   link-graph walk → `viz.html`) to let-go; low value, do last.
+
+**Stays non-let-go by design:** Claude subagent orchestration (harness-level)
+and the reused PKM Python (`llm-wiki` CLI, `wiki-doctor.py`,
+`wiki-check-name.py`) — rewriting existing tools isn't dogfooding *this* wiki.
