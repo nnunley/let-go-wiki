@@ -51,9 +51,23 @@ Mirrors the `~/pkm/llm_wiki.md` model.
 3. **Consumption / publication (generated):** local browse (Obsidian/editor),
    the vendored OKF `viz.html` graph, and the styled GitHub Pages site. §7, §8.
 
-The **schema layer** (per llm_wiki) is a root `CLAUDE.md` telling any agent
-working here how the wiki is structured and to maintain it via the CLI/skills
-rather than hand-editing bookkeeping files.
+The **schema layer** (per llm_wiki) is **model-agnostic**: the canonical
+maintenance instructions live in a root **`AGENTS.md`** (the neutral,
+cross-tool standard read by Codex and others), with **`CLAUDE.md` a thin
+pointer** (`See AGENTS.md`) so Claude Code picks it up too. Any coding agent —
+Claude, Codex, Cursor, Gemini — gets the same instructions from one source.
+
+### 2.1 Multi-party repo hygiene
+
+The repo is maintained by multiple parties and published as a static site, so a
+clone must be **self-contained** regardless of a contributor's *global* git
+ignore. The authoring machine's `~/.config/git/ignore` excludes `/*.md` (all
+root markdown: `index.md`, `log.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`),
+`.claude/`, and `docs/superpowers/`. Mitigation: an **authoritative repo-root
+`.gitignore` with negation rules** (`!/index.md`, `!/AGENTS.md`, …) — negations
+in a repo-root `.gitignore` outrank `core.excludesFile`, so these files stay
+trackable by a normal `git add` for everyone. Generated output (`site/`) stays
+ignored and is deployed via CI / a `gh-pages` branch.
 
 ## 3. Canonical format — llm_wiki ⊕ OKF
 
@@ -98,7 +112,8 @@ non-empty `type` — satisfying OKF v0.1 §9 so the visualizer works unmodified.
 let-go-wiki/
   index.md                 # catalog by category (maintained by llm-wiki CLI)
   log.md                   # append-only chronological log (llm-wiki CLI)
-  CLAUDE.md                # schema/maintenance instructions for agents
+  AGENTS.md                # CANONICAL schema/maintenance instructions (model-agnostic)
+  CLAUDE.md                # thin pointer: "See AGENTS.md"
   _meta/
     taxonomy.md            # let-go-specific tag vocabulary (fresh, not PKM's)
   concepts/                # HOW it works — implementation & language internals
@@ -151,9 +166,11 @@ hand edits (per `llm_wiki.md`: hand-editing index/log/manifest is *not* the path
 - **`~/pkm/.claude/skills/wiki/*`**: reuse `wiki-check-name.py` (name-collision
   guard — run before every new page), `wiki-doctor.py` (health/lint),
   ingest/lint/query skill docs.
-- **Root `CLAUDE.md`**: instructs agents here to (a) maintain via the CLI +
-  wiki skills, (b) follow the harmonized frontmatter, (c) run the enrich
-  discipline (§7) when authoring, (d) never hand-edit index/log.
+- **Root `AGENTS.md`** (canonical, model-agnostic) + **`CLAUDE.md`** (pointer):
+  instruct agents here to (a) maintain via the CLI + wiki skills, (b) follow the
+  harmonized frontmatter, (c) run the enrich discipline (§7) when authoring,
+  (d) never hand-edit index/log. Written once in `AGENTS.md` so Claude, Codex,
+  Cursor, Gemini, etc. all share one schema.
 - **qmd** (optional): hybrid BM25/vector search + MCP server; kicks in past a
   few hundred pages. `llm-wiki index update` wraps it.
 - **Vendored OKF visualizer** (`tools/viz/`): copy
@@ -252,6 +269,14 @@ let-go's page) — more control, more work. *Decision point for review.*
 
 Frontmatter is consumed by the generator (title/description/tags/nav) and not
 shown as raw text. Relative `.md` links (§3) resolve directly.
+
+**What the site publishes:** only the wiki-content dirs — `concepts/`,
+`entities/`, `ideas/`, `projects/`, `sources/`, `references/` — plus `index.md`
+(landing). **Excluded from the rendered site** (machinery / internal process
+docs, but still git-tracked for contributors): `docs/superpowers/` (design
+specs & plans), `tools/`, `_meta/`, `.claude/`, `AGENTS.md`/`CLAUDE.md`. The
+generator's `docs_dir`/`nav` is scoped to the content dirs so process artifacts
+never leak into the published output.
 
 ## 9. Build sequence (this session)
 

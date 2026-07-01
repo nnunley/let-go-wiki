@@ -1,5 +1,24 @@
-site/
+# Authoritative ignore rules for let-go-wiki.
+# This repo is maintained by multiple parties and published as a static site,
+# so it must be self-contained: a clone has to carry all wiki + tooling files
+# regardless of any contributor's *global* git ignore (~/.config/git/ignore).
+
+# Generated / local-only
+site/            # built static site (deployed via CI or a gh-pages branch)
 .DS_Store
 __pycache__/
 *.pyc
 .venv/
+
+# Re-include project files that a contributor's GLOBAL gitignore may drop.
+# Negations in a repo-root .gitignore outrank core.excludesFile, so these stay
+# tracked for everyone. (Observed on the author's machine: global `/*.md` and
+# `.claude/` would otherwise exclude the wiki's core files.)
+!/README.md
+!/index.md
+!/log.md
+!/AGENTS.md
+!/CLAUDE.md
+!.claude/
+!/docs/superpowers/
+!/docs/superpowers/**
