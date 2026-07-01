@@ -1,0 +1,7 @@
+# Dev tools for let-go-wiki (managed by mise — https://mise.jdx.dev).
+# Provides the `lgx` task runner so contributors get it reproducibly:
+#   mise trust          # trust this repo config (first use)
+#   mise install        # fetch pinned tools
+#   mise exec -- lgx doctor   (or, with mise activated: lgx doctor)
+[tools]
+"github:abogoyavlensky/lgx" = "0.1.0-rc2"

@@ -311,7 +311,7 @@ site.
 **Generator — MkDocs Material (v1, decided).** Rationale: Python (matches the
 `llm-wiki`/viewer toolchain), trivial GitHub Pages deploy, custom CSS via
 `extra_css` for the house tokens, built-in client-side search, nav derived from
-the directory tree, frontmatter-aware. Invoked via the `lgx build` task. The
+the directory tree, frontmatter-aware. Invoked via the `lgx site` task. The
 **bespoke let-go SSG** (goldmark via `lginterop`, sharing the WASM playground
 toolchain) is the deferred dogfooding target that replaces MkDocs later — §12.
 
@@ -375,7 +375,7 @@ Per user choice, scaffold **and** generate in this session.
 - **Accuracy of agent-drafted pages** — mitigated by `status: speculative` gate
   + mandatory review before `stable`; every page cites `resource`.
 - **Static-site generator choice** — DECIDED: MkDocs Material for v1 (invoked
-  via `lgx build`); bespoke let-go SSG is the deferred dogfood target (§12).
+  via `lgx site`); bespoke let-go SSG is the deferred dogfood target (§12).
 - **Name collisions** — flat-ish page slugs across dirs; `wiki-check-name.py`
   before each new page.
 
@@ -390,7 +390,7 @@ Per user choice, scaffold **and** generate in this session.
 - The enrich discipline (four gates + augmentation rules) is captured in
   `AGENTS.md` (with `CLAUDE.md` pointing to it) so future authoring stays
   consistent across any coding agent.
-- The repo is an `lgx` project: `lgx enrich` / `lgx build` / `lgx viz` /
+- The repo is an `lgx` project: `lgx enrich` / `lgx site` / `lgx viz` /
   `lgx serve` all work.
 
 ## 12. Dogfooding roadmap (deferred)

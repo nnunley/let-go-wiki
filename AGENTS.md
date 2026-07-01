@@ -37,5 +37,7 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 
 ## Build & publish
 - `lgx doctor` — validate pages.  `lgx viz` — regenerate the graph.
-- `lgx build` — build the styled site into `site/`.  `lgx serve` — local preview.
+- `lgx site` — build the styled site into `site/`.  `lgx serve` — local preview.
+
+(lgx is provided via mise — `mise exec -- lgx <task>`, or just `lgx <task>` with mise activated.)
 The site renders only content dirs + index.md; tooling/process files are excluded.
