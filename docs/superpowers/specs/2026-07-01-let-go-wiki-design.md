@@ -304,10 +304,11 @@ Per user choice, scaffold **and** generate in this session.
 1. `git init` the repo; create dirs (§4); write `_meta/taxonomy.md` (fresh
    let-go tags: `clojure`, `lisp`, `vm`, `bytecode`, `compiler`, `go`, `wasm`,
    `interop`, `stdlib`, `roguelike`, `tooling`, plus type tags), `index.md`,
-   `log.md`, root `CLAUDE.md`.
+   `log.md`, root `AGENTS.md` (canonical) + `CLAUDE.md` pointer.
 2. Wire the `llm-wiki` CLI to this repo as a project; verify `--help`.
 3. Vendor the OKF viewer into `tools/viz/`; restyle `viz.html` with §8 tokens.
-4. Implement `LetGoSource` (pass-1 enumeration; REPL sampling optional in v1).
+4. Implement `LetGoSource` (pass-1 enumeration + live REPL sampling via `let-go`
+   binary shell-out, sandboxed with timeouts).
 5. **Pass 1:** dispatch parallel read-only Claude subagents (one per repo:
    let-go, xsofy, let-go-lab, lgx) drafting `entities/`, `concepts/`,
    `projects/` pages (`status: speculative`, `resource`/`sources` cited),
@@ -348,4 +349,5 @@ Per user choice, scaffold **and** generate in this session.
 - `tools/build_site.py` produces a styled GitHub Pages site (fonts/colors match
   let-go's published page) with working nav, search, and relative links.
 - The enrich discipline (four gates + augmentation rules) is captured in
-  `CLAUDE.md` so future authoring stays consistent.
+  `AGENTS.md` (with `CLAUDE.md` pointing to it) so future authoring stays
+  consistent across any coding agent.
