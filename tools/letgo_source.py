@@ -74,3 +74,33 @@ class LetGoSource:
                 source_path=str(source_file),
             ))
         return concepts
+
+    def read_concept(self, concept: Concept) -> dict:
+        if concept.arglists:
+            arities = " ".join("[" + " ".join(a) + "]" for a in concept.arglists)
+            signature = f"({concept.name} {arities})"
+        else:
+            signature = f"{concept.name}"
+        return {
+            "id": concept.id, "kind": concept.kind, "name": concept.name,
+            "ns": concept.ns, "arglists": concept.arglists, "doc": concept.doc,
+            "signature": signature, "source_path": concept.source_path,
+        }
+
+    def eval_example(self, form: str, timeout: float = 5.0) -> dict:
+        try:
+            r = subprocess.run(self.lg + ["-e", form], capture_output=True,
+                               text=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            return {"form": form, "output": "", "error": "timeout"}
+        except (OSError, subprocess.SubprocessError) as e:
+            return {"form": form, "output": "", "error": str(e)}
+        if r.returncode != 0:
+            err = (r.stderr or r.stdout).strip().splitlines()
+            return {"form": form, "output": "", "error": err[0] if err else "error"}
+        # Check if output contains error marker (lg prints errors to stdout with return code 0)
+        output = r.stdout.strip()
+        if "error:" in output:
+            err_lines = output.splitlines()
+            return {"form": form, "output": "", "error": err_lines[0] if err_lines else "error"}
+        return {"form": form, "output": output, "error": None}
