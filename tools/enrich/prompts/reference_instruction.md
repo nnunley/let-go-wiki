@@ -39,6 +39,9 @@ status: speculative
 3. `# Examples` — 1–3 fenced `clojure` blocks, each a real form and its actual
    `lg -e` output as a comment (`;; => ...`). No invented output.
 4. `# Citations` — the concept's `resource` first, then any real sources.
+   Cite the **source**, not generated artifacts: if a file is generated (e.g.
+   `op_generated.go` is generated from `ir_ops.lg`, per its header), point
+   `resource`/citations at the source it is generated from, not the artifact.
 
 ## Cross-linking
 
