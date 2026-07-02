@@ -64,6 +64,9 @@ def main(argv: list[str]) -> int:
     p.add_argument("--count", type=int, default=5)
     p.add_argument("--out", type=Path, default=Path(".enrich/briefs"))
     args = p.parse_args(argv)
+    if not args.manifest.exists():
+        print(f"no manifest at {args.manifest}; run `lgx enrich` first", file=sys.stderr)
+        return 1
     briefs = next_briefs(args.manifest, args.root, args.count, args.out)
     print(f"enrich next: wrote {len(briefs)} brief(s) -> {args.out}")
     for b in briefs:

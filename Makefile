@@ -47,7 +47,7 @@ status: ## Report authoring coverage vs the enrich manifest
 	python -m tools.enrich.status
 
 next: ## Generate authoring briefs for the next batch of pending concepts
-	python -m tools.enrich.next --count $(or $(COUNT),5)
+	python -m tools.enrich.next_batch --count $(or $(COUNT),5)
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-10s %s\n", $$1, $$2}'
