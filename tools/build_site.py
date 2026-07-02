@@ -10,6 +10,9 @@ import yaml
 CONTENT_DIRS = ("concepts", "entities", "ideas", "projects", "sources", "references")
 _TITLE_CAT = {"concepts": "Concepts", "entities": "Entities", "ideas": "Ideas",
               "projects": "Projects", "sources": "Sources", "references": "References"}
+# The OKF graph is a standalone HTML file (site/viz.html), not a MkDocs page, so
+# it is linked as an external nav entry rather than rendered inside the theme.
+GRAPH_URL = "https://nnunley.github.io/let-go-wiki/viz.html"
 
 def _stage(root: Path, docs_dir: Path) -> None:
     docs_dir.mkdir(parents=True, exist_ok=True)
@@ -36,6 +39,7 @@ def _nav(docs_dir: Path) -> list:
         pages = [str(p.relative_to(docs_dir).as_posix()) for p in sorted(dd.rglob("*.md"))]
         if pages:
             nav.append({_TITLE_CAT[d]: pages})
+    nav.append({"Graph ↗": GRAPH_URL})
     return nav
 
 def build(root: Path, out: Path) -> Path:

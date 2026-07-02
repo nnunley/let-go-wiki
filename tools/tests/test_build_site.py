@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import json
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from build_site import build, _nav  # noqa: E402
+from build_site import build, _nav, GRAPH_URL  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -25,3 +25,10 @@ def test_nav_uses_full_relative_path_for_nested_pages(tmp_path):
     # flatten all page paths mentioned in nav
     flat = json.dumps(nav)
     assert "references/clojure-compat/foo.md" in flat
+
+def test_nav_includes_graph_link(tmp_path):
+    """The OKF graph is linked as an external nav entry."""
+    nav = _nav(tmp_path / "docs")
+    assert {"Graph ↗": GRAPH_URL} in nav
+    assert GRAPH_URL.endswith("viz.html")
+
