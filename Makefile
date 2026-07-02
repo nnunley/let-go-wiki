@@ -46,5 +46,8 @@ enrich: ## Prepare the authoring manifest (SOURCE_ROOT defaults to ../let-go)
 status: ## Report authoring coverage vs the enrich manifest
 	python -m tools.enrich.status
 
+next: ## Generate authoring briefs for the next batch of pending concepts
+	python -m tools.enrich.next --count $(or $(COUNT),5)
+
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-10s %s\n", $$1, $$2}'

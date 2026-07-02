@@ -9,4 +9,6 @@
          enrich {:doc "Prepare the per-concept authoring manifest from a let-go checkout"
                  :do [{:sh "python -m tools.enrich.prepare --source-root ../let-go"}]}
          status {:doc "Report wiki authoring coverage vs the enrich manifest"
-                 :do [{:sh "python -m tools.enrich.status"}]}}}
+                 :do [{:sh "python -m tools.enrich.status"}]}
+         next   {:doc "Generate authoring briefs for the next batch of pending concepts"
+                 :do [{:sh "python -m tools.enrich.next --count 5"}]}}}
