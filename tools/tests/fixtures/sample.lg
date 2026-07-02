@@ -1,0 +1,15 @@
+(defn square
+  "Return n squared."
+  [n]
+  (* n n))
+
+(defn add
+  ([a] a)
+  ([a b] (+ a b)))
+
+(def answer 42)
+
+(defmacro unless [test body]
+  (list 'if test nil body))
+
+(defn- helper [x] x)

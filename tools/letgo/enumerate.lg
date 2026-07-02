@@ -1,0 +1,59 @@
+;; enumerate.lg — read a .lg file's top-level def forms, print one JSON object
+;; per form: {"op","name","doc","arglists","private"}.
+;; Usage: lg enumerate.lg <path-to-file.lg>
+(require 'clojure.string)
+
+(def def-ops #{'def 'defn 'defn- 'defmacro 'definline})
+
+(defn- json-str [s]
+  ;; minimal JSON string escaping for the fields we emit
+  (str "\"" (-> (str s)
+                (clojure.string/replace "\\" "\\\\")
+                (clojure.string/replace "\"" "\\\""))
+       "\""))
+
+(defn- json-arglists [arglists]
+  (str "[" (clojure.string/join ","
+             (map (fn [al]
+                    (str "[" (clojure.string/join "," (map json-str al)) "]"))
+                  arglists))
+       "]"))
+
+(defn- private? [op form]
+  (or (= op 'defn-)
+      (boolean (:private (meta (second form))))))
+
+(defn- extract-arglists [op form]
+  ;; forms after the name, skipping an optional docstring and attr-map.
+  (let [after (drop 2 form)
+        after (if (string? (first after)) (rest after) after)
+        after (if (map? (first after)) (rest after) after)]
+    (cond
+      (vector? (first after)) [(first after)]          ; single arity
+      (list? (first after))   (map first after)         ; multi-arity: ([args] body)...
+      :else [])))
+
+(defn- doc-of [form]
+  (let [x (nth form 2 nil)]
+    (when (string? x) x)))
+
+(defn- emit [form]
+  (let [op (first form)]
+    (when (contains? def-ops op)
+      (let [nm (second form)
+            arglists (if (= op 'def) [] (extract-arglists op form))
+            doc (doc-of form)]
+        (println
+          (str "{"
+               "\"op\":" (json-str op) ","
+               "\"name\":" (json-str nm) ","
+               "\"doc\":" (if doc (json-str doc) "null") ","
+               "\"arglists\":" (json-arglists arglists) ","
+               "\"private\":" (if (private? op form) "true" "false")
+               "}"))))))
+
+(let [path (first *command-line-args*)
+      forms (read-string (str "[" (slurp path) "]"))]
+  (doseq [f forms]
+    (when (and (seq? f) (symbol? (first f)))
+      (emit f))))
