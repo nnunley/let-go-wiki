@@ -41,3 +41,11 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 
 (lgx is provided via mise — `mise exec -- lgx <task>`, or just `lgx <task>` with mise activated.)
 The site renders only content dirs + index.md; tooling/process files are excluded.
+
+## Populate
+Author new pages with the repeatable loop in
+[docs/superpowers/runbooks/population-sprint.md](docs/superpowers/runbooks/population-sprint.md):
+`lgx enrich` → `lgx status` → `lgx next` → author via subagents (real `lg -e`
+output) → `lgx doctor` → accuracy-review → promote to `stable` → publish. When
+reading source repos, skip non-useful large files (debug logs, media, binaries)
+and use the `rlm` skill to subdivide large *useful* files.
