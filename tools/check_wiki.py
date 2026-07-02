@@ -99,6 +99,17 @@ def _wiki_root(path: Path) -> Path:
         return cwd
     return path.parent
 
+# Basename markers of generated artifacts — pages should cite the SOURCE these
+# are generated from, not the artifact. Tight set to avoid false positives.
+_GENERATED_MARKERS = ("_generated.", ".gen.", ".pb.go", ".lgb")
+
+
+def _looks_generated(url: str) -> bool:
+    """True if a URL/path's basename indicates a generated file."""
+    base = url.split("#", 1)[0].split("?", 1)[0].rstrip("/").rsplit("/", 1)[-1].lower()
+    return any(marker in base for marker in _GENERATED_MARKERS)
+
+
 def validate_page(path: Path, tags: set[str] | None = None) -> list[str]:
     if path.name in RESERVED:
         return []
@@ -132,6 +143,19 @@ def validate_page(path: Path, tags: set[str] | None = None) -> list[str]:
             target = (path.parent / link_path).resolve()
             if not target.exists():
                 errors.append(f"{path}: broken link '{link}' (no such page)")
+
+    # Source-of-truth: resource/citation URLs must not point at generated
+    # artifacts — cite the source they are generated from instead.
+    candidate_urls: list[str] = []
+    resource = fm.get("resource")
+    if isinstance(resource, str) and resource:
+        candidate_urls.append(resource)
+    candidate_urls += [ln for ln in links if ln.startswith("http")]
+    for url in candidate_urls:
+        if _looks_generated(url):
+            errors.append(
+                f"{path}: '{url}' looks generated — cite the source it is "
+                f"generated from, not the artifact")
 
     known = tags if tags is not None else _load_taxonomy_tags(_wiki_root(path))
     page_tags = fm.get("tags") or []

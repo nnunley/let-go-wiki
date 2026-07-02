@@ -106,3 +106,21 @@ def test_fragment_link_counts_as_inbound_for_orphans(tmp_path):
     # index links to B only with a fragment
     (tmp_path / "index.md").write_text("# Index\n\n- [B section](concepts/b.md#usage)\n", encoding="utf-8")
     assert find_orphans(tmp_path) == []
+
+
+def test_generated_resource_is_flagged(tmp_path):
+    """A resource/citation pointing at a generated artifact is flagged."""
+    p = tmp_path / "c.md"
+    p.write_text('---\ntype: Concept\ncategory: concept\ntitle: "C"\n'
+                 'description: "d"\ntags: [go]\nstatus: stable\n'
+                 'resource: "https://github.com/x/y/blob/main/pkg/ir/op_generated.go"\n'
+                 '---\n\nBody.\n', encoding="utf-8")
+    assert any("generated" in e for e in validate_page(p, tags={"go"}))
+
+def test_source_resource_not_flagged(tmp_path):
+    p = tmp_path / "c.md"
+    p.write_text('---\ntype: Concept\ncategory: concept\ntitle: "C"\n'
+                 'description: "d"\ntags: [go]\nstatus: stable\n'
+                 'resource: "https://github.com/x/y/blob/main/pkg/ir/ir_ops.lg"\n'
+                 '---\n\nBody.\n', encoding="utf-8")
+    assert not any("generated" in e for e in validate_page(p, tags={"go"}))

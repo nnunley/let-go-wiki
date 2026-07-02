@@ -60,7 +60,7 @@ A reference implementation of block-parameter SSA.
 All employ block-parameter control flow for cross-block SSA-style value threading.
 
 [4] **let-go IR source (op catalogue)**  
-[pkg/ir/ir_ops.lg](https://github.com/nooga/let-go/blob/main/pkg/ir/ir_ops.lg) — the operations are defined here (in let-go), and generated into [pkg/ir/op_generated.go](https://github.com/nooga/let-go/blob/main/pkg/ir/op_generated.go) (which carries the design-references header).
+[pkg/ir/ir_ops.lg](https://github.com/nooga/let-go/blob/main/pkg/ir/ir_ops.lg) — the operations are defined here (in let-go), and generated into `pkg/ir/op_generated.go` (which carries the design-references header).
 
 ---
 
