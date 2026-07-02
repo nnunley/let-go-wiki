@@ -8,7 +8,7 @@ resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/core.lg"
 sources: ["repo: nooga/let-go pkg/rt/core/core.lg, 2026-07-02"]
 created: "2026-07-02"
 updated: "2026-07-02"
-status: speculative
+status: stable
 ---
 
 `defn` defines a named function and binds it in the current namespace. Use it to create reusable functions that can be called by name throughout your program. It combines [fn](fn.md) for function creation with binding to a name in the current scope.

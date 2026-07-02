@@ -8,7 +8,7 @@ resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/core.lg"
 sources: ["repo: nooga/let-go pkg/rt/core/core.lg, 2026-07-02"]
 created: "2026-07-02"
 updated: "2026-07-02"
-status: speculative
+status: stable
 ---
 
 `when` is a conditional macro that evaluates its body only when the condition is truthy. Use it for single-branch conditionals where you want to execute side effects or return a value based on a condition, with nil as the implicit else case.

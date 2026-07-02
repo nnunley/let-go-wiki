@@ -6,3 +6,7 @@ Created repo structure, taxonomy, schema docs (AGENTS.md/CLAUDE.md), and seed pa
 ## [2026-07-01] build | tooling foundation
 Added validator, restyled OKF viewer, MkDocs house-style site, lgx tasks, Pages CI.
 Built viz.html and site/ from the two seed pages.
+
+## [2026-07-02] ingest | stdlib batch 1 (5 concepts)
+Authored reference/clojure.core/{apply,fn,let,when,defn} with real `lg -e` examples;
+accuracy-reviewed (all examples verified) and macro signatures corrected to usage form. Promoted to stable.
