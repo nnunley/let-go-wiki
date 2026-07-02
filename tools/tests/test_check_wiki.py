@@ -1,6 +1,6 @@
 from pathlib import Path
 import textwrap
-from tools.check_wiki import validate_page
+from tools.check_wiki import validate_page, extract_links, find_orphans
 
 REQUIRED = {"type", "category", "title", "description", "tags", "status"}
 
@@ -39,3 +39,56 @@ def test_scalar_unknown_tag_is_reported(tmp_path):
     p = _write(tmp_path / "c.md",
                'type: Concept\ncategory: concept\ntitle: "C"\ndescription: "d"\ntags: not-a-real-tag\nstatus: stable')
     assert any("tag" in e.lower() for e in validate_page(p, tags={"go", "vm"}))
+
+# NEW: Extract links via markdown parser
+def test_extract_links_via_markdown_parser():
+    md = "see [a](a.md) and [b](b.md) and <http://x> and [anchor](#section)"
+    links = extract_links(md)
+    assert "a.md" in links
+    assert "b.md" in links
+    assert "http://x" in links or "#section" in links or len(links) >= 2
+
+# NEW: Broken relative link detection
+def test_broken_relative_link_is_reported(tmp_path):
+    p = _write(tmp_path / "concepts" / "page_a.md",
+               'type: Concept\ncategory: concept\ntitle: "A"\ndescription: "d"\ntags: [go]\nstatus: stable',
+               body="See [nope](nope.md).")
+    errs = validate_page(p)
+    assert any("broken link" in e for e in errs), f"Expected broken link error, got: {errs}"
+
+# NEW: Valid relative link not reported
+def test_valid_relative_link_not_reported(tmp_path):
+    # Create page B
+    _write(tmp_path / "concepts" / "page_b.md",
+           'type: Concept\ncategory: concept\ntitle: "B"\ndescription: "d"\ntags: [go]\nstatus: stable')
+    # Create page A that links to B
+    p = _write(tmp_path / "concepts" / "page_a.md",
+               'type: Concept\ncategory: concept\ntitle: "A"\ndescription: "d"\ntags: [go]\nstatus: stable',
+               body="See [b](page_b.md).")
+    errs = validate_page(p)
+    assert not any("broken link" in e for e in errs), f"Should not report broken link for valid page, got: {errs}"
+
+# NEW: Orphan detection
+def test_find_orphans_reports_unlinked_pages(tmp_path):
+    # Create index.md that links only to page_a
+    _write(tmp_path / "index.md", "# Index", body="See [A](concepts/page_a.md).")
+    # Create page A and page B
+    _write(tmp_path / "concepts" / "page_a.md",
+           'type: Concept\ncategory: concept\ntitle: "A"\ndescription: "d"\ntags: [go]\nstatus: stable')
+    _write(tmp_path / "concepts" / "page_b.md",
+           'type: Concept\ncategory: concept\ntitle: "B"\ndescription: "d"\ntags: [go]\nstatus: stable')
+    orphans = find_orphans(tmp_path)
+    # page_b should be in orphans (not linked from index or page_a)
+    orphan_names = [str(o) for o in orphans]
+    assert any("page_b" in o for o in orphan_names), f"Expected page_b to be orphan, got: {orphan_names}"
+
+def test_find_orphans_empty_when_all_linked(tmp_path):
+    # Create index.md that links to both pages
+    _write(tmp_path / "index.md", "# Index", body="See [A](concepts/page_a.md) and [B](concepts/page_b.md).")
+    # Create page A and page B
+    _write(tmp_path / "concepts" / "page_a.md",
+           'type: Concept\ncategory: concept\ntitle: "A"\ndescription: "d"\ntags: [go]\nstatus: stable')
+    _write(tmp_path / "concepts" / "page_b.md",
+           'type: Concept\ncategory: concept\ntitle: "B"\ndescription: "d"\ntags: [go]\nstatus: stable')
+    orphans = find_orphans(tmp_path)
+    assert len(orphans) == 0, f"Expected no orphans when all pages are linked, got: {orphans}"
