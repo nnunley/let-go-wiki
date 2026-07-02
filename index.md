@@ -6,10 +6,17 @@ Catalog of pages by category. Updated on every ingest.
 - [entities/let-go](entities/let-go.md) — the Clojure-dialect bytecode VM in Go.
 
 ## Concepts
-- [concepts/stack-vm](concepts/stack-vm.md) — the stack-based bytecode virtual machine.
+- [concepts/bytecode-compiler](concepts/bytecode-compiler.md) — How let-go compiles source code to bytecode: the reader, Indexed-RPN IR intermediate form, and code emission pipeline.
+- [concepts/go-interop](concepts/go-interop.md) — Two-way Go ↔ let-go interoperability: calling Go from let-go, embedding let-go in Go, struct/channel roundtripping, and code generation.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
+- [concepts/stack-vm](concepts/stack-vm.md) — The stack-based virtual machine that executes let-go bytecode.
+- [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup.
 
 ## Projects
+- [projects/legmacs](projects/legmacs.md) — An Emacs-flavored terminal editor written in and scripted with let-go (~4,000 lines) — same language for implementation and config, no separate plugin API.
+- [projects/let-go-lab](projects/let-go-lab.md) — Sixel graphics / terminal-UI / WASM experiments on let-go (e.g. a browser Mandelbrot renderer compiled to WASM in xterm.js).
+- [projects/lgcr](projects/lgcr.md) — A small Linux container runtime written in let-go, built on the syscall namespace.
+- [projects/lgx](projects/lgx.md) — A git-based dependency manager, runner, build tool, test runner, scaffolder, and task runner for let-go in one binary (config in lgx.edn).
 - [projects/xsofy](projects/xsofy.md) — A browser-and-terminal roguelike written in let-go where the magic system is a Lisp.
 
 ## Ideas

@@ -140,7 +140,7 @@ top-level dirs: **developing let-go → `concepts/`**; **using let-go →
 | xsofy | github.com/nooga/xsofy (local `~/development/xsofy`) | A roguelike written *in* let-go. `projects/xsofy` — usage case study, idioms, WASM. |
 | let-go-lab | github.com/mparrett/let-go-lab | Sixel/terminal-graphics/WASM experiments on let-go. `projects/let-go-lab`. |
 | lgx | github.com/abogoyavlensky/lgx | Git-based package/project manager for let-go (`lgx.edn`: deps/run/test/build/scaffold). `projects/lgx` + `entities/lgx`; the "how to manage a let-go project" story. |
-| legmacs | github.com/nooga/legmacs | An Emacs-flavored terminal editor written in (~2.7k lines) and scripted with let-go — same language for implementation and config, no separate plugin API. `projects/legmacs` — a substantial "using let-go in anger" case study for interactive/TUI apps and self-hosted extensibility. |
+| legmacs | github.com/nooga/legmacs | An Emacs-flavored terminal editor written in (~4,000 lines) and scripted with let-go — same language for implementation and config, no separate plugin API. `projects/legmacs` — a substantial "using let-go in anger" case study for interactive/TUI apps and self-hosted extensibility. |
 | lgcr | github.com/nooga/lgcr | A small Linux container runtime written in let-go, built on the `syscall` namespace. `projects/lgcr` + `entities/lgcr` — the systems-programming / low-level case study (referenced from the let-go README). |
 
 **In-repo usage corpus (from `~/development/let-go`):** the let-go README's

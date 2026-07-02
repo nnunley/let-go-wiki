@@ -23,3 +23,8 @@ magic system is a Lisp; persistent data structures, WASM, no deps, ~6ms startup.
 ## [2026-07-02] ingest | stdlib batch 2 (6 concepts)
 Authored references/clojure.core/{map,filter,comp,inc,mapv,partial} with real lg -e examples;
 accuracy-reviewed (all 18 examples verified), promoted to stable. Published stdlib coverage: 11.
+
+## [2026-07-02] ingest | breadth batch (4 projects + 3 internals)
+Authored projects/{lgcr,lgx,legmacs,let-go-lab} (README-grounded) and
+concepts/{bytecode-compiler,wasm-compilation,go-interop} (from let-go source).
+Accuracy-reviewed (6/7 clean; legmacs line-count corrected to ~4,000). Promoted to stable.
