@@ -8,7 +8,9 @@ def _read(name):
 def test_reference_prompt_has_letgo_contract():
     t = _read("reference_instruction.md")
     for needle in ["# signature", "# examples", "# citations",
-                   "file-relative", "status: speculative", "lg -e"]:
+                   "file-relative", "status: speculative", "lg -e",
+                   # load-bearing semantic rules (must survive edits)
+                   "never invent", "do not contradict"]:
         assert needle in t, f"reference prompt missing: {needle}"
     # Must NOT carry over BigQuery/SQL specifics.
     for banned in ["bigquery", "sql", "# schema"]:
@@ -17,5 +19,7 @@ def test_reference_prompt_has_letgo_contract():
 def test_web_prompt_keeps_four_gates_and_letgo_extractions():
     t = _read("web_ingestion_instruction.md")
     for needle in ["four gate", "references/", "skip",
-                   "clojure-compat", "interop", "limitation"]:
+                   "clojure-compat", "interop", "limitation",
+                   # load-bearing augmentation rule (must survive edits)
+                   "strict augmentation", "never rewrite"]:
         assert needle in t, f"web prompt missing: {needle}"
