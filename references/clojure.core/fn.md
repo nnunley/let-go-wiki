@@ -11,7 +11,7 @@ updated: "2026-07-02"
 status: stable
 ---
 
-`fn` creates an anonymous function or named function. Use it to define functions inline without assigning them to a name (useful for higher-order functions like [apply](apply.md) or [map](map.md)), or define a named function for recursion. `fn` supports both single-arity and multi-arity definitions.
+`fn` creates an anonymous function or named function. Use it to define functions inline without assigning them to a name (useful for higher-order functions like [apply](apply.md)), or define a named function for recursion. `fn` supports both single-arity and multi-arity definitions.
 
 # Signature
 

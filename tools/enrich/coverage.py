@@ -3,12 +3,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-_CONTENT_DIRS = ("reference", "concepts", "projects", "entities")
+_CONTENT_DIRS = ("references", "concepts", "projects", "entities")
 
 
 def page_path_for(concept_id: str, kind: str) -> str:
     """Stdlib concept id (<ns>/<name>) → its reference page path (POSIX, repo-relative)."""
-    return f"reference/{concept_id}.md"
+    return f"references/{concept_id}.md"
 
 
 def authored_ids(root: Path) -> set[str]:

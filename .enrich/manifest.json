@@ -1,0 +1,2962 @@
+[
+  {
+    "id": "clojure.core/fn",
+    "kind": "Macro",
+    "name": "fn",
+    "ns": "clojure.core",
+    "signature": "(fn [& forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defn",
+    "kind": "Macro",
+    "name": "defn",
+    "ns": "clojure.core",
+    "signature": "(defn [name & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/apply",
+    "kind": "Function",
+    "name": "apply",
+    "ns": "clojure.core",
+    "signature": "(apply [f args] [f x args] [f x y args] [f x y z args] [f a b c d & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defmacro",
+    "kind": "Macro",
+    "name": "defmacro",
+    "ns": "clojure.core",
+    "signature": "(defmacro [name & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/def-",
+    "kind": "Macro",
+    "name": "def-",
+    "ns": "clojure.core",
+    "signature": "(def- [name form])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defn-",
+    "kind": "Macro",
+    "name": "defn-",
+    "ns": "clojure.core",
+    "signature": "(defn- [name & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/declare",
+    "kind": "Macro",
+    "name": "declare",
+    "ns": "clojure.core",
+    "signature": "(declare [& names])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/comment",
+    "kind": "Macro",
+    "name": "comment",
+    "ns": "clojure.core",
+    "signature": "(comment [& _])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/let",
+    "kind": "Macro",
+    "name": "let",
+    "ns": "clojure.core",
+    "signature": "(let [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/loop",
+    "kind": "Macro",
+    "name": "loop",
+    "ns": "clojure.core",
+    "signature": "(loop [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/when",
+    "kind": "Macro",
+    "name": "when",
+    "ns": "clojure.core",
+    "signature": "(when [condition & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/when-not",
+    "kind": "Macro",
+    "name": "when-not",
+    "ns": "clojure.core",
+    "signature": "(when-not [condition & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/if-not",
+    "kind": "Macro",
+    "name": "if-not",
+    "ns": "clojure.core",
+    "signature": "(if-not [condition & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/and",
+    "kind": "Macro",
+    "name": "and",
+    "ns": "clojure.core",
+    "signature": "(and [] [x] [x & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/or",
+    "kind": "Macro",
+    "name": "or",
+    "ns": "clojure.core",
+    "signature": "(or [] [x] [x & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/empty?",
+    "kind": "Function",
+    "name": "empty?",
+    "ns": "clojure.core",
+    "signature": "(empty? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/concat-list",
+    "kind": "Function",
+    "name": "concat-list",
+    "ns": "clojure.core",
+    "signature": "(concat-list [a b])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/>",
+    "kind": "Var",
+    "name": ">",
+    "ns": "clojure.core",
+    "signature": ">",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/<",
+    "kind": "Var",
+    "name": "<",
+    "ns": "clojure.core",
+    "signature": "<",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/>=",
+    "kind": "Var",
+    "name": ">=",
+    "ns": "clojure.core",
+    "signature": ">=",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/<=",
+    "kind": "Var",
+    "name": "<=",
+    "ns": "clojure.core",
+    "signature": "<=",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/parse-long",
+    "kind": "Var",
+    "name": "parse-long",
+    "ns": "clojure.core",
+    "signature": "parse-long",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/lazy-seq",
+    "kind": "Macro",
+    "name": "lazy-seq",
+    "ns": "clojure.core",
+    "signature": "(lazy-seq [& body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/delay",
+    "kind": "Macro",
+    "name": "delay",
+    "ns": "clojure.core",
+    "signature": "(delay [& body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/cond",
+    "kind": "Macro",
+    "name": "cond",
+    "ns": "clojure.core",
+    "signature": "(cond [& forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/condp",
+    "kind": "Macro",
+    "name": "condp",
+    "ns": "clojure.core",
+    "signature": "(condp [comparator arg & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/case",
+    "kind": "Macro",
+    "name": "case",
+    "ns": "clojure.core",
+    "signature": "(case [arg & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *test-flag* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *test-flag* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *test-flag* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/test",
+    "kind": "Macro",
+    "name": "test",
+    "ns": "clojure.core",
+    "signature": "(test [name & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/identity",
+    "kind": "Function",
+    "name": "identity",
+    "ns": "clojure.core",
+    "signature": "(identity [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/zero?",
+    "kind": "Function",
+    "name": "zero?",
+    "ns": "clojure.core",
+    "signature": "(zero? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/pos?",
+    "kind": "Function",
+    "name": "pos?",
+    "ns": "clojure.core",
+    "signature": "(pos? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/neg?",
+    "kind": "Function",
+    "name": "neg?",
+    "ns": "clojure.core",
+    "signature": "(neg? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/even?",
+    "kind": "Function",
+    "name": "even?",
+    "ns": "clojure.core",
+    "signature": "(even? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/odd?",
+    "kind": "Function",
+    "name": "odd?",
+    "ns": "clojure.core",
+    "signature": "(odd? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/nil?",
+    "kind": "Function",
+    "name": "nil?",
+    "ns": "clojure.core",
+    "signature": "(nil? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/some?",
+    "kind": "Function",
+    "name": "some?",
+    "ns": "clojure.core",
+    "signature": "(some? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/true?",
+    "kind": "Function",
+    "name": "true?",
+    "ns": "clojure.core",
+    "signature": "(true? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/false?",
+    "kind": "Function",
+    "name": "false?",
+    "ns": "clojure.core",
+    "signature": "(false? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/boolean",
+    "kind": "Function",
+    "name": "boolean",
+    "ns": "clojure.core",
+    "signature": "(boolean [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/inc",
+    "kind": "Function",
+    "name": "inc",
+    "ns": "clojure.core",
+    "signature": "(inc [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/dec",
+    "kind": "Function",
+    "name": "dec",
+    "ns": "clojure.core",
+    "signature": "(dec [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/inc'",
+    "kind": "Function",
+    "name": "inc'",
+    "ns": "clojure.core",
+    "signature": "(inc' [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/dec'",
+    "kind": "Function",
+    "name": "dec'",
+    "ns": "clojure.core",
+    "signature": "(dec' [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/unchecked-inc",
+    "kind": "Function",
+    "name": "unchecked-inc",
+    "ns": "clojure.core",
+    "signature": "(unchecked-inc [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/unchecked-dec",
+    "kind": "Function",
+    "name": "unchecked-dec",
+    "ns": "clojure.core",
+    "signature": "(unchecked-dec [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/unchecked-inc-int",
+    "kind": "Function",
+    "name": "unchecked-inc-int",
+    "ns": "clojure.core",
+    "signature": "(unchecked-inc-int [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/unchecked-dec-int",
+    "kind": "Function",
+    "name": "unchecked-dec-int",
+    "ns": "clojure.core",
+    "signature": "(unchecked-dec-int [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/unchecked-add-int",
+    "kind": "Function",
+    "name": "unchecked-add-int",
+    "ns": "clojure.core",
+    "signature": "(unchecked-add-int [x y])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/unchecked-multiply-int",
+    "kind": "Function",
+    "name": "unchecked-multiply-int",
+    "ns": "clojure.core",
+    "signature": "(unchecked-multiply-int [x y])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *unchecked-math* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *unchecked-math* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *unchecked-math* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/hash-combine",
+    "kind": "Function",
+    "name": "hash-combine",
+    "ns": "clojure.core",
+    "signature": "(hash-combine [x y])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/num",
+    "kind": "Function",
+    "name": "num",
+    "ns": "clojure.core",
+    "signature": "(num [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ffirst",
+    "kind": "Function",
+    "name": "ffirst",
+    "ns": "clojure.core",
+    "signature": "(ffirst [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/fnext",
+    "kind": "Function",
+    "name": "fnext",
+    "ns": "clojure.core",
+    "signature": "(fnext [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/nfirst",
+    "kind": "Function",
+    "name": "nfirst",
+    "ns": "clojure.core",
+    "signature": "(nfirst [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/nnext",
+    "kind": "Function",
+    "name": "nnext",
+    "ns": "clojure.core",
+    "signature": "(nnext [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/pos-int?",
+    "kind": "Function",
+    "name": "pos-int?",
+    "ns": "clojure.core",
+    "signature": "(pos-int? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/neg-int?",
+    "kind": "Function",
+    "name": "neg-int?",
+    "ns": "clojure.core",
+    "signature": "(neg-int? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/nat-int?",
+    "kind": "Function",
+    "name": "nat-int?",
+    "ns": "clojure.core",
+    "signature": "(nat-int? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/integer?",
+    "kind": "Function",
+    "name": "integer?",
+    "ns": "clojure.core",
+    "signature": "(integer? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/rational?",
+    "kind": "Function",
+    "name": "rational?",
+    "ns": "clojure.core",
+    "signature": "(rational? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/byte",
+    "kind": "Function",
+    "name": "byte",
+    "ns": "clojure.core",
+    "signature": "(byte [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/short",
+    "kind": "Function",
+    "name": "short",
+    "ns": "clojure.core",
+    "signature": "(short [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ident?",
+    "kind": "Function",
+    "name": "ident?",
+    "ns": "clojure.core",
+    "signature": "(ident? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/simple-ident?",
+    "kind": "Function",
+    "name": "simple-ident?",
+    "ns": "clojure.core",
+    "signature": "(simple-ident? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/qualified-ident?",
+    "kind": "Function",
+    "name": "qualified-ident?",
+    "ns": "clojure.core",
+    "signature": "(qualified-ident? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/simple-keyword?",
+    "kind": "Function",
+    "name": "simple-keyword?",
+    "ns": "clojure.core",
+    "signature": "(simple-keyword? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/qualified-keyword?",
+    "kind": "Function",
+    "name": "qualified-keyword?",
+    "ns": "clojure.core",
+    "signature": "(qualified-keyword? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/simple-symbol?",
+    "kind": "Function",
+    "name": "simple-symbol?",
+    "ns": "clojure.core",
+    "signature": "(simple-symbol? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/qualified-symbol?",
+    "kind": "Function",
+    "name": "qualified-symbol?",
+    "ns": "clojure.core",
+    "signature": "(qualified-symbol? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/vector?",
+    "kind": "Function",
+    "name": "vector?",
+    "ns": "clojure.core",
+    "signature": "(vector? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/symbol?",
+    "kind": "Function",
+    "name": "symbol?",
+    "ns": "clojure.core",
+    "signature": "(symbol? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/keyword?",
+    "kind": "Function",
+    "name": "keyword?",
+    "ns": "clojure.core",
+    "signature": "(keyword? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/string?",
+    "kind": "Function",
+    "name": "string?",
+    "ns": "clojure.core",
+    "signature": "(string? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/counted?",
+    "kind": "Function",
+    "name": "counted?",
+    "ns": "clojure.core",
+    "signature": "(counted? [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/set",
+    "kind": "Function",
+    "name": "set",
+    "ns": "clojure.core",
+    "signature": "(set [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/concat-vec",
+    "kind": "Function",
+    "name": "concat-vec",
+    "ns": "clojure.core",
+    "signature": "(concat-vec [a b])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/reduce-kv",
+    "kind": "Function",
+    "name": "reduce-kv",
+    "ns": "clojure.core",
+    "signature": "(reduce-kv [f init coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/time",
+    "kind": "Macro",
+    "name": "time",
+    "ns": "clojure.core",
+    "signature": "(time [& body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/->",
+    "kind": "Macro",
+    "name": "->",
+    "ns": "clojure.core",
+    "signature": "(-> [initial & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/->>",
+    "kind": "Macro",
+    "name": "->>",
+    "ns": "clojure.core",
+    "signature": "(->> [initial & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/spy",
+    "kind": "Function",
+    "name": "spy",
+    "ns": "clojure.core",
+    "signature": "(spy [s x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/map",
+    "kind": "Function",
+    "name": "map",
+    "ns": "clojure.core",
+    "signature": "(map [f] [f coll] [f c1 c2] [f c1 c2 & colls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/lazy-cat-seqs",
+    "kind": "Function",
+    "name": "lazy-cat-seqs",
+    "ns": "clojure.core",
+    "signature": "(lazy-cat-seqs [seqs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/concat",
+    "kind": "Function",
+    "name": "concat",
+    "ns": "clojure.core",
+    "signature": "(concat [] [x] [x y] [x y & zs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/mapcat",
+    "kind": "Function",
+    "name": "mapcat",
+    "ns": "clojure.core",
+    "signature": "(mapcat [f] [f xs] [f c1 c2] [f c1 c2 & colls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ns",
+    "kind": "Macro",
+    "name": "ns",
+    "ns": "clojure.core",
+    "signature": "(ns [n & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/filter",
+    "kind": "Function",
+    "name": "filter",
+    "ns": "clojure.core",
+    "signature": "(filter [pred] [f xs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/if-let",
+    "kind": "Macro",
+    "name": "if-let",
+    "ns": "clojure.core",
+    "signature": "(if-let [bindings then] [bindings then else])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/when-let",
+    "kind": "Macro",
+    "name": "when-let",
+    "ns": "clojure.core",
+    "signature": "(when-let [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/take",
+    "kind": "Function",
+    "name": "take",
+    "ns": "clojure.core",
+    "signature": "(take [n] [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/drop",
+    "kind": "Function",
+    "name": "drop",
+    "ns": "clojure.core",
+    "signature": "(drop [n] [n xs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/split-at",
+    "kind": "Function",
+    "name": "split-at",
+    "ns": "clojure.core",
+    "signature": "(split-at [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/partition",
+    "kind": "Function",
+    "name": "partition",
+    "ns": "clojure.core",
+    "signature": "(partition [n xs] [n step xs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/binding",
+    "kind": "Macro",
+    "name": "binding",
+    "ns": "clojure.core",
+    "signature": "(binding [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/bound-fn",
+    "kind": "Macro",
+    "name": "bound-fn",
+    "ns": "clojure.core",
+    "signature": "(bound-fn [& fntail])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/definterface",
+    "kind": "Macro",
+    "name": "definterface",
+    "ns": "clojure.core",
+    "signature": "(definterface [name & sigs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/let-go-new",
+    "kind": "Function",
+    "name": "let-go-new",
+    "ns": "clojure.core",
+    "signature": "(let-go-new [class & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/new",
+    "kind": "Macro",
+    "name": "new",
+    "ns": "clojure.core",
+    "signature": "(new [class & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/register-constructor!",
+    "kind": "Macro",
+    "name": "register-constructor!",
+    "ns": "clojure.core",
+    "signature": "(register-constructor! [class ctor])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/with-precision",
+    "kind": "Macro",
+    "name": "with-precision",
+    "ns": "clojure.core",
+    "signature": "(with-precision [precision & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/UP",
+    "kind": "Var",
+    "name": "UP",
+    "ns": "clojure.core",
+    "signature": "UP",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/DOWN",
+    "kind": "Var",
+    "name": "DOWN",
+    "ns": "clojure.core",
+    "signature": "DOWN",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/HALF_UP",
+    "kind": "Var",
+    "name": "HALF_UP",
+    "ns": "clojure.core",
+    "signature": "HALF_UP",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/HALF_DOWN",
+    "kind": "Var",
+    "name": "HALF_DOWN",
+    "ns": "clojure.core",
+    "signature": "HALF_DOWN",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/HALF_EVEN",
+    "kind": "Var",
+    "name": "HALF_EVEN",
+    "ns": "clojure.core",
+    "signature": "HALF_EVEN",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/CEILING",
+    "kind": "Var",
+    "name": "CEILING",
+    "ns": "clojure.core",
+    "signature": "CEILING",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/FLOOR",
+    "kind": "Var",
+    "name": "FLOOR",
+    "ns": "clojure.core",
+    "signature": "FLOOR",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/UNNECESSARY",
+    "kind": "Var",
+    "name": "UNNECESSARY",
+    "ns": "clojure.core",
+    "signature": "UNNECESSARY",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/dotimes",
+    "kind": "Macro",
+    "name": "dotimes",
+    "ns": "clojure.core",
+    "signature": "(dotimes [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defonce",
+    "kind": "Macro",
+    "name": "defonce",
+    "ns": "clojure.core",
+    "signature": "(defonce [name expr])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta destructure-vector {:private true})",
+    "kind": "Function",
+    "name": "(with-meta destructure-vector {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta destructure-vector {:private true}) [n v])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta destructure-directive? {:private true})",
+    "kind": "Function",
+    "name": "(with-meta destructure-directive? {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta destructure-directive? {:private true}) [k])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta destructure-map {:private true})",
+    "kind": "Function",
+    "name": "(with-meta destructure-map {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta destructure-map {:private true}) [n m])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta destructure {:private true})",
+    "kind": "Function",
+    "name": "(with-meta destructure {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta destructure {:private true}) [binds])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta destructure* {:private true})",
+    "kind": "Function",
+    "name": "(with-meta destructure* {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta destructure* {:private true}) [binds])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta merge-def-meta {:private true})",
+    "kind": "Function",
+    "name": "(with-meta merge-def-meta {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta merge-def-meta {:private true}) [base extra])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta def-meta-name {:private true})",
+    "kind": "Function",
+    "name": "(with-meta def-meta-name {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta def-meta-name {:private true}) [name doc attr])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta fn-expand {:private true})",
+    "kind": "Function",
+    "name": "(with-meta fn-expand {:private true})",
+    "ns": "clojure.core",
+    "signature": "((with-meta fn-expand {:private true}) [bindings body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/name-fn-arity",
+    "kind": "Function",
+    "name": "name-fn-arity",
+    "ns": "clojure.core",
+    "signature": "(name-fn-arity [name self arity])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *ir-compile* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *ir-compile* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *ir-compile* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/while",
+    "kind": "Macro",
+    "name": "while",
+    "ns": "clojure.core",
+    "signature": "(while [test & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/go",
+    "kind": "Macro",
+    "name": "go",
+    "ns": "clojure.core",
+    "signature": "(go [& forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/go-loop",
+    "kind": "Macro",
+    "name": "go-loop",
+    "ns": "clojure.core",
+    "signature": "(go-loop [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/spread",
+    "kind": "Function",
+    "name": "spread",
+    "ns": "clojure.core",
+    "signature": "(spread [arglist])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/list*",
+    "kind": "Function",
+    "name": "list*",
+    "ns": "clojure.core",
+    "signature": "(list* [args] [a args] [a b args] [a b c args] [a b c d & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/comp",
+    "kind": "Function",
+    "name": "comp",
+    "ns": "clojure.core",
+    "signature": "(comp [] [f] [f g] [f g & fs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/juxt",
+    "kind": "Function",
+    "name": "juxt",
+    "ns": "clojure.core",
+    "signature": "(juxt [f] [f g] [f g h] [f g h & fs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/partial",
+    "kind": "Function",
+    "name": "partial",
+    "ns": "clojure.core",
+    "signature": "(partial [f] [f arg1] [f arg1 arg2] [f arg1 arg2 arg3] [f arg1 arg2 arg3 & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/reverse",
+    "kind": "Function",
+    "name": "reverse",
+    "ns": "clojure.core",
+    "signature": "(reverse [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/when-first",
+    "kind": "Macro",
+    "name": "when-first",
+    "ns": "clojure.core",
+    "signature": "(when-first [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/letfn",
+    "kind": "Macro",
+    "name": "letfn",
+    "ns": "clojure.core",
+    "signature": "(letfn [fnspecs & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/if-some",
+    "kind": "Macro",
+    "name": "if-some",
+    "ns": "clojure.core",
+    "signature": "(if-some [bindings then] [bindings then else])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/when-some",
+    "kind": "Macro",
+    "name": "when-some",
+    "ns": "clojure.core",
+    "signature": "(when-some [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/every?",
+    "kind": "Function",
+    "name": "every?",
+    "ns": "clojure.core",
+    "signature": "(every? [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/get-in",
+    "kind": "Function",
+    "name": "get-in",
+    "ns": "clojure.core",
+    "signature": "(get-in [m ks] [m ks not-found])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/assoc-in",
+    "kind": "Function",
+    "name": "assoc-in",
+    "ns": "clojure.core",
+    "signature": "(assoc-in [m [k & ks] v])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/update-in",
+    "kind": "Function",
+    "name": "update-in",
+    "ns": "clojure.core",
+    "signature": "(update-in [m ks f] [m ks f & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/update",
+    "kind": "Function",
+    "name": "update",
+    "ns": "clojure.core",
+    "signature": "(update [m k f] [m k f x] [m k f x y] [m k f x y z] [m k f x y z & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/fnil",
+    "kind": "Function",
+    "name": "fnil",
+    "ns": "clojure.core",
+    "signature": "(fnil [f x] [f x y] [f x y z])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/difference",
+    "kind": "Function",
+    "name": "difference",
+    "ns": "clojure.core",
+    "signature": "(difference [s1] [s1 s2] [s1 s2 & sets])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/intersection",
+    "kind": "Function",
+    "name": "intersection",
+    "ns": "clojure.core",
+    "signature": "(intersection [s1] [s1 s2])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/take-while",
+    "kind": "Function",
+    "name": "take-while",
+    "ns": "clojure.core",
+    "signature": "(take-while [pred] [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/drop-while",
+    "kind": "Function",
+    "name": "drop-while",
+    "ns": "clojure.core",
+    "signature": "(drop-while [pred] [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/split-with",
+    "kind": "Function",
+    "name": "split-with",
+    "ns": "clojure.core",
+    "signature": "(split-with [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/butlast",
+    "kind": "Function",
+    "name": "butlast",
+    "ns": "clojure.core",
+    "signature": "(butlast [s])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/last",
+    "kind": "Function",
+    "name": "last",
+    "ns": "clojure.core",
+    "signature": "(last [s])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/completing",
+    "kind": "Function",
+    "name": "completing",
+    "ns": "clojure.core",
+    "signature": "(completing [f] [f cf])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/transduce",
+    "kind": "Function",
+    "name": "transduce",
+    "ns": "clojure.core",
+    "signature": "(transduce [xform f coll] [xform f init coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/cat",
+    "kind": "Function",
+    "name": "cat",
+    "ns": "clojure.core",
+    "signature": "(cat [rf])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/transientable?",
+    "kind": "Function",
+    "name": "transientable?",
+    "ns": "clojure.core",
+    "signature": "(transientable? [c])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/into",
+    "kind": "Function",
+    "name": "into",
+    "ns": "clojure.core",
+    "signature": "(into [c r] [c xform from])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/sequence",
+    "kind": "Function",
+    "name": "sequence",
+    "ns": "clojure.core",
+    "signature": "(sequence [coll] [xform coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/eduction",
+    "kind": "Function",
+    "name": "eduction",
+    "ns": "clojure.core",
+    "signature": "(eduction [& xforms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/some-fn",
+    "kind": "Function",
+    "name": "some-fn",
+    "ns": "clojure.core",
+    "signature": "(some-fn [p] [p1 p2] [p1 p2 p3] [p1 p2 p3 & ps])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/every-pred",
+    "kind": "Function",
+    "name": "every-pred",
+    "ns": "clojure.core",
+    "signature": "(every-pred [& ps])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/merge",
+    "kind": "Function",
+    "name": "merge",
+    "ns": "clojure.core",
+    "signature": "(merge [] [m] [m & maps])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/repeatedly",
+    "kind": "Function",
+    "name": "repeatedly",
+    "ns": "clojure.core",
+    "signature": "(repeatedly [f] [n f])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/run!",
+    "kind": "Function",
+    "name": "run!",
+    "ns": "clojure.core",
+    "signature": "(run! [proc coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/random-sample",
+    "kind": "Function",
+    "name": "random-sample",
+    "ns": "clojure.core",
+    "signature": "(random-sample [prob] [prob coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/keep",
+    "kind": "Function",
+    "name": "keep",
+    "ns": "clojure.core",
+    "signature": "(keep [f] [f coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/keepi",
+    "kind": "Function",
+    "name": "keepi",
+    "ns": "clojure.core",
+    "signature": "(keepi [f idx coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/mapi",
+    "kind": "Function",
+    "name": "mapi",
+    "ns": "clojure.core",
+    "signature": "(mapi [f idx coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/map-indexed",
+    "kind": "Function",
+    "name": "map-indexed",
+    "ns": "clojure.core",
+    "signature": "(map-indexed [f coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/keep-indexed",
+    "kind": "Function",
+    "name": "keep-indexed",
+    "ns": "clojure.core",
+    "signature": "(keep-indexed [f coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/find",
+    "kind": "Function",
+    "name": "find",
+    "ns": "clojure.core",
+    "signature": "(find [m key])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/->MapEntry",
+    "kind": "Function",
+    "name": "->MapEntry",
+    "ns": "clojure.core",
+    "signature": "(->MapEntry [k v] [k v _])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ns-resolve",
+    "kind": "Function",
+    "name": "ns-resolve",
+    "ns": "clojure.core",
+    "signature": "(ns-resolve [ns sym] [ns env sym])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/inst-ms",
+    "kind": "Function",
+    "name": "inst-ms",
+    "ns": "clojure.core",
+    "signature": "(inst-ms [inst])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/select-keys",
+    "kind": "Function",
+    "name": "select-keys",
+    "ns": "clojure.core",
+    "signature": "(select-keys [map keyseq])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/keys",
+    "kind": "Function",
+    "name": "keys",
+    "ns": "clojure.core",
+    "signature": "(keys [m])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/vals",
+    "kind": "Function",
+    "name": "vals",
+    "ns": "clojure.core",
+    "signature": "(vals [m])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/not-every?",
+    "kind": "Function",
+    "name": "not-every?",
+    "ns": "clojure.core",
+    "signature": "(not-every? [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/not-any?",
+    "kind": "Function",
+    "name": "not-any?",
+    "ns": "clojure.core",
+    "signature": "(not-any? [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/remove",
+    "kind": "Function",
+    "name": "remove",
+    "ns": "clojure.core",
+    "signature": "(remove [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/drop-last",
+    "kind": "Function",
+    "name": "drop-last",
+    "ns": "clojure.core",
+    "signature": "(drop-last [coll] [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/take-last",
+    "kind": "Function",
+    "name": "take-last",
+    "ns": "clojure.core",
+    "signature": "(take-last [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/zipmap",
+    "kind": "Function",
+    "name": "zipmap",
+    "ns": "clojure.core",
+    "signature": "(zipmap [keys vals])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/group-by",
+    "kind": "Function",
+    "name": "group-by",
+    "ns": "clojure.core",
+    "signature": "(group-by [f coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/partition-by",
+    "kind": "Function",
+    "name": "partition-by",
+    "ns": "clojure.core",
+    "signature": "(partition-by [f] [f coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/frequencies",
+    "kind": "Function",
+    "name": "frequencies",
+    "ns": "clojure.core",
+    "signature": "(frequencies [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/reductions",
+    "kind": "Function",
+    "name": "reductions",
+    "ns": "clojure.core",
+    "signature": "(reductions [f coll] [f init coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/take-nth",
+    "kind": "Function",
+    "name": "take-nth",
+    "ns": "clojure.core",
+    "signature": "(take-nth [n] [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/interpose",
+    "kind": "Function",
+    "name": "interpose",
+    "ns": "clojure.core",
+    "signature": "(interpose [sep] [sep coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/interleave",
+    "kind": "Function",
+    "name": "interleave",
+    "ns": "clojure.core",
+    "signature": "(interleave [] [c1] [c1 c2] [c1 c2 & colls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/distinct-step",
+    "kind": "Function",
+    "name": "distinct-step",
+    "ns": "clojure.core",
+    "signature": "(distinct-step [xs seen])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/dedupe",
+    "kind": "Function",
+    "name": "dedupe",
+    "ns": "clojure.core",
+    "signature": "(dedupe [] [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/distinct",
+    "kind": "Function",
+    "name": "distinct",
+    "ns": "clojure.core",
+    "signature": "(distinct [] [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/distinct?",
+    "kind": "Function",
+    "name": "distinct?",
+    "ns": "clojure.core",
+    "signature": "(distinct? [_] [x y] [x y & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/doseq",
+    "kind": "Macro",
+    "name": "doseq",
+    "ns": "clojure.core",
+    "signature": "(doseq [bind & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/for-emit",
+    "kind": "Function",
+    "name": "for-emit",
+    "ns": "clojure.core",
+    "signature": "(for-emit [steps body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/for",
+    "kind": "Macro",
+    "name": "for",
+    "ns": "clojure.core",
+    "signature": "(for [bindings body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/cond->",
+    "kind": "Macro",
+    "name": "cond->",
+    "ns": "clojure.core",
+    "signature": "(cond-> [expr & clauses])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/cond->>",
+    "kind": "Macro",
+    "name": "cond->>",
+    "ns": "clojure.core",
+    "signature": "(cond->> [expr & clauses])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/as->",
+    "kind": "Macro",
+    "name": "as->",
+    "ns": "clojure.core",
+    "signature": "(as-> [expr name & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/some->",
+    "kind": "Macro",
+    "name": "some->",
+    "ns": "clojure.core",
+    "signature": "(some-> [expr & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/some->>",
+    "kind": "Macro",
+    "name": "some->>",
+    "ns": "clojure.core",
+    "signature": "(some->> [expr & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/lazy-filter",
+    "kind": "Var",
+    "name": "lazy-filter",
+    "ns": "clojure.core",
+    "signature": "lazy-filter",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/lazy-map",
+    "kind": "Var",
+    "name": "lazy-map",
+    "ns": "clojure.core",
+    "signature": "lazy-map",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/lazy-take",
+    "kind": "Var",
+    "name": "lazy-take",
+    "ns": "clojure.core",
+    "signature": "lazy-take",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/lazy-take-while",
+    "kind": "Var",
+    "name": "lazy-take-while",
+    "ns": "clojure.core",
+    "signature": "lazy-take-while",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/not-empty",
+    "kind": "Function",
+    "name": "not-empty",
+    "ns": "clojure.core",
+    "signature": "(not-empty [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *assert* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *assert* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *assert* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *print-level* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *print-level* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *print-level* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *print-length* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *print-length* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *print-length* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *print-meta* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *print-meta* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *print-meta* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *print-readably* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *print-readably* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *print-readably* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *print-dup* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *print-dup* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *print-dup* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *flush-on-newline* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *flush-on-newline* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *flush-on-newline* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/&env",
+    "kind": "Var",
+    "name": "&env",
+    "ns": "clojure.core",
+    "signature": "&env",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/&form",
+    "kind": "Var",
+    "name": "&form",
+    "ns": "clojure.core",
+    "signature": "&form",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/tagged-literal?",
+    "kind": "Function",
+    "name": "tagged-literal?",
+    "ns": "clojure.core",
+    "signature": "(tagged-literal? [_])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/assert",
+    "kind": "Macro",
+    "name": "assert",
+    "ns": "clojure.core",
+    "signature": "(assert [x] [x message])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/min-key",
+    "kind": "Function",
+    "name": "min-key",
+    "ns": "clojure.core",
+    "signature": "(min-key [k x] [k x y] [k x y & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/max-key",
+    "kind": "Function",
+    "name": "max-key",
+    "ns": "clojure.core",
+    "signature": "(max-key [k x] [k x y] [k x y & more])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/associative?",
+    "kind": "Function",
+    "name": "associative?",
+    "ns": "clojure.core",
+    "signature": "(associative? [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/sequential?",
+    "kind": "Function",
+    "name": "sequential?",
+    "ns": "clojure.core",
+    "signature": "(sequential? [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/coll?",
+    "kind": "Function",
+    "name": "coll?",
+    "ns": "clojure.core",
+    "signature": "(coll? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta special-symbols {:private true})",
+    "kind": "Var",
+    "name": "(with-meta special-symbols {:private true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta special-symbols {:private true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/special-symbol?",
+    "kind": "Function",
+    "name": "special-symbol?",
+    "ns": "clojure.core",
+    "signature": "(special-symbol? [s])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/flatten",
+    "kind": "Function",
+    "name": "flatten",
+    "ns": "clojure.core",
+    "signature": "(flatten [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/seqable?",
+    "kind": "Function",
+    "name": "seqable?",
+    "ns": "clojure.core",
+    "signature": "(seqable? [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/contains-val?",
+    "kind": "Function",
+    "name": "contains-val?",
+    "ns": "clojure.core",
+    "signature": "(contains-val? [coll val])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/mapv",
+    "kind": "Function",
+    "name": "mapv",
+    "ns": "clojure.core",
+    "signature": "(mapv [f coll] [f c1 & colls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/filterv",
+    "kind": "Function",
+    "name": "filterv",
+    "ns": "clojure.core",
+    "signature": "(filterv [pred coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/range?",
+    "kind": "Function",
+    "name": "range?",
+    "ns": "clojure.core",
+    "signature": "(range? [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/bounded-count",
+    "kind": "Function",
+    "name": "bounded-count",
+    "ns": "clojure.core",
+    "signature": "(bounded-count [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/sort-by",
+    "kind": "Function",
+    "name": "sort-by",
+    "ns": "clojure.core",
+    "signature": "(sort-by [keyfn coll] [keyfn comp coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/str-join",
+    "kind": "Function",
+    "name": "str-join",
+    "ns": "clojure.core",
+    "signature": "(str-join [coll] [sep coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-field-name",
+    "kind": "Function",
+    "name": "-dt-field-name",
+    "ns": "clojure.core",
+    "signature": "(-dt-field-name [f])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-field-meta",
+    "kind": "Function",
+    "name": "-dt-field-meta",
+    "ns": "clojure.core",
+    "signature": "(-dt-field-meta [f])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-mutable?",
+    "kind": "Function",
+    "name": "-dt-mutable?",
+    "ns": "clojure.core",
+    "signature": "(-dt-mutable? [f])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-let-like",
+    "kind": "Var",
+    "name": "-dt-let-like",
+    "ns": "clojure.core",
+    "signature": "-dt-let-like",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-collect-syms",
+    "kind": "Function",
+    "name": "-dt-collect-syms",
+    "ns": "clojure.core",
+    "signature": "(-dt-collect-syms [form])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-rewrite",
+    "kind": "Function",
+    "name": "-dt-rewrite",
+    "ns": "clojure.core",
+    "signature": "(-dt-rewrite [recv fields muts bound form])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-rewrite-let",
+    "kind": "Function",
+    "name": "-dt-rewrite-let",
+    "ns": "clojure.core",
+    "signature": "(-dt-rewrite-let [recv fields muts bound form])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-rewrite-fn",
+    "kind": "Function",
+    "name": "-dt-rewrite-fn",
+    "ns": "clojure.core",
+    "signature": "(-dt-rewrite-fn [recv fields muts bound form])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-rewrite-method",
+    "kind": "Function",
+    "name": "-dt-rewrite-method",
+    "ns": "clojure.core",
+    "signature": "(-dt-rewrite-method [fields muts m])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/-dt-rewrite-impls",
+    "kind": "Function",
+    "name": "-dt-rewrite-impls",
+    "ns": "clojure.core",
+    "signature": "(-dt-rewrite-impls [fields muts impls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/deftype",
+    "kind": "Macro",
+    "name": "deftype",
+    "ns": "clojure.core",
+    "signature": "(deftype [tname fields & protocol-impls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defrecord",
+    "kind": "Macro",
+    "name": "defrecord",
+    "ns": "clojure.core",
+    "signature": "(defrecord [name fields & protocol-impls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defprotocol",
+    "kind": "Macro",
+    "name": "defprotocol",
+    "ns": "clojure.core",
+    "signature": "(defprotocol [name & sigs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/extend-type",
+    "kind": "Macro",
+    "name": "extend-type",
+    "ns": "clojure.core",
+    "signature": "(extend-type [type-expr & specs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/reify",
+    "kind": "Macro",
+    "name": "reify",
+    "ns": "clojure.core",
+    "signature": "(reify [& specs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/extend-protocol",
+    "kind": "Macro",
+    "name": "extend-protocol",
+    "ns": "clojure.core",
+    "signature": "(extend-protocol [protocol & specs])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/constantly",
+    "kind": "Function",
+    "name": "constantly",
+    "ns": "clojure.core",
+    "signature": "(constantly [x])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/with-redefs-fn",
+    "kind": "Function",
+    "name": "with-redefs-fn",
+    "ns": "clojure.core",
+    "signature": "(with-redefs-fn [vars vals func])",
+    "doc": "Implementation helper for with-redefs. vars is a seq of Vars and vals the\n   parallel seq of temporary root values; sets each var's root to its temp\n   value, calls (func), then always restores the original roots \u2014 returning\n   func's value, or re-throwing whatever it threw. Mutates global roots, so it\n   works on any var \u2014 including non-^:dynamic ones and ordinary defns \u2014 unlike\n   binding.",
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/with-redefs",
+    "kind": "Macro",
+    "name": "with-redefs",
+    "ns": "clojure.core",
+    "signature": "(with-redefs [bindings & body])",
+    "doc": "(with-redefs [v1 val1 v2 val2 ...] body...) temporarily redefines the root\n   values of the named vars for the dynamic extent of body, restoring the\n   originals afterward \u2014 even if body throws. Unlike binding, it mutates global\n   roots and works on any var, including ordinary defns, so use it to stub plain\n   functions in tests. Returns the value of body.",
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/memoize",
+    "kind": "Function",
+    "name": "memoize",
+    "ns": "clojure.core",
+    "signature": "(memoize [f])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/trampoline",
+    "kind": "Function",
+    "name": "trampoline",
+    "ns": "clojure.core",
+    "signature": "(trampoline [f] [f & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/cycle-seq",
+    "kind": "Function",
+    "name": "cycle-seq",
+    "ns": "clojure.core",
+    "signature": "(cycle-seq [s orig])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/cycle",
+    "kind": "Function",
+    "name": "cycle",
+    "ns": "clojure.core",
+    "signature": "(cycle [coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/dorun",
+    "kind": "Function",
+    "name": "dorun",
+    "ns": "clojure.core",
+    "signature": "(dorun [coll] [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/doall",
+    "kind": "Function",
+    "name": "doall",
+    "ns": "clojure.core",
+    "signature": "(doall [coll] [n coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/merge-with",
+    "kind": "Function",
+    "name": "merge-with",
+    "ns": "clojure.core",
+    "signature": "(merge-with [f & maps])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/doto",
+    "kind": "Macro",
+    "name": "doto",
+    "ns": "clojure.core",
+    "signature": "(doto [x & forms])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/with-open",
+    "kind": "Macro",
+    "name": "with-open",
+    "ns": "clojure.core",
+    "signature": "(with-open [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *scope-drain-timeout-ms* {:dynamic true})",
+    "kind": "Var",
+    "name": "(with-meta *scope-drain-timeout-ms* {:dynamic true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *scope-drain-timeout-ms* {:dynamic true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/with-scope",
+    "kind": "Macro",
+    "name": "with-scope",
+    "ns": "clojure.core",
+    "signature": "(with-scope [bindings & body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/replace",
+    "kind": "Function",
+    "name": "replace",
+    "ns": "clojure.core",
+    "signature": "(replace [smap coll])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/nthrest",
+    "kind": "Function",
+    "name": "nthrest",
+    "ns": "clojure.core",
+    "signature": "(nthrest [coll n])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/nthnext",
+    "kind": "Function",
+    "name": "nthnext",
+    "ns": "clojure.core",
+    "signature": "(nthnext [coll n])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/future",
+    "kind": "Macro",
+    "name": "future",
+    "ns": "clojure.core",
+    "signature": "(future [& body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ref",
+    "kind": "Var",
+    "name": "ref",
+    "ns": "clojure.core",
+    "signature": "ref",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ref-set",
+    "kind": "Var",
+    "name": "ref-set",
+    "ns": "clojure.core",
+    "signature": "ref-set",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/alter",
+    "kind": "Var",
+    "name": "alter",
+    "ns": "clojure.core",
+    "signature": "alter",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/commute",
+    "kind": "Var",
+    "name": "commute",
+    "ns": "clojure.core",
+    "signature": "commute",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/ensure",
+    "kind": "Var",
+    "name": "ensure",
+    "ns": "clojure.core",
+    "signature": "ensure",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/dosync",
+    "kind": "Macro",
+    "name": "dosync",
+    "ns": "clojure.core",
+    "signature": "(dosync [& body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/(with-meta *agent-errors* {:private true})",
+    "kind": "Var",
+    "name": "(with-meta *agent-errors* {:private true})",
+    "ns": "clojure.core",
+    "signature": "(with-meta *agent-errors* {:private true})",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/agent",
+    "kind": "Var",
+    "name": "agent",
+    "ns": "clojure.core",
+    "signature": "agent",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/send",
+    "kind": "Var",
+    "name": "send",
+    "ns": "clojure.core",
+    "signature": "send",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/send-off",
+    "kind": "Var",
+    "name": "send-off",
+    "ns": "clojure.core",
+    "signature": "send-off",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/await",
+    "kind": "Var",
+    "name": "await",
+    "ns": "clojure.core",
+    "signature": "await",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/await-for",
+    "kind": "Var",
+    "name": "await-for",
+    "ns": "clojure.core",
+    "signature": "await-for",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/agent-error",
+    "kind": "Var",
+    "name": "agent-error",
+    "ns": "clojure.core",
+    "signature": "agent-error",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/restart-agent",
+    "kind": "Var",
+    "name": "restart-agent",
+    "ns": "clojure.core",
+    "signature": "restart-agent",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/set-error-handler!",
+    "kind": "Var",
+    "name": "set-error-handler!",
+    "ns": "clojure.core",
+    "signature": "set-error-handler!",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/set-error-mode!",
+    "kind": "Var",
+    "name": "set-error-mode!",
+    "ns": "clojure.core",
+    "signature": "set-error-mode!",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/error-handler",
+    "kind": "Var",
+    "name": "error-handler",
+    "ns": "clojure.core",
+    "signature": "error-handler",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/error-mode",
+    "kind": "Var",
+    "name": "error-mode",
+    "ns": "clojure.core",
+    "signature": "error-mode",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/shutdown-agents",
+    "kind": "Var",
+    "name": "shutdown-agents",
+    "ns": "clojure.core",
+    "signature": "shutdown-agents",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/release-pending-sends",
+    "kind": "Var",
+    "name": "release-pending-sends",
+    "ns": "clojure.core",
+    "signature": "release-pending-sends",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/future-cancel",
+    "kind": "Var",
+    "name": "future-cancel",
+    "ns": "clojure.core",
+    "signature": "future-cancel",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/tree-walk",
+    "kind": "Function",
+    "name": "tree-walk",
+    "ns": "clojure.core",
+    "signature": "(tree-walk [branch? children node])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/tree-seq",
+    "kind": "Function",
+    "name": "tree-seq",
+    "ns": "clojure.core",
+    "signature": "(tree-seq [branch? children root])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/vary-meta",
+    "kind": "Function",
+    "name": "vary-meta",
+    "ns": "clojure.core",
+    "signature": "(vary-meta [obj f & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/pmap",
+    "kind": "Function",
+    "name": "pmap",
+    "ns": "clojure.core",
+    "signature": "(pmap [f coll] [n f coll] [f coll & colls])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defmulti",
+    "kind": "Macro",
+    "name": "defmulti",
+    "ns": "clojure.core",
+    "signature": "(defmulti [name & args])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/defmethod",
+    "kind": "Macro",
+    "name": "defmethod",
+    "ns": "clojure.core",
+    "signature": "(defmethod [name dispatch-val & fn-tail])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/pr-on",
+    "kind": "Function",
+    "name": "pr-on",
+    "ns": "clojure.core",
+    "signature": "(pr-on [obj writer])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/pr-sequential",
+    "kind": "Function",
+    "name": "pr-sequential",
+    "ns": "clojure.core",
+    "signature": "(pr-sequential [items open close w])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/amap",
+    "kind": "Macro",
+    "name": "amap",
+    "ns": "clojure.core",
+    "signature": "(amap [a idx ret expr])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/areduce",
+    "kind": "Macro",
+    "name": "areduce",
+    "ns": "clojure.core",
+    "signature": "(areduce [a idx ret init expr])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  },
+  {
+    "id": "clojure.core/with-out-str",
+    "kind": "Macro",
+    "name": "with-out-str",
+    "ns": "clojure.core",
+    "signature": "(with-out-str [& body])",
+    "doc": null,
+    "source_path": "../let-go/pkg/rt/core/core.lg",
+    "status": "pending"
+  }
+]

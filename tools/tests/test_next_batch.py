@@ -20,14 +20,14 @@ def test_next_writes_one_brief_per_pending(tmp_path):
     assert len(briefs) == 2
     text = (tmp_path/"briefs"/"clojure.core__map.md").read_text(encoding="utf-8")
     assert "(map [f coll])" in text                       # signature
-    assert "reference/clojure.core/map.md" in text        # target path
+    assert "references/clojure.core/map.md" in text        # target path
     assert "clojure.core/filter" in text                  # sibling id
     assert "stdlib" in text                                # taxonomy tag offered
 
 def test_next_skips_already_authored(tmp_path):
     (tmp_path/"_meta"/"taxonomy.md").write_text("- `stdlib`\n", encoding="utf-8")
-    (tmp_path / "reference" / "clojure.core").mkdir(parents=True)
-    (tmp_path / "reference" / "clojure.core" / "map.md").write_text("x", encoding="utf-8")
+    (tmp_path / "references" / "clojure.core").mkdir(parents=True)
+    (tmp_path / "references" / "clojure.core" / "map.md").write_text("x", encoding="utf-8")
     briefs = next_briefs(_manifest(tmp_path), tmp_path, count=5, out_dir=tmp_path/"briefs")
     names = {b.name for b in briefs}
     assert names == {"clojure.core__filter.md"}           # map already authored → skipped
