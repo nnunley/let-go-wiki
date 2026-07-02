@@ -1,4 +1,6 @@
-{:tasks {doctor {:doc "Validate wiki pages against the schema"
+{:tasks {deps   {:doc "Install the Python tooling deps into the venv"
+                 :do [{:sh "python -m pip install -r requirements.txt"}]}
+         doctor {:doc "Validate wiki pages against the schema"
                  :do [{:sh "python tools/check_wiki.py ."}]}
          viz    {:doc "Regenerate the OKF graph (viz.html)"
                  :do [{:sh "python tools/viz/render_viz.py . viz.html"}]}
