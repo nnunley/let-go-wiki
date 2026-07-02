@@ -43,5 +43,8 @@ serve: ## Local preview of the site
 enrich: ## Prepare the authoring manifest (SOURCE_ROOT defaults to ../let-go)
 	python -m tools.enrich.prepare --source-root $(or $(SOURCE_ROOT),../let-go)
 
+status: ## Report authoring coverage vs the enrich manifest
+	python -m tools.enrich.status
+
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-10s %s\n", $$1, $$2}'

@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_lgx_edn_defines_required_tasks():
     text = (ROOT / "lgx.edn").read_text(encoding="utf-8")
-    for task in ("doctor", "viz", "site", "serve", "enrich"):
+    for task in ("doctor", "viz", "site", "serve", "enrich", "status"):
         assert re.search(rf"\b{task}\b", text), f"missing task {task}"
     # Balanced braces/brackets — cheap EDN sanity check.
     assert text.count("{") == text.count("}")
@@ -43,5 +43,5 @@ def test_lgx_edn_is_valid_per_lgx():
                        text=True, timeout=120)
     out = r.stdout + r.stderr
     assert "invalid lgx.edn" not in out, f"lgx rejected lgx.edn:\n{out}"
-    for task in ("doctor", "viz", "site", "serve", "enrich"):
+    for task in ("doctor", "viz", "site", "serve", "enrich", "status"):
         assert re.search(rf"lgx\s+{task}\b", out), f"task {task} not listed by lgx:\n{out}"

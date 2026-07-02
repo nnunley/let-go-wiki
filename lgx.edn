@@ -7,4 +7,6 @@
          serve  {:doc "Local preview of the site"
                  :do [{:sh "python tools/build_site.py --serve"}]}
          enrich {:doc "Prepare the per-concept authoring manifest from a let-go checkout"
-                 :do [{:sh "python -m tools.enrich.prepare --source-root ../let-go"}]}}}
+                 :do [{:sh "python -m tools.enrich.prepare --source-root ../let-go"}]}
+         status {:doc "Report wiki authoring coverage vs the enrich manifest"
+                 :do [{:sh "python -m tools.enrich.status"}]}}}
