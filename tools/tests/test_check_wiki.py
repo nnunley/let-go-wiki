@@ -92,3 +92,17 @@ def test_find_orphans_empty_when_all_linked(tmp_path):
            'type: Concept\ncategory: concept\ntitle: "B"\ndescription: "d"\ntags: [go]\nstatus: stable')
     orphans = find_orphans(tmp_path)
     assert len(orphans) == 0, f"Expected no orphans when all pages are linked, got: {orphans}"
+
+
+def test_fragment_link_counts_as_inbound_for_orphans(tmp_path):
+    """A page linked only via `page.md#section` must NOT be flagged orphan."""
+    from tools.check_wiki import find_orphans
+    (tmp_path / "_meta").mkdir(exist_ok=True)
+    (tmp_path / "_meta" / "taxonomy.md").write_text("- `go`\n", encoding="utf-8")
+    (tmp_path / "concepts").mkdir()
+    b = tmp_path / "concepts" / "b.md"
+    b.write_text("---\ntype: Concept\ncategory: concept\ntitle: \"B\"\n"
+                 "description: \"d\"\ntags: [go]\nstatus: stable\n---\n\nB.\n", encoding="utf-8")
+    # index links to B only with a fragment
+    (tmp_path / "index.md").write_text("# Index\n\n- [B section](concepts/b.md#usage)\n", encoding="utf-8")
+    assert find_orphans(tmp_path) == []

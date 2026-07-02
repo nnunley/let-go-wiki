@@ -48,8 +48,11 @@ def find_orphans(root: Path) -> list[Path]:
         text = index_md.read_text(encoding="utf-8")
         links = extract_links(text)
         for link in links:
-            if link.endswith(".md") and not link.startswith("http"):
-                target = root / link.lstrip("./")
+            if link.startswith("http"):
+                continue
+            link_path = link.split("#", 1)[0]  # strip fragment
+            if link_path.endswith(".md"):
+                target = root / link_path.lstrip("./")
                 if target.exists():
                     linked_pages.add(target.resolve())
 
@@ -64,9 +67,12 @@ def find_orphans(root: Path) -> list[Path]:
 
         links = extract_links(body)
         for link in links:
-            if link.endswith(".md") and not link.startswith("http"):
+            if link.startswith("http"):
+                continue
+            link_path = link.split("#", 1)[0]  # strip fragment
+            if link_path.endswith(".md"):
                 # Resolve relative to the linking page's directory
-                target = (page.parent / link).resolve()
+                target = (page.parent / link_path).resolve()
                 if target.exists():
                     linked_pages.add(target.resolve())
 
