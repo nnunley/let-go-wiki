@@ -10,7 +10,7 @@ Catalog of pages by category. Updated on every ingest.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
 
 ## Projects
-*(none yet)*
+- [projects/xsofy](projects/xsofy.md) — A browser-and-terminal roguelike written in let-go where the magic system is a Lisp.
 
 ## Ideas
 *(none yet)*

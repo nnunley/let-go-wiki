@@ -15,3 +15,7 @@ accuracy-reviewed (all examples verified) and macro signatures corrected to usag
 Authored concepts/indexed-rpn-ir (developing-let-go internals) from pkg/ir/op_generated.go + ir_ops.lg.
 Documents the indexed-RPN (SSA-equivalent, NOT SSA) encoding + block-parameter control flow; external refs
 (Burak Emir, Carbon sem_ir, Swift SIL/Cranelift/MLIR). All 9 ops verified real. Promoted to stable.
+
+## [2026-07-02] ingest | project: xsofy
+Authored projects/xsofy (using-let-go case study) from the xsofy README — browser+terminal roguelike whose
+magic system is a Lisp; persistent data structures, WASM, no deps, ~6ms startup. Promoted to stable.
