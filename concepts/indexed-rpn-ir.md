@@ -4,8 +4,8 @@ category: concept
 title: "Indexed-RPN IR"
 description: "let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow."
 tags: [compiler, bytecode, vm]
-resource: "https://github.com/nooga/let-go/tree/main/pkg/ir/op_generated.go"
-sources: ["repo: nooga/let-go pkg/ir/op_generated.go + pkg/ir/ir_ops.lg, 2026-07-02"]
+resource: "https://github.com/nooga/let-go/blob/main/pkg/ir/ir_ops.lg"
+sources: ["repo: nooga/let-go pkg/ir/ir_ops.lg (source) + pkg/ir/op_generated.go (generated), 2026-07-02"]
 created: "2026-07-02"
 updated: "2026-07-02"
 status: stable
@@ -59,8 +59,8 @@ A reference implementation of block-parameter SSA.
 [3] **Swift SIL, Cranelift, MLIR**  
 All employ block-parameter control flow for cross-block SSA-style value threading.
 
-[4] **let-go IR source**  
-[pkg/ir/op_generated.go](https://github.com/nooga/let-go/tree/main/pkg/ir/op_generated.go) — canonical operation catalogue (generated from `pkg/ir/ir_ops.lg`)
+[4] **let-go IR source (op catalogue)**  
+[pkg/ir/ir_ops.lg](https://github.com/nooga/let-go/blob/main/pkg/ir/ir_ops.lg) — the operations are defined here (in let-go), and generated into [pkg/ir/op_generated.go](https://github.com/nooga/let-go/blob/main/pkg/ir/op_generated.go) (which carries the design-references header).
 
 ---
 
