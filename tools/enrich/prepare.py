@@ -7,6 +7,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from letgo_source import LetGoSource  # noqa: E402
 
 
+def _richness_score(record: dict) -> tuple:
+    """Return a sort key for record richness: (kind_priority, has_signature, is_last).
+    Higher values are richer. Used to select the best record when deduplicating by id.
+    """
+    kind_priority = {"Function": 2, "Macro": 2, "Var": 1}.get(record["kind"], 0)
+    has_signature = 1 if record.get("signature") and len(record["signature"]) > len(record["name"]) else 0
+    return (kind_priority, has_signature)
+
+
+def _deduplicate_records(records: list[dict]) -> list[dict]:
+    """Deduplicate records by id, keeping the richest definition.
+    Preserves order by first appearance of each id.
+    """
+    seen_ids = {}  # id -> (first_index, best_record)
+    for idx, record in enumerate(records):
+        rec_id = record["id"]
+        if rec_id not in seen_ids:
+            seen_ids[rec_id] = (idx, record)
+        else:
+            first_idx, best_record = seen_ids[rec_id]
+            # Keep the record with higher richness score; ties go to the latest.
+            if _richness_score(record) >= _richness_score(best_record):
+                seen_ids[rec_id] = (first_idx, record)
+    # Reconstruct in original order (by first appearance).
+    result = [best_record for _, best_record in sorted(seen_ids.values(), key=lambda x: x[0])]
+    return result
+
+
 def prepare(config_path: Path, out_dir: Path, source_root: Path, lg=None) -> Path:
     config_path, out_dir, source_root = map(Path, (config_path, out_dir, source_root))
     cfg = tomllib.loads(config_path.read_text(encoding="utf-8"))
@@ -22,6 +50,8 @@ def prepare(config_path: Path, out_dir: Path, source_root: Path, lg=None) -> Pat
                 "doc": detail["doc"], "source_path": str(source_file),
                 "status": "pending",
             })
+    # Deduplicate by id, keeping the richest definition.
+    records = _deduplicate_records(records)
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest = out_dir / "manifest.json"
     manifest.write_text(json.dumps(records, indent=2), encoding="utf-8")
