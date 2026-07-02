@@ -28,3 +28,8 @@ accuracy-reviewed (all 18 examples verified), promoted to stable. Published stdl
 Authored projects/{lgcr,lgx,legmacs,let-go-lab} (README-grounded) and
 concepts/{bytecode-compiler,wasm-compilation,go-interop} (from let-go source).
 Accuracy-reviewed (6/7 clean; legmacs line-count corrected to ~4,000). Promoted to stable.
+
+## [2026-07-02] ingest | internals deep-dive (lginterop / lg-compile / IR pipeline)
+Authored concepts/{lginterop,lg-compile,ir-pipeline} — usage-first (let-go primary, Go reference):
+lginterop (wrapping Go pkgs to call Go FROM let-go), lg-compile (AOT to Go packages), the IR framework
+(written in let-go). Cited .lg/README sources. Promoted to stable.
