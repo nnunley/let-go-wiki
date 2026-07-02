@@ -7,6 +7,7 @@ Catalog of pages by category. Updated on every ingest.
 
 ## Concepts
 - [concepts/stack-vm](concepts/stack-vm.md) — the stack-based bytecode virtual machine.
+- [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
 
 ## Projects
 *(none yet)*

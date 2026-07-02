@@ -10,3 +10,8 @@ Built viz.html and site/ from the two seed pages.
 ## [2026-07-02] ingest | stdlib batch 1 (5 concepts)
 Authored references/clojure.core/{apply,fn,let,when,defn} with real `lg -e` examples;
 accuracy-reviewed (all examples verified) and macro signatures corrected to usage form. Promoted to stable.
+
+## [2026-07-02] ingest | concept: Indexed-RPN IR
+Authored concepts/indexed-rpn-ir (developing-let-go internals) from pkg/ir/op_generated.go + ir_ops.lg.
+Documents the indexed-RPN (SSA-equivalent, NOT SSA) encoding + block-parameter control flow; external refs
+(Burak Emir, Carbon sem_ir, Swift SIL/Cranelift/MLIR). All 9 ops verified real. Promoted to stable.
