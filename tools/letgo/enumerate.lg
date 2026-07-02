@@ -6,10 +6,14 @@
 (def def-ops #{'def 'defn 'defn- 'defmacro 'definline})
 
 (defn- json-str [s]
-  ;; minimal JSON string escaping for the fields we emit
+  ;; JSON string escaping for the fields we emit.
+  ;; IMPORTANT: backslash replacement MUST come first.
   (str "\"" (-> (str s)
                 (clojure.string/replace "\\" "\\\\")
-                (clojure.string/replace "\"" "\\\""))
+                (clojure.string/replace "\"" "\\\"")
+                (clojure.string/replace "\n" "\\n")
+                (clojure.string/replace "\r" "\\r")
+                (clojure.string/replace "\t" "\\t"))
        "\""))
 
 (defn- json-arglists [arglists]

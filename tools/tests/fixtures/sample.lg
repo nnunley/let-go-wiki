@@ -13,3 +13,8 @@
   (list 'if test nil body))
 
 (defn- helper [x] x)
+
+(defn tricky
+  "Line one.\nHas a \"quote\", a back\\slash, and a\ttab."
+  [x]
+  x)
