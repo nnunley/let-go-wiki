@@ -151,6 +151,22 @@
     chip.style.background = data.color;
 
     document.getElementById("detail-title").textContent = data.label;
+
+    // Add open-page link
+    const titleContainer = document.querySelector(".detail-header");
+    if (titleContainer) {
+      const existingLink = titleContainer.querySelector(".open-page");
+      if (existingLink) existingLink.remove();
+      if (data.url) {
+        const openPageLink = document.createElement("a");
+        openPageLink.className = "open-page";
+        openPageLink.href = data.url;
+        openPageLink.target = "_top";
+        openPageLink.textContent = "Open page ↗";
+        titleContainer.appendChild(openPageLink);
+      }
+    }
+
     document.getElementById("detail-id").textContent = conceptId;
     document.getElementById("detail-description").textContent = data.description || "—";
 
@@ -229,9 +245,19 @@
           return;
         }
       }
-      a.className = "external";
-      a.setAttribute("target", "_blank");
-      a.setAttribute("rel", "noopener");
+      // For external links or rewritten MkDocs URLs (like "concepts/b/"),
+      // set target="_top" so they navigate the whole window
+      if (!href.startsWith("#")) {
+        a.className = "external";
+        if (!href.includes("://")) {
+          // Rewritten internal URL (MkDocs format) - navigate away from graph
+          a.setAttribute("target", "_top");
+        } else {
+          // External URL - open in new tab
+          a.setAttribute("target", "_blank");
+          a.setAttribute("rel", "noopener");
+        }
+      }
     });
   }
 

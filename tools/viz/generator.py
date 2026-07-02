@@ -30,6 +30,64 @@ class OKFDocument:
 
 _INDEX_NAME = "index.md"
 _LINK_RE = re.compile(r"\]\(([^)\s]+\.md)(?:#[A-Za-z0-9_\-]*)?\)")
+_BODY_LINK_RE = re.compile(r"\]\(([^)]+)\)")
+_TYPE_PALETTE = {}
+
+
+def _rewrite_body_links(body: str, concept_dir: str) -> str:
+    """Rewrite relative .md links to MkDocs URLs (site-root-relative).
+
+    For a concept in dir 'references/clojure.core', a body link like:
+      [apply](apply.md) -> [apply](references/clojure.core/apply/)
+      [fn](fn.md) -> [fn](references/clojure.core/fn/)
+      [bar](../foo/bar.md) -> [bar](references/foo/bar/)
+      [external](https://example.com) -> [external](https://example.com)  (unchanged)
+      [anchor](#section) -> [anchor](#section)  (unchanged)
+    """
+    def replace_link(m):
+        target = m.group(1)
+
+        # Skip external URLs and absolute paths
+        if "://" in target or target.startswith("/"):
+            return m.group(0)
+
+        # Skip anchor-only links
+        if target.startswith("#"):
+            return m.group(0)
+
+        # Extract fragment (anchor) if present
+        fragment = ""
+        if "#" in target:
+            target, fragment = target.split("#", 1)
+            fragment = "#" + fragment
+
+        # Skip if not ending in .md
+        if not target.endswith(".md"):
+            return m.group(0)
+
+        # Normalize the path: resolve .. and . relative to concept_dir
+        from pathlib import Path as PathlibPath
+        concept_path = PathlibPath(concept_dir)
+        link_path = concept_path / target
+
+        # Normalize to remove .. and .
+        try:
+            # Use posixpath for consistent forward slashes
+            import posixpath
+            normalized = posixpath.normpath(link_path.as_posix())
+            # Remove .md extension
+            if normalized.endswith(".md"):
+                normalized = normalized[:-3]
+            # Create the MkDocs URL (ends with /)
+            mkdocs_url = normalized + "/"
+            return f"]({mkdocs_url}{fragment})"
+        except Exception:
+            # If anything fails, return original
+            return m.group(0)
+
+    return _BODY_LINK_RE.sub(replace_link, body)
+
+
 _TYPE_PALETTE = {
     "Entity": "#b45309",
     "Concept": "#877a5e",
@@ -65,6 +123,7 @@ class Concept:
                 "description": self.description,
                 "resource": self.resource,
                 "tags": self.tags,
+                "url": f"{self.id}/",
                 "color": color,
                 "size": 30 + min(60, len(self.body) // 200),
             }
@@ -107,6 +166,11 @@ def _walk_concepts(bundle_root: Path) -> list[Concept]:
         tags = fm.get("tags") or []
         if not isinstance(tags, list):
             tags = [str(tags)]
+        # Rewrite body links from .md to MkDocs URLs
+        body = doc.body or ""
+        concept_dir = md_path.parent.relative_to(bundle_root).as_posix()
+        body = _rewrite_body_links(body, concept_dir)
+
         concept = Concept(
             id=concept_id,
             type=str(fm.get("type") or "Unknown"),
@@ -114,7 +178,7 @@ def _walk_concepts(bundle_root: Path) -> list[Concept]:
             description=str(fm.get("description") or ""),
             resource=str(fm.get("resource") or ""),
             tags=[str(t) for t in tags],
-            body=doc.body or "",
+            body=body,
             links_to=_extract_links(doc.body or "", md_path.parent, bundle_root),
         )
         concepts.append(concept)
