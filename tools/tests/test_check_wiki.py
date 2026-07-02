@@ -34,3 +34,8 @@ def test_unknown_tag_is_reported(tmp_path):
     p = _write(tmp_path / "c.md",
                'type: Concept\ncategory: concept\ntitle: "C"\ndescription: "d"\ntags: [not-a-real-tag]\nstatus: stable')
     assert any("tag" in e.lower() for e in validate_page(p))
+
+def test_scalar_unknown_tag_is_reported(tmp_path):
+    p = _write(tmp_path / "c.md",
+               'type: Concept\ncategory: concept\ntitle: "C"\ndescription: "d"\ntags: not-a-real-tag\nstatus: stable')
+    assert any("tag" in e.lower() for e in validate_page(p, tags={"go", "vm"}))

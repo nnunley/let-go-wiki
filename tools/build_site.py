@@ -13,14 +13,19 @@ _TITLE_CAT = {"concepts": "Concepts", "entities": "Entities", "ideas": "Ideas",
 
 def _stage(root: Path, docs_dir: Path) -> None:
     docs_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(root / "index.md", docs_dir / "index.md")
+    # Copy index.md if it exists (optional for test/viz compatibility).
+    index_src = root / "index.md"
+    if index_src.exists():
+        shutil.copy2(index_src, docs_dir / "index.md")
     for d in CONTENT_DIRS:
         src = root / d
         if any(src.rglob("*.md")):
             shutil.copytree(src, docs_dir / d, dirs_exist_ok=True,
                             ignore=shutil.ignore_patterns(".gitkeep"))
-    # Assets for extra_css.
-    shutil.copytree(root / "tools" / "assets", docs_dir / "assets", dirs_exist_ok=True)
+    # Assets for extra_css (optional, may not exist in all environments).
+    assets_src = root / "tools" / "assets"
+    if assets_src.exists():
+        shutil.copytree(assets_src, docs_dir / "assets", dirs_exist_ok=True)
 
 def _nav(docs_dir: Path) -> list:
     nav: list = [{"Home": "index.md"}]

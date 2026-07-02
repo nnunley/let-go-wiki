@@ -46,12 +46,13 @@ def validate_page(path: Path, tags: set[str] | None = None) -> list[str]:
         errors.append(f"{path}: absolute link '{lm.group(1)}' — use a file-relative link")
     known = tags if tags is not None else _load_taxonomy_tags(_wiki_root(path))
     page_tags = fm.get("tags") or []
-    if isinstance(page_tags, list):
-        if len(page_tags) > 5:
-            errors.append(f"{path}: more than 5 tags")
-        for t in page_tags:
-            if known and t not in known:
-                errors.append(f"{path}: unknown tag '{t}' (not in taxonomy)")
+    if not isinstance(page_tags, list):
+        page_tags = [page_tags]
+    if len(page_tags) > 5:
+        errors.append(f"{path}: more than 5 tags")
+    for t in page_tags:
+        if known and t not in known:
+            errors.append(f"{path}: unknown tag '{t}' (not in taxonomy)")
     return errors
 
 def validate_tree(root: Path) -> dict[str, list[str]]:

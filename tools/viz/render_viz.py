@@ -1,7 +1,6 @@
 # tools/viz/render_viz.py
 """Standalone wrapper around the vendored OKF viewer (no GCP/reference_agent deps)."""
 from __future__ import annotations
-import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -9,20 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from generator import generate_visualization  # noqa: E402
-from build_site import CONTENT_DIRS  # noqa: E402
-
-def _stage_for_viz(root: Path, docs_dir: Path) -> None:
-    """Stage only markdown content dirs for graph generation (skip assets)."""
-    docs_dir.mkdir(parents=True, exist_ok=True)
-    # Copy index.md if it exists (optional for tests).
-    index_src = root / "index.md"
-    if index_src.exists():
-        shutil.copy2(index_src, docs_dir / "index.md")
-    for d in CONTENT_DIRS:
-        src = root / d
-        if any(src.rglob("*.md")):
-            shutil.copytree(src, docs_dir / d, dirs_exist_ok=True,
-                            ignore=shutil.ignore_patterns(".gitkeep"))
+from build_site import _stage  # noqa: E402
 
 def render(bundle_root: Path, out: Path, name: str = "let-go-wiki") -> dict:
     """Render visualization from wiki content dirs only (excluding docs/ etc)."""
@@ -30,7 +16,7 @@ def render(bundle_root: Path, out: Path, name: str = "let-go-wiki") -> dict:
     out = Path(out)
     with tempfile.TemporaryDirectory() as tmp:
         staging_docs_dir = Path(tmp) / "docs"
-        _stage_for_viz(bundle_root, staging_docs_dir)
+        _stage(bundle_root, staging_docs_dir)
         return generate_visualization(staging_docs_dir, out, bundle_name=name)
 
 def main(argv: list[str]) -> int:
