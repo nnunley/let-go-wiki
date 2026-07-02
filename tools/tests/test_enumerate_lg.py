@@ -34,7 +34,8 @@ def _run_enumerate():
 def test_enumerates_all_def_forms():
     forms = _run_enumerate()
     by_name = {f["name"]: f for f in forms}
-    assert set(by_name) == {"square", "add", "answer", "unless", "helper", "tricky"}
+    assert set(by_name) == {"square", "add", "answer", "unless", "helper", "tricky",
+                            "*flag*", "masked"}
 
 def test_defn_doc_and_arglist():
     f = next(f for f in _run_enumerate() if f["name"] == "square")
@@ -53,6 +54,16 @@ def test_def_and_macro_and_private():
     assert by["unless"]["op"] == "defmacro"
     assert by["helper"]["op"] == "defn-"
     assert by["helper"]["private"] is True
+
+def test_metadata_reader_macro_on_name():
+    """A ^:dynamic/^:private name reads as a (with-meta sym {...}) form; the
+    enumerator must unwrap it to the bare symbol, not emit the whole form as the name."""
+    by = {f["name"]: f for f in _run_enumerate()}
+    assert "*flag*" in by, "^:dynamic def name was not unwrapped to its symbol"
+    assert by["*flag*"]["op"] == "def"
+    # ^:private in the metadata map must be detected as private.
+    assert by["masked"]["private"] is True
+
 
 def test_json_escape_control_chars():
     """Regression test: docstrings with newlines, quotes, backslashes, tabs must JSON-encode correctly."""

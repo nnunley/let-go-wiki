@@ -5,6 +5,15 @@
 
 (def def-ops #{'def 'defn 'defn- 'defmacro 'definline})
 
+(defn- name+meta [form]
+  ;; The def name may be a bare symbol, or a (with-meta sym {...}) form: let-go's
+  ;; reader expands a metadata reader macro (^:dynamic, ^:private) into a with-meta
+  ;; call at read time rather than attaching metadata to the symbol. Return [sym meta].
+  (let [nm (second form)]
+    (if (and (seq? nm) (= 'with-meta (first nm)))
+      [(nth nm 1) (nth nm 2 {})]
+      [nm {}])))
+
 (defn- json-str [s]
   ;; JSON string escaping for the fields we emit.
   ;; IMPORTANT: backslash replacement MUST come first.
@@ -25,7 +34,7 @@
 
 (defn- private? [op form]
   (or (= op 'defn-)
-      (boolean (:private (meta (second form))))))
+      (boolean (:private (second (name+meta form))))))
 
 (defn- extract-arglists [op form]
   ;; forms after the name, skipping an optional docstring and attr-map.
@@ -44,7 +53,7 @@
 (defn- emit [form]
   (let [op (first form)]
     (when (contains? def-ops op)
-      (let [nm (second form)
+      (let [nm (first (name+meta form))
             arglists (if (= op 'def) [] (extract-arglists op form))
             doc (doc-of form)]
         (println

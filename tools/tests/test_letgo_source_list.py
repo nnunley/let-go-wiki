@@ -23,6 +23,9 @@ def test_list_concepts_kinds_and_ids(src):
 
 def test_private_functions_included_but_flagged(src):
     cs = {c.name: c for c in src.list_concepts(FIX, ns="sample.core")}
-    assert set(cs) == {"square", "add", "answer", "unless", "helper", "tricky"}
+    assert set(cs) == {"square", "add", "answer", "unless", "helper", "tricky",
+                       "*flag*", "masked"}
     assert cs["square"].arglists == [["n"]]
     assert cs["add"].arglists == [["a"], ["a", "b"]]
+    # ^:private on the name (not defn-) must still flag the concept private.
+    assert cs["masked"].private is True

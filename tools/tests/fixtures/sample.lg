@@ -18,3 +18,7 @@
   "Line one.\nHas a \"quote\", a back\\slash, and a\ttab."
   [x]
   x)
+
+(def ^:dynamic *flag* true)
+
+(defn ^:private masked [x] x)
