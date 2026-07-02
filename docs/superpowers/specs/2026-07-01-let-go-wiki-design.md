@@ -141,6 +141,21 @@ top-level dirs: **developing let-go → `concepts/`**; **using let-go →
 | let-go-lab | github.com/mparrett/let-go-lab | Sixel/terminal-graphics/WASM experiments on let-go. `projects/let-go-lab`. |
 | lgx | github.com/abogoyavlensky/lgx | Git-based package/project manager for let-go (`lgx.edn`: deps/run/test/build/scaffold). `projects/lgx` + `entities/lgx`; the "how to manage a let-go project" story. |
 | legmacs | github.com/nooga/legmacs | An Emacs-flavored terminal editor written in (~2.7k lines) and scripted with let-go — same language for implementation and config, no separate plugin API. `projects/legmacs` — a substantial "using let-go in anger" case study for interactive/TUI apps and self-hosted extensibility. |
+| lgcr | github.com/nooga/lgcr | A small Linux container runtime written in let-go, built on the `syscall` namespace. `projects/lgcr` + `entities/lgcr` — the systems-programming / low-level case study (referenced from the let-go README). |
+
+**In-repo usage corpus (from `~/development/let-go`):** the let-go README's
+"Examples" section points at `examples/` (small `.lg` programs) and `test/`
+(`.lg` test files) — a first-party corpus of idiomatic usage. Mine these for
+`# Examples` and idiom pages (they run under `lg`, so example output is real).
+
+**Ecosystem-comparison entities (lower priority, context only):** the README
+benchmarks/positions let-go against other Clojure-on-Go / native hosts —
+Babashka (+ [pods](https://github.com/babashka/pods), which let-go can load),
+Joker / [go-joker](https://github.com/rcarmo/go-joker), and Glojure /
+[gloat](https://github.com/gloathub/gloat). Capture as `entities/` for "how
+let-go relates to the Clojure landscape." (Note: `nooga/paserati` is the
+author's *other* project — a TypeScript runtime in Go — **not** let-go-based, so
+it is out of scope.)
 
 External doc seeds (for enrich pass 2): let-go README, clojure.org /
 clojuredocs (compat semantics), the jank clojure-test-suite, nooga's posts.
