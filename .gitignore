@@ -3,9 +3,11 @@
 # so it must be self-contained: a clone has to carry all wiki + tooling files
 # regardless of any contributor's *global* git ignore (~/.config/git/ignore).
 
-# Generated / local-only
-site/            # built static site (deployed via CI or a gh-pages branch)
-.enrich/         # authoring manifest and work
+# Generated / local-only.
+# NOTE: gitignore does not support inline comments — keep comments on their own
+# lines, or the pattern includes the trailing text and matches nothing.
+site/
+.enrich/
 .DS_Store
 __pycache__/
 *.pyc
