@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_lgx_edn_defines_required_tasks():
     text = (ROOT / "lgx.edn").read_text(encoding="utf-8")
-    for task in ("doctor", "viz", "site", "serve"):
+    for task in ("doctor", "viz", "site", "serve", "enrich"):
         assert re.search(rf"\b{task}\b", text), f"missing task {task}"
     # Balanced braces/brackets — cheap EDN sanity check.
     assert text.count("{") == text.count("}")
@@ -34,7 +34,7 @@ def _lgx_cmd():
 
 def test_lgx_edn_is_valid_per_lgx():
     """When lgx is installed (directly or via mise), it must accept lgx.edn and
-    list all four project tasks. Skipped where lgx is unavailable (e.g. CI)."""
+    list all project tasks. Skipped where lgx is unavailable (e.g. CI)."""
     cmd = _lgx_cmd()
     if cmd is None:
         pytest.skip("lgx not available (install directly or via mise)")
@@ -43,5 +43,5 @@ def test_lgx_edn_is_valid_per_lgx():
                        text=True, timeout=120)
     out = r.stdout + r.stderr
     assert "invalid lgx.edn" not in out, f"lgx rejected lgx.edn:\n{out}"
-    for task in ("doctor", "viz", "site", "serve"):
+    for task in ("doctor", "viz", "site", "serve", "enrich"):
         assert re.search(rf"lgx\s+{task}\b", out), f"task {task} not listed by lgx:\n{out}"

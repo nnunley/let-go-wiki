@@ -5,4 +5,6 @@
          site   {:doc "Build the styled static site into site/"
                  :do [{:sh "python tools/build_site.py"}]}
          serve  {:doc "Local preview of the site"
-                 :do [{:sh "python tools/build_site.py --serve"}]}}}
+                 :do [{:sh "python tools/build_site.py --serve"}]}
+         enrich {:doc "Prepare the per-concept authoring manifest from a let-go checkout"
+                 :do [{:sh "python -m tools.enrich.prepare --source-root ../let-go"}]}}}

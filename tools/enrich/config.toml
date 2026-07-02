@@ -1,0 +1,5 @@
+# Source files to enumerate for the let-go stdlib. Paths are relative to
+# --source-root (the let-go checkout). Add more as coverage grows.
+[[source]]
+file = "pkg/rt/core/core.lg"
+ns = "clojure.core"

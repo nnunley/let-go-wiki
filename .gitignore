@@ -5,6 +5,7 @@
 
 # Generated / local-only
 site/            # built static site (deployed via CI or a gh-pages branch)
+.enrich/         # authoring manifest and work
 .DS_Store
 __pycache__/
 *.pyc
