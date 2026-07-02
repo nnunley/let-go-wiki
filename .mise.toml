@@ -12,7 +12,7 @@
 #   brew install nooga/tap/let-go   (or a release tarball from
 #   https://github.com/nooga/let-go/releases — current: v1.11.1)
 [tools]
-python = "3.12"
+python = "3.13"
 "github:abogoyavlensky/lgx" = "0.1.0-rc2"
 
 [env]

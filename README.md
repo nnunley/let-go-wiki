@@ -18,6 +18,6 @@ agent-authored and agent-maintained, published as a styled static site.
 - `lgx site` — build the site into `site/`
 - `lgx serve` — local preview
 
-`lgx` is provided via [mise](https://mise.jdx.dev) (see `.mise.toml`): run `mise trust && mise install`, then `mise exec -- lgx <task>` (or `lgx <task>` with mise activated). All tasks also run directly, e.g. `python tools/build_site.py`.
+`lgx` is provided via [mise](https://mise.jdx.dev) (see `.mise.toml`): run `mise trust && mise install && lgx deps` (the last installs the Python deps into an auto-managed `.venv`), then `mise exec -- lgx <task>` (or `lgx <task>` with mise activated). All tasks also run directly, e.g. `python tools/build_site.py`.
 
 See [AGENTS.md](AGENTS.md) for the page format and conventions.
