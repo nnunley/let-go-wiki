@@ -19,3 +19,7 @@ Documents the indexed-RPN (SSA-equivalent, NOT SSA) encoding + block-parameter c
 ## [2026-07-02] ingest | project: xsofy
 Authored projects/xsofy (using-let-go case study) from the xsofy README — browser+terminal roguelike whose
 magic system is a Lisp; persistent data structures, WASM, no deps, ~6ms startup. Promoted to stable.
+
+## [2026-07-02] ingest | stdlib batch 2 (6 concepts)
+Authored references/clojure.core/{map,filter,comp,inc,mapv,partial} with real lg -e examples;
+accuracy-reviewed (all 18 examples verified), promoted to stable. Published stdlib coverage: 11.
