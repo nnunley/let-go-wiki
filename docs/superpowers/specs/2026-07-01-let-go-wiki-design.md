@@ -232,8 +232,19 @@ repos + the running `let-go` runtime**:
 | enrich (`Source`) | `LetGoSource` |
 |---|---|
 | `list_concepts()` → BQ tables/datasets | namespaces (`Namespace`), functions/macros/special-forms (`Function`/`Macro`/`Special Form`), Go-interop bindings (`Go Interop`), internal packages `pkg/vm`,`pkg/compiler` (`Package`), example programs (`Project`) |
-| `read_concept()` → schema metadata | arglists + `:doc` docstring (let-go carries Clojure-style var metadata) + source location |
-| `sample_rows()` → query the table | **eval the form in the `let-go` REPL** and capture real output |
+| `read_concept()` → schema metadata | name + arglists + docstring, read from the **`.lg` source** (see note) + source location |
+| `sample_rows()` → query the table | **`lg -e '<form>'`** — evaluate the form and capture real output |
+
+**Introspection reality (verified 2026-07-02):** let-go's *runtime* reflection
+is thin — `all-ns`/`ns-name`/`find-ns`/`meta` exist, but **`ns-publics`,
+`ns-map`, `ns-interns`, and `doc` do not**, and `(meta (var f))` returns `nil`
+(arglists/docstrings are not retrievable at runtime). So `LetGoSource` enumerates
+stdlib concepts by **reading the `.lg` source with let-go's own reader** — a
+small `.lg` script uses `read-string`/`read` to parse each source file into
+forms and emits EDN describing every top-level `def`/`defn`/`defmacro`
+(name, arglists, docstring, line). This is deterministic *and* dogfoods let-go
+(reading let-go with let-go). `all-ns` supplies the namespace list; `lg -e`
+supplies real `# Examples` output.
 
 Per concept, a **Claude subagent** (adapted `reference_instruction.md`) reads
 any existing doc (refine, don't rewrite), reads raw metadata, evals a sample,
@@ -280,7 +291,7 @@ metric/dimension/join extractions that bypass the gates):
 - **Reused (ported near-verbatim):** the four-gate reference test, the strict
   augmentation rules, the crawl-guardrail model, the OKF doc shape, the
   `viz.html` viewer.
-- **Rebuilt for let-go:** `LetGoSource` (repo walk + REPL introspection), the
+- **Rebuilt for let-go:** `LetGoSource` (reads `.lg` source via let-go's reader + `lg -e` eval), the
   two prompts recast SQL→Clojure, Claude subagents in place of ADK agents,
   writes through the `llm-wiki` CLI.
 
@@ -401,12 +412,14 @@ below is tracked so it isn't lost. Each step is independently shippable behind
 the stable `lgx <task>` interface, so contributors see no churn. Capture as
 `ideas/dogfooding-tooling`.
 
-1. **`LetGoSource` → let-go** *(highest value — also a better design).*
-   Replace Python repo-scraping with native runtime introspection: `all-ns` /
-   `ns-publics` / `(meta (var …))` / `:arglists` / `:doc`, and in-process eval
-   for `# Examples`. Self-introspection beats scraping the binary; this is where
-   dogfooding and correctness align. Confirmed feasible: `all-ns` is registered
-   and let-go passes the Clojure test suite.
+1. **`LetGoSource` reader → let-go** *(dogfooding; partly required, see §7 note).*
+   Runtime var introspection is thin (`ns-publics`/`doc`/`meta (var …)` absent),
+   so stdlib enumeration reads the `.lg` **source** via let-go's own reader
+   (`read-string`) — a `.lg` script emitting EDN per `def`/`defn`/`defmacro`.
+   This dogfoods let-go (reading let-go with let-go) and is the correct path
+   given the introspection gap; `lg -e` already provides real `# Examples`
+   output. If let-go later grows `ns-publics`/var metadata, a runtime path can
+   supplement the source reader behind the same interface.
 2. **Bespoke let-go SSG → replaces MkDocs.** Wrap a Go markdown lib (goldmark)
    via `lginterop`; emit the house-styled HTML directly (pixel parity with
    let-go's own page) and embed the WASM REPL from the same toolchain. let-go
