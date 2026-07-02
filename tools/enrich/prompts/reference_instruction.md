@@ -29,7 +29,13 @@ status: speculative
 
 1. One–three sentences: what the concept is and when you use it (ground it in
    the docstring; do not contradict it).
-2. `# Signature` — the signature string in a fenced `clojure` block.
+2. `# Signature` — the signature string in a fenced `clojure` block. **For
+   `type: Macro`, the brief's `signature` is the macro's `defmacro` parameter
+   list (e.g., `[condition & forms]`) — this is NOT the call form. Present the
+   actual **usage** form (how the macro is invoked). Do NOT wrap the first
+   argument in brackets unless it is genuinely a binding/vector position (as in
+   `let`/`fn`/`loop`). Prefer conventional Clojure parameter names (test, body,
+   bindings) and show multiple arities when they exist.**
 3. `# Examples` — 1–3 fenced `clojure` blocks, each a real form and its actual
    `lg -e` output as a comment (`;; => ...`). No invented output.
 4. `# Citations` — the concept's `resource` first, then any real sources.
