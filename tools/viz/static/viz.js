@@ -36,6 +36,33 @@
     muted: _v("--muted", "#877a5e"),
   };
 
+  // Initialize mermaid for ```mermaid blocks rendered in the detail panel.
+  // Theme-matched; securityLevel 'loose' so <br/> in node labels works.
+  if (window.mermaid) {
+    const _dark = window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    window.mermaid.initialize({
+      startOnLoad: false, securityLevel: "loose",
+      theme: _dark ? "dark" : "default",
+    });
+  }
+
+  // Convert marked's ```mermaid code blocks into rendered diagrams.
+  function renderMermaid(container) {
+    if (!window.mermaid) return;
+    const divs = [];
+    container.querySelectorAll("code.language-mermaid").forEach((code) => {
+      const div = document.createElement("div");
+      div.className = "mermaid";
+      div.textContent = code.textContent; // raw (unescaped) diagram source
+      (code.closest("pre") || code).replaceWith(div);
+      divs.push(div);
+    });
+    if (divs.length) {
+      try { window.mermaid.run({ nodes: divs }); } catch (_e) { /* bad diagram */ }
+    }
+  }
+
   // Register the fcose force layout (self-registers in most builds; the guarded
   // use() covers builds that don't, and swallows a double-registration error).
   if (window.cytoscapeFcose) {
@@ -242,6 +269,7 @@
     const bodyEl = document.getElementById("detail-body");
     bodyEl.innerHTML = html;
     rewriteInternalLinks(bodyEl);
+    renderMermaid(bodyEl);
 
     const bl = backlinks[conceptId] || [];
     const blSection = document.getElementById("detail-backlinks");

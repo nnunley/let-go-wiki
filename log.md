@@ -68,3 +68,8 @@ Bumped cytoscape 3.28.1->3.34.0 + added fcose force layout (declutters the graph
 UMD path. Put Graph + sections on a sticky top bar (navigation.tabs). Enabled mermaid diagrams via
 pymdownx superfences custom fence (sentinel-swapped python/name tag in build_site); added a pipeline
 flowchart to concepts/bytecode-compiler. Browser-verified: labels legible, fcose spread, tabs, diagram render.
+
+## [2026-07-03] fix | render mermaid in the viz detail panel
+The graph detail panel renders page markdown via marked, which left ```mermaid as raw code.
+Added mermaid@11.16.0 to viz.html + a renderMermaid() pass (theme-matched, securityLevel loose) that
+converts code.language-mermaid blocks to rendered SVG after each panel populate. Browser-verified.
