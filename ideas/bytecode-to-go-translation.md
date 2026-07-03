@@ -76,8 +76,8 @@ https://github.com/nooga/let-go#goals
 [6] **pkg/rt/core/ir/lower_go.lg** — existing Go lowering in the IR pipeline  
 https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower_go.lg
 
-[7] **pkg/compile** — bytecode compiler  
-https://github.com/nooga/let-go/tree/main/pkg/compile
+[7] **pkg/compiler** — bytecode compiler  
+https://github.com/nooga/let-go/tree/main/pkg/compiler
 
 [8] **let-go** (this wiki)  
 [let-go.md](../entities/let-go.md)

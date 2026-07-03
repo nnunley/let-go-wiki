@@ -30,7 +30,7 @@ Today, let-go's nREPL server only runs locally (native process), forcing develop
 
 - **[WASM Compilation](../concepts/wasm-compilation.md)**: let-go already compiles to WASM and boots the VM in the browser (~10ms). The runtime is fully functional.
 - **[nREPL Server](../concepts/nrepl-server.md)** (native): let-go ships an nREPL server (`lg -n`, `lgx nrepl`) that works with standard editors. The protocol layer and operations (eval, describe, completions) are proven.
-- **[Browser Inspector / nREPL-like Bridge Design](https://github.com/nooga/let-go/tree/main/docs/superpowers)**: Partial design exists for a request/response bridge from the browser JS layer to the in-WASM runtime, with JSON frames and sequential form evaluation. This seam can be extended to support streaming nREPL operations.
+- **Browser Inspector / nREPL Bridge**: A request/response bridge from the browser JS layer to the in-WASM runtime (JSON frames, sequential form evaluation) is being designed internally; it extends the public [nREPL server](../concepts/nrepl-server.md) seam and can grow to stream nREPL operations.
 - **[LetGoHost Glue](https://github.com/nooga/let-go/blob/main/wasm/main.go)**: Browser-to-WASM JavaScript interop is already wired. A WebSocket layer and nREPL adapter are the main additions.
 
 ## Open Questions
@@ -54,11 +54,11 @@ https://github.com/nooga/let-go#goals
 [2] **docs/guide/nrepl.md** — native nREPL server  
 https://github.com/nooga/let-go/blob/main/docs/guide/nrepl.md
 
-[3] **Browser Inspector nREPL Bridge Plan**  
-https://github.com/nooga/let-go/blob/main/docs/superpowers/plans/2026-06-29-browser-inspector-nrepl-bridge.md
+[3] **pkg/nrepl/server.go** — the native nREPL server the browser bridge extends  
+https://github.com/nooga/let-go/blob/main/pkg/nrepl/server.go
 
-[4] **Browser Inspector nREPL Bridge Design Spec**  
-https://github.com/nooga/let-go/blob/main/docs/superpowers/specs/2026-06-29-browser-inspector-nrepl-bridge-design.md
+[4] **wasm/main.go** — LetGoHost browser/WASM glue the bridge builds on  
+https://github.com/nooga/let-go/blob/main/wasm/main.go
 
 [5] **WASM Compilation** (this wiki)  
 [wasm-compilation.md](../concepts/wasm-compilation.md)

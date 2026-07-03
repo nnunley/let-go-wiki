@@ -110,7 +110,63 @@ def _looks_generated(url: str) -> bool:
     return any(marker in base for marker in _GENERATED_MARKERS)
 
 
-def validate_page(path: Path, tags: set[str] | None = None) -> list[str]:
+# let-go source URLs must point at PUBLIC, existing paths. Paths under these
+# prefixes are gitignored in the let-go repo (never pushed to GitHub), so a
+# blob/tree URL to them is a guaranteed 404 — cite the more general public
+# artifact (the implementation, a public docs/design or docs/guide doc, or the
+# README) instead. This prefix check needs no external checkout, so it runs in CI.
+_LETGO_URL_RE = re.compile(
+    r"https://github\.com/nooga/let-go/(?:blob|tree|raw)/(?:main|master)/([^\s)#?\"]+)")
+_PRIVATE_LETGO_PREFIXES = ("docs/superpowers/",)
+
+
+def _resolve_letgo_repo(root: Path) -> Path | None:
+    """Locate a local let-go checkout for path-existence checks, or None.
+
+    Absent (e.g. in CI, which only checks out the wiki) the deeper check is
+    skipped; the static prefix check above still runs.
+    """
+    import os
+
+    candidates = []
+    env = os.environ.get("LETGO_SOURCE_REPO") or os.environ.get("LETGO_REPO")
+    if env:
+        candidates.append(Path(env).expanduser())
+    candidates.append(root.parent / "let-go")
+    candidates.append(Path("~/development/let-go").expanduser())
+    for c in candidates:
+        if (c / ".git").exists():
+            return c
+    return None
+
+
+def _letgo_url_problem(url: str, repo: Path | None) -> str | None:
+    """Reason a let-go GitHub URL is non-public, or None if it looks fine."""
+    m = _LETGO_URL_RE.match(url)
+    if not m:
+        return None
+    rel = m.group(1).rstrip("/")
+    # Match the prefix itself (the bare directory) as well as paths under it.
+    if any((rel + "/").startswith(p) for p in _PRIVATE_LETGO_PREFIXES):
+        return "gitignored/non-public path — cite the public source instead"
+    if repo is not None:
+        import subprocess
+
+        if not (repo / rel).exists():
+            return "no such path in the let-go repo — cite an existing public source"
+        r = subprocess.run(
+            ["git", "check-ignore", rel], cwd=repo,
+            capture_output=True, text=True)
+        if r.returncode == 0:
+            return "gitignored/non-public path — cite the public source instead"
+    return None
+
+
+def validate_page(
+    path: Path,
+    tags: set[str] | None = None,
+    letgo_repo: Path | None = None,
+) -> list[str]:
     if path.name in RESERVED:
         return []
     text = path.read_text(encoding="utf-8")
@@ -156,6 +212,9 @@ def validate_page(path: Path, tags: set[str] | None = None) -> list[str]:
             errors.append(
                 f"{path}: '{url}' looks generated — cite the source it is "
                 f"generated from, not the artifact")
+        problem = _letgo_url_problem(url, letgo_repo)
+        if problem:
+            errors.append(f"{path}: '{url}' — {problem}")
 
     known = tags if tags is not None else _load_taxonomy_tags(_wiki_root(path))
     page_tags = fm.get("tags") or []
@@ -170,11 +229,12 @@ def validate_page(path: Path, tags: set[str] | None = None) -> list[str]:
 
 def validate_tree(root: Path) -> dict[str, list[str]]:
     tags = _load_taxonomy_tags(root)
+    letgo_repo = _resolve_letgo_repo(root)
     content_dirs = ("concepts", "entities", "ideas", "projects", "sources", "references")
     out: dict[str, list[str]] = {}
     for d in content_dirs:
         for md in sorted((root / d).rglob("*.md")):
-            errs = validate_page(md, tags)
+            errs = validate_page(md, tags, letgo_repo)
             if errs:
                 out[str(md.relative_to(root))] = errs
     return out

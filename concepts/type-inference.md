@@ -104,10 +104,10 @@ https://github.com/nooga/let-go/blob/main/pkg/rt/parallel.go
 https://github.com/nooga/let-go/blob/main/pkg/vm/var.go
 
 [4] **Lowering**: The IR-to-Go code generation step  
-https://github.com/nooga/let-go/blob/main/pkg/compiler/lower_go.lg
+https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower_go.lg
 
 [5] **Type inference**: The typeinfer pass in the lowering pipeline  
-https://github.com/nooga/let-go/blob/main/pkg/compiler/lower_typeinfer.lg
+https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/passes/typeinfer.lg
 
 ---
 

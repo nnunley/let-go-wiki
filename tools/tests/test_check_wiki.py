@@ -1,6 +1,7 @@
 from pathlib import Path
 import textwrap
-from tools.check_wiki import validate_page, extract_links, find_orphans
+from tools.check_wiki import (
+    validate_page, extract_links, find_orphans, _letgo_url_problem)
 
 REQUIRED = {"type", "category", "title", "description", "tags", "status"}
 
@@ -124,3 +125,35 @@ def test_source_resource_not_flagged(tmp_path):
                  'resource: "https://github.com/x/y/blob/main/pkg/ir/ir_ops.lg"\n'
                  '---\n\nBody.\n', encoding="utf-8")
     assert not any("generated" in e for e in validate_page(p, tags={"go"}))
+
+
+# NEW: gitignored/non-public let-go URLs (static prefix rule — no repo needed)
+def test_letgo_url_problem_flags_gitignored_prefix():
+    url = ("https://github.com/nooga/let-go/blob/main/"
+           "docs/superpowers/specs/2026-06-05-some-design.md")
+    assert _letgo_url_problem(url, None) is not None
+
+def test_letgo_url_problem_ignores_public_path():
+    url = "https://github.com/nooga/let-go/blob/main/pkg/nrepl/server.go"
+    assert _letgo_url_problem(url, None) is None
+
+def test_letgo_url_problem_ignores_foreign_repo():
+    # Only nooga/let-go URLs are governed by this rule.
+    url = "https://github.com/other/repo/blob/main/docs/superpowers/x.md"
+    assert _letgo_url_problem(url, None) is None
+
+def test_private_letgo_resource_is_flagged_via_validate_page(tmp_path):
+    p = tmp_path / "c.md"
+    p.write_text('---\ntype: Concept\ncategory: concept\ntitle: "C"\n'
+                 'description: "d"\ntags: [go]\nstatus: stable\n'
+                 'resource: "https://github.com/nooga/let-go/blob/main/'
+                 'docs/superpowers/plans/2026-06-29-x.md"\n'
+                 '---\n\nBody.\n', encoding="utf-8")
+    assert any("non-public" in e for e in validate_page(p, tags={"go"}))
+
+def test_private_letgo_body_link_is_flagged(tmp_path):
+    p = _write(tmp_path / "concepts" / "a.md",
+               'type: Concept\ncategory: concept\ntitle: "A"\ndescription: "d"\n'
+               'tags: [go]\nstatus: stable',
+               body="See [design](https://github.com/nooga/let-go/tree/main/docs/superpowers).")
+    assert any("non-public" in e for e in validate_page(p, tags={"go"}))

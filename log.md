@@ -54,3 +54,11 @@ Authored + Opus-4.8-adversarially-verified from PUBLIC docs: references/testing-
 ideas/{clojurelike-refactor, jvm-compat, master-plan-roadmap}, concepts/nrepl-server (cites pkg/nrepl/server.go).
 Opus verifier flagged framing/faithfulness issues on all 5; fix pass repaired all (remaining []).
 Repointed ideas/nrepl-in-browser's "nREPL Server" link to the new concepts/nrepl-server page (was stale → stack-vm).
+
+## [2026-07-03] lint | fix non-public citations + harden check_wiki
+Repaired 8 dead let-go GitHub URLs across 4 pages (exec-context, type-inference, bytecode-to-go-translation,
+nrepl-in-browser): gitignored docs/superpowers/* and guessed/nonexistent paths → real public sources
+(pkg/vm/exec_context.go, pkg/vm/binding_stack.go, pkg/rt/core/ir/lower_go.lg + passes/typeinfer.lg,
+pkg/compiler, pkg/nrepl/server.go, wasm/main.go). Added check_wiki rule: flag github.com/nooga/let-go URLs
+under gitignored prefixes (docs/superpowers/, CI-safe) + optional missing/ignored-path check vs a local
+let-go checkout. +5 tests (50 total).

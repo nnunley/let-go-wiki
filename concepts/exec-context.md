@@ -81,11 +81,11 @@ The change is mechanical for most code (pure builtins see no change), and the bl
 
 # Citations
 
-[1] **pkg/vm/scope_gls.go**: Goroutine-local scope storage  
-https://github.com/nooga/let-go/blob/main/pkg/vm/scope_gls.go
+[1] **pkg/vm/exec_context.go**: Execution-context threading and per-goroutine scope  
+https://github.com/nooga/let-go/blob/main/pkg/vm/exec_context.go
 
-[2] **pkg/vm/binding_frames.go**: Goroutine-local binding storage  
-https://github.com/nooga/let-go/blob/main/pkg/vm/binding_frames.go
+[2] **pkg/vm/binding_stack.go**: Dynamic-binding stack storage  
+https://github.com/nooga/let-go/blob/main/pkg/vm/binding_stack.go
 
 [3] **pkg/rt/iort.go**: I/O routing through `WriteToOut`, `WriteToErr`  
 https://github.com/nooga/let-go/blob/main/pkg/rt/iort.go
