@@ -1,11 +1,23 @@
 """Stage content dirs into a MkDocs docs_dir and build the styled site."""
 from __future__ import annotations
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 import yaml
+
+# mkdocs.base.yml carries a sentinel where a `!!python/name:` YAML tag is needed
+# (pymdownx mermaid fence format); safe_load/safe_dump can't round-trip that tag,
+# so we swap it back in when writing the final mkdocs.yml.
+_MERMAID_SENTINEL = "__MERMAID_FENCE_FORMAT__"
+_MERMAID_TAG = "!!python/name:pymdownx.superfences.fence_code_format"
+
+
+def _dump_config(base: dict) -> str:
+    text = yaml.safe_dump(base, sort_keys=False)
+    return re.sub(rf"(['\"]?){_MERMAID_SENTINEL}\1", _MERMAID_TAG, text)
 
 CONTENT_DIRS = ("concepts", "entities", "ideas", "projects", "sources", "references")
 _TITLE_CAT = {"concepts": "Concepts", "entities": "Entities", "ideas": "Ideas",
@@ -53,7 +65,7 @@ def build(root: Path, out: Path) -> Path:
         base["site_dir"] = str(out)
         base["nav"] = _nav(docs_dir)
         cfg = tmp / "mkdocs.yml"
-        cfg.write_text(yaml.safe_dump(base, sort_keys=False), encoding="utf-8")
+        cfg.write_text(_dump_config(base), encoding="utf-8")
         subprocess.run(["mkdocs", "build", "-f", str(cfg), "--strict"],
                        check=True, cwd=root)
     return out
@@ -67,7 +79,7 @@ def main(argv: list[str]) -> int:
         base = yaml.safe_load((root / "mkdocs.base.yml").read_text(encoding="utf-8"))
         base["docs_dir"] = str(tmp / "docs")
         base["nav"] = _nav(tmp / "docs")
-        (tmp / "mkdocs.yml").write_text(yaml.safe_dump(base, sort_keys=False), encoding="utf-8")
+        (tmp / "mkdocs.yml").write_text(_dump_config(base), encoding="utf-8")
         # Pin the address so the URL we announce is authoritative.
         addr = "127.0.0.1:8000"
         banner = f"serving on http://{addr}/  (ctrl-c to stop)"

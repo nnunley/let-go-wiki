@@ -17,7 +17,15 @@ The let-go compiler transforms source code into bytecode that runs on the [stack
 
 ## Compilation Pipeline
 
-**Reader → AST → Indexed-RPN IR → Optimizations → Bytecode Emission**
+```mermaid
+flowchart LR
+    S["Clojure<br/>source"] --> R[Reader]
+    R --> AST[AST]
+    AST --> IR["Indexed-RPN<br/>IR"]
+    IR --> O[Optimizations]
+    O --> E["Bytecode<br/>Emission"]
+    E --> LGB[".lgb module"]
+```
 
 1. **Reader** (`pkg/compiler/reader.go`): Parses Clojure source into `vm.Value` AST nodes. Supports reader macros, `:lg` conditionals for let-go-only code, and syntax validation. Returns symbols, keywords, lists, vectors, and maps that drive compilation.
 

@@ -16,5 +16,13 @@ theme:
 extra_css: [assets/css/house.css]
 markdown_extensions:
   - admonition
-  - pymdownx.superfences
+  # Mermaid diagrams: ```mermaid fences render as diagrams (and natively on
+  # GitHub). The format sentinel is swapped for the real
+  # !!python/name:pymdownx.superfences.fence_code_format tag in build_site.py,
+  # since safe_load/safe_dump cannot round-trip that YAML tag.
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: __MERMAID_FENCE_FORMAT__
   - toc: { permalink: true }

@@ -62,3 +62,9 @@ nrepl-in-browser): gitignored docs/superpowers/* and guessed/nonexistent paths â
 pkg/compiler, pkg/nrepl/server.go, wasm/main.go). Added check_wiki rule: flag github.com/nooga/let-go URLs
 under gitignored prefixes (docs/superpowers/, CI-safe) + optional missing/ignored-path check vs a local
 let-go checkout. +5 tests (50 total).
+
+## [2026-07-03] update | viz upgrade, top-bar nav, mermaid diagrams
+Bumped cytoscape 3.28.1->3.34.0 + added fcose force layout (declutters the graph); fixed marked 12->18
+UMD path. Put Graph + sections on a sticky top bar (navigation.tabs). Enabled mermaid diagrams via
+pymdownx superfences custom fence (sentinel-swapped python/name tag in build_site); added a pipeline
+flowchart to concepts/bytecode-compiler. Browser-verified: labels legible, fcose spread, tabs, diagram render.

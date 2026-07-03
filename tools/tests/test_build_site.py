@@ -2,9 +2,17 @@ from pathlib import Path
 import sys
 import json
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from build_site import build, _nav, GRAPH_URL  # noqa: E402
+from build_site import build, _nav, GRAPH_URL, _dump_config, _MERMAID_TAG  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def test_dump_config_swaps_mermaid_sentinel_for_python_tag():
+    base = {"markdown_extensions": [
+        {"pymdownx.superfences": {"custom_fences": [
+            {"name": "mermaid", "class": "mermaid", "format": "__MERMAID_FENCE_FORMAT__"}]}}]}
+    text = _dump_config(base)
+    assert _MERMAID_TAG in text
+    assert "__MERMAID_FENCE_FORMAT__" not in text
 
 def test_build_produces_styled_site(tmp_path):
     out = build(ROOT, tmp_path / "site")

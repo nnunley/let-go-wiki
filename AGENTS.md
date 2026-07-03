@@ -24,6 +24,7 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 
 - Cross-links are **file-relative** markdown links (`[stack vm](../concepts/stack-vm.md)`), never `/absolute`.
 - `resource`/`sources` must cite where a claim comes from. Agent drafts start `speculative`; promote to `stable` only after checking against the actual code/runtime.
+- Diagrams: use a ```` ```mermaid ```` fenced block (flowchart/sequence/etc.). It renders as a diagram on the built site **and** natively on GitHub. Prefer a diagram over a plain-text arrow chain for pipelines/state machines.
 
 ## Directories
 `concepts/` (how it works / internals), `entities/` (the things),
