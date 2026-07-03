@@ -73,3 +73,10 @@ flowchart to concepts/bytecode-compiler. Browser-verified: labels legible, fcose
 The graph detail panel renders page markdown via marked, which left ```mermaid as raw code.
 Added mermaid@11.16.0 to viz.html + a renderMermaid() pass (theme-matched, securityLevel loose) that
 converts code.language-mermaid blocks to rendered SVG after each panel populate. Browser-verified.
+
+## [2026-07-03] ingest | sources/ provenance layer (21 pages) + curated overview
+Populated sources/ (one page per ingested source: README, codebase map, 8 design docs, 4 guides,
+4 roadmap docs, 3 external IR refs), each with a Derived-pages backlink section, authored + adversarially
+verified (external refs Opus-verified — caught 2 bad resource URLs + fabrication, fixed). Rewrote index.md:
+curated altitude-grouped Map of Content on top (human path) + full flat catalog below (LLM retrieval path),
+now including the Sources section. Graph: 49 -> 70 nodes. Sources tab now on the top bar.
