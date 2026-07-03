@@ -48,3 +48,9 @@ Authored + adversarially source-verified: concurrency-model, deftype-and-protoco
 debug-info, go-structs, ir-passes, ir-optimizations. Workflow verify pass caught faithfulness/framing
 defects in 4/6 auto-verified pages; fix pass repaired them. ir-passes verified separately (schema retry).
 Sources: docs/superpowers/specs/* (gitignored — cited by local path) + public pkg/rt/core/ir/passes/*.lg impls.
+
+## [2026-07-03] ingest | Tier-2 roadmap capture via workflow (5 pages) + nrepl backlink
+Authored + Opus-4.8-adversarially-verified from PUBLIC docs: references/testing-conformance,
+ideas/{clojurelike-refactor, jvm-compat, master-plan-roadmap}, concepts/nrepl-server (cites pkg/nrepl/server.go).
+Opus verifier flagged framing/faithfulness issues on all 5; fix pass repaired all (remaining []).
+Repointed ideas/nrepl-in-browser's "nREPL Server" link to the new concepts/nrepl-server page (was stale → stack-vm).

@@ -21,6 +21,7 @@ Catalog of pages by category. Updated on every ingest.
 - [concepts/lg-compile](concepts/lg-compile.md) — Ahead-of-time compilation of let-go source files to Go packages with cross-package function calls.
 - [concepts/lgb-bytecode-format](concepts/lgb-bytecode-format.md) — Binary serialization format for let-go compiled code, with per-tag versioning, batch collection decoding, and capability-mask extensibility.
 - [concepts/lginterop](concepts/lginterop.md) — Wrapping Go packages as callable functions in let-go via code generation.
+- [concepts/nrepl-server](concepts/nrepl-server.md) — A TCP server exposing let-go's compiler and runtime over the nREPL protocol for editor tooling and interactive development.
 - [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
 - [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.
 - [concepts/stack-vm](concepts/stack-vm.md) — The stack-based virtual machine that executes let-go bytecode.
@@ -38,7 +39,10 @@ Catalog of pages by category. Updated on every ingest.
 ## Ideas
 - [ideas/bytecode-to-go-translation](ideas/bytecode-to-go-translation.md) — Translate let-go bytecode (.lgb) to idiomatic Go source code, enabling faster/native execution paths alongside the stack VM.
 - [ideas/clojure-at-your-go-dayjob](ideas/clojure-at-your-go-dayjob.md) — Make it feasible and idiomatic to write Clojure code in Go codebases via two-way interop and single-binary deployment.
+- [ideas/clojurelike-refactor](ideas/clojurelike-refactor.md) — Aligning let-go's collection semantics with Clojure through persistent data structures; Phases 1–3 shipped, Phase 4 (transducers) in progress.
+- [ideas/jvm-compat](ideas/jvm-compat.md) — A phased plan to run real-world Clojure libraries in let-go by mapping JVM symbol shapes to let-go runtime values.
 - [ideas/malli-on-let-go](ideas/malli-on-let-go.md) — Feasibility of running metosin's malli (Clojure data-schema library) on let-go via Babashka-compatible reader branches and Go-backed interop.
+- [ideas/master-plan-roadmap](ideas/master-plan-roadmap.md) — Consolidated roadmap toward the fastest and most useful Clojure-on-Go, spanning 9 phases from baseline semantics through Go AOT compilation.
 - [ideas/nrepl-in-browser](ideas/nrepl-in-browser.md) — Run the let-go VM in WASM in the browser with an nREPL server reachable over WebSocket, enabling external editor connections to live in-browser runtimes.
 - [ideas/self-hosting-aot](ideas/self-hosting-aot.md) — Roadmap for let-go compiling itself ahead-of-time to native Go: using the IR pipeline and Go AOT backend to bootstrap a self-hosted runtime.
 
@@ -56,6 +60,7 @@ Catalog of pages by category. Updated on every ingest.
 - [references/clojure.core/mapv](references/clojure.core/mapv.md) — Like map, but returns a vector instead of a lazy sequence.
 - [references/clojure.core/partial](references/clojure.core/partial.md) — Creates a new function with some arguments already supplied.
 - [references/clojure.core/when](references/clojure.core/when.md) — Evaluates body forms only if the condition is truthy, otherwise returns nil.
+- [references/testing-conformance](references/testing-conformance.md) — How let-go validates correctness through unit tests, conformance suites, property testing, and performance guardrails.
 
 ## Sources
 *(none yet)*

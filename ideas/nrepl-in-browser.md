@@ -29,7 +29,7 @@ Today, let-go's nREPL server only runs locally (native process), forcing develop
 ## Building Blocks in Place
 
 - **[WASM Compilation](../concepts/wasm-compilation.md)**: let-go already compiles to WASM and boots the VM in the browser (~10ms). The runtime is fully functional.
-- **[nREPL Server](../concepts/stack-vm.md)** (native): let-go ships an nREPL server (`lg -n`, `lgx nrepl`) that works with standard editors. The protocol layer and operations (eval, describe, completions) are proven.
+- **[nREPL Server](../concepts/nrepl-server.md)** (native): let-go ships an nREPL server (`lg -n`, `lgx nrepl`) that works with standard editors. The protocol layer and operations (eval, describe, completions) are proven.
 - **[Browser Inspector / nREPL-like Bridge Design](https://github.com/nooga/let-go/tree/main/docs/superpowers)**: Partial design exists for a request/response bridge from the browser JS layer to the in-WASM runtime, with JSON frames and sequential form evaluation. This seam can be extended to support streaming nREPL operations.
 - **[LetGoHost Glue](https://github.com/nooga/let-go/blob/main/wasm/main.go)**: Browser-to-WASM JavaScript interop is already wired. A WebSocket layer and nREPL adapter are the main additions.
 
@@ -71,4 +71,4 @@ https://github.com/nooga/let-go/blob/main/docs/superpowers/specs/2026-06-29-brow
 
 ---
 
-See also: [let-go](../entities/let-go.md), [WASM Compilation](../concepts/wasm-compilation.md), [Stack VM](../concepts/stack-vm.md)
+See also: [nREPL Server](../concepts/nrepl-server.md), [let-go](../entities/let-go.md), [WASM Compilation](../concepts/wasm-compilation.md), [Stack VM](../concepts/stack-vm.md)
