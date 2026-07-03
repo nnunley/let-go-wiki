@@ -4,6 +4,8 @@ A knowledge base for **developing and using** [let-go](https://github.com/nooga/
 a Clojure dialect on a Go bytecode VM. Markdown + YAML frontmatter (llm_wiki ⊕ OKF),
 agent-authored and agent-maintained, published as a styled static site.
 
+**Live site:** https://nnunley.github.io/let-go-wiki/ (built from `main` by GitHub Pages) — [OKF graph](https://nnunley.github.io/let-go-wiki/viz.html).
+
 ## Prerequisites
 - Python 3.13 (`make install` for deps).
 - **`lg` ≥ 1.11.1** (the let-go binary) — the authoring engine reads `.lg` source
