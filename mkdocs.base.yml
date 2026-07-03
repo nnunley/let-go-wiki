@@ -25,4 +25,7 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: __MERMAID_FENCE_FORMAT__
+  # Auto-link bare URLs (e.g. citation URLs on their own line). python-markdown
+  # does not do this by default the way GitHub does.
+  - pymdownx.magiclink
   - toc: { permalink: true }
