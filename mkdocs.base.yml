@@ -12,7 +12,7 @@ theme:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle: { icon: material/weather-sunny, name: Light }
-  features: [navigation.sections, navigation.top, search.suggest, content.code.copy]
+  features: [navigation.tabs, navigation.tabs.sticky, navigation.sections, navigation.top, search.suggest, content.code.copy]
 extra_css: [assets/css/house.css]
 markdown_extensions:
   - admonition
