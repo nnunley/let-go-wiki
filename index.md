@@ -23,7 +23,10 @@ Catalog of pages by category. Updated on every ingest.
 - [projects/xsofy](projects/xsofy.md) — A browser-and-terminal roguelike written in let-go where the magic system is a Lisp.
 
 ## Ideas
-*(none yet)*
+- [ideas/bytecode-to-go-translation](ideas/bytecode-to-go-translation.md) — Translate let-go bytecode (.lgb) to idiomatic Go source code, enabling faster/native execution paths alongside the stack VM.
+- [ideas/clojure-at-your-go-dayjob](ideas/clojure-at-your-go-dayjob.md) — Make it feasible and idiomatic to write Clojure code in Go codebases via two-way interop and single-binary deployment.
+- [ideas/nrepl-in-browser](ideas/nrepl-in-browser.md) — Run the let-go VM in WASM in the browser with an nREPL server reachable over WebSocket, enabling external editor connections to live in-browser runtimes.
+
 
 ## References
 - [references/clojure.core/apply](references/clojure.core/apply.md) — Applies a function to a sequence of arguments, unpacking the final argument list.

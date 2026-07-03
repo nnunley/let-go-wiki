@@ -33,3 +33,7 @@ Accuracy-reviewed (6/7 clean; legmacs line-count corrected to ~4,000). Promoted 
 Authored concepts/{lginterop,lg-compile,ir-pipeline} — usage-first (let-go primary, Go reference):
 lginterop (wrapping Go pkgs to call Go FROM let-go), lg-compile (AOT to Go packages), the IR framework
 (written in let-go). Cited .lg/README sources. Promoted to stable.
+
+## [2026-07-02] ingest | ideas (roadmap)
+Authored ideas/{nrepl-in-browser,bytecode-to-go-translation,clojure-at-your-go-dayjob} from let-go's
+README Goals (unchecked roadmap). Speculative by nature (unbuilt); cross-linked to existing concepts.
