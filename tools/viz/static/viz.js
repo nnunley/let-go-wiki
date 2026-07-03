@@ -36,6 +36,28 @@
     muted: _v("--muted", "#877a5e"),
   };
 
+  // Register the fcose force layout (self-registers in most builds; the guarded
+  // use() covers builds that don't, and swallows a double-registration error).
+  if (window.cytoscapeFcose) {
+    try { cytoscape.use(window.cytoscapeFcose); } catch (_e) { /* already registered */ }
+  }
+  const _hasFcose = !!window.cytoscapeFcose;
+
+  // Per-layout options. fcose is the default force layout: its nodeSeparation
+  // and idealEdgeLength pull the graph apart so labels stop overlapping.
+  function layoutOpts(name) {
+    if (name === "fcose" && _hasFcose) {
+      return {
+        name: "fcose", animate: false, quality: "default", randomize: true,
+        padding: 40, nodeSeparation: 130, idealEdgeLength: 95,
+        nodeRepulsion: 6500, gravity: 0.25, numIter: 2500,
+      };
+    }
+    if (name === "fcose") name = "cose"; // fallback if the extension failed to load
+    if (name === "cose") return { name: "cose", animate: false, padding: 30 };
+    return { name, animate: false, padding: 30 };
+  }
+
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: [...bundle.nodes, ...bundle.edges],
@@ -94,7 +116,7 @@
         style: { "opacity": 0.15 },
       },
     ],
-    layout: { name: "cose", animate: false, padding: 30 },
+    layout: layoutOpts("fcose"),
     wheelSensitivity: 0.2,
   });
 
@@ -104,7 +126,7 @@
   });
 
   document.getElementById("layout").addEventListener("change", (e) => {
-    cy.layout({ name: e.target.value, animate: false, padding: 30 }).run();
+    cy.layout(layoutOpts(e.target.value)).run();
   });
 
   document.getElementById("reset").addEventListener("click", () => {

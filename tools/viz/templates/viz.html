@@ -3,8 +3,12 @@
 <head>
 <meta charset="utf-8">
 <title>OKF Bundle Viewer</title>
-<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.34.0/dist/cytoscape.min.js"></script>
+<!-- fcose force layout (needs layout-base -> cose-base first) -->
+<script src="https://cdn.jsdelivr.net/npm/layout-base@2.0.1/layout-base.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cose-base@2.2.0/cose-base.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@18.0.5/lib/marked.umd.min.js"></script>
 <style>
 /*__VIZ_CSS__*/
 </style>
@@ -22,6 +26,7 @@
       <option value="">All types</option>
     </select>
     <select id="layout">
+      <option value="fcose">fcose (force)</option>
       <option value="cose">cose (force)</option>
       <option value="concentric">concentric</option>
       <option value="breadthfirst">breadth-first</option>
