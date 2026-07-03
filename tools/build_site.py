@@ -68,7 +68,22 @@ def main(argv: list[str]) -> int:
         base["docs_dir"] = str(tmp / "docs")
         base["nav"] = _nav(tmp / "docs")
         (tmp / "mkdocs.yml").write_text(yaml.safe_dump(base, sort_keys=False), encoding="utf-8")
-        return subprocess.run(["mkdocs", "serve", "-f", str(tmp / "mkdocs.yml")], cwd=root).returncode
+        # Pin the address so the URL we announce is authoritative.
+        addr = "127.0.0.1:8000"
+        banner = f"serving on http://{addr}/  (ctrl-c to stop)"
+        # lgx captures the task's stdout and only flushes it once the task exits,
+        # so a plain print (even flushed) never surfaces for a long-running server
+        # — mkdocs' own "Serving on" line is swallowed the same way. Write straight
+        # to the controlling terminal to bypass that buffer; fall back to stdout
+        # when there is no tty (CI, redirected output).
+        try:
+            with open("/dev/tty", "w") as tty:
+                tty.write(banner + "\n")
+                tty.flush()
+        except OSError:
+            print(banner, flush=True)
+        return subprocess.run(["mkdocs", "serve", "-a", addr, "-f", str(tmp / "mkdocs.yml")],
+                              cwd=root).returncode
     out = build(root, root / "site")
     print(f"site -> {out}")
     return 0
