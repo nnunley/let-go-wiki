@@ -7,12 +7,19 @@ Catalog of pages by category. Updated on every ingest.
 
 ## Concepts
 - [concepts/bytecode-compiler](concepts/bytecode-compiler.md) — How let-go compiles source code to bytecode: the reader, Indexed-RPN IR intermediate form, and code emission pipeline.
+- [concepts/concurrency-model](concepts/concurrency-model.md) — Goroutine-local dynamic bindings and scoped async supervision for concurrent namespace and binding isolation.
+- [concepts/debug-info](concepts/debug-info.md) — Mapping bytecode back to source locations and local variable names for readable crash traces and error reporting.
+- [concepts/deftype-and-protocols](concepts/deftype-and-protocols.md) — Custom types and protocol-based polymorphism in let-go, unifying Clojure's deftype/defprotocol with native Go lowering.
 - [concepts/exec-context](concepts/exec-context.md) — How the ExecContext carries execution state (scopes and dynamic bindings) through the VM, threaded rather than stored in goroutine-local maps.
 - [concepts/go-interop](concepts/go-interop.md) — Two-way Go ↔ let-go interoperability: calling Go from let-go, embedding let-go in Go, struct/channel roundtripping, and code generation.
+- [concepts/go-structs](concepts/go-structs.md) — Defining and using Go structs from let-go via compile-time code generation.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
 - [concepts/io-host-decoupling](concepts/io-host-decoupling.md) — How the runtime decouples I/O operations from the host platform, enabling the same runtime to run natively, in WASM, and on exotic hosts.
+- [concepts/ir-optimizations](concepts/ir-optimizations.md) — Lambda lifting and higher-order specialization to eliminate dynamic dispatch and closure allocation in combinator-based code.
+- [concepts/ir-passes](concepts/ir-passes.md) — Lisp-implemented optimization passes that transform the semantic IR to improve runtime performance.
 - [concepts/ir-pipeline](concepts/ir-pipeline.md) — let-go's compiler IR framework, written in let-go itself: building, optimizing, and lowering to bytecode.
 - [concepts/lg-compile](concepts/lg-compile.md) — Ahead-of-time compilation of let-go source files to Go packages with cross-package function calls.
+- [concepts/lgb-bytecode-format](concepts/lgb-bytecode-format.md) — Binary serialization format for let-go compiled code, with per-tag versioning, batch collection decoding, and capability-mask extensibility.
 - [concepts/lginterop](concepts/lginterop.md) — Wrapping Go packages as callable functions in let-go via code generation.
 - [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
 - [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.

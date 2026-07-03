@@ -42,3 +42,9 @@ README Goals (unchecked roadmap). Speculative by nature (unbuilt); cross-linked 
 From ~/development/let-go/docs: concepts value-representation, exec-context, io-host-decoupling,
 runtime-image, type-inference, pods; references/clojure-compat; ideas malli-on-let-go, self-hosting-aot.
 Grounded in docs/design + docs/guide + shareable superpowers analyses. Concepts/ref → stable; ideas speculative.
+
+## [2026-07-02] ingest | Tier-1 design capture via multi-agent workflow (7 concepts)
+Authored + adversarially source-verified: concurrency-model, deftype-and-protocols, lgb-bytecode-format,
+debug-info, go-structs, ir-passes, ir-optimizations. Workflow verify pass caught faithfulness/framing
+defects in 4/6 auto-verified pages; fix pass repaired them. ir-passes verified separately (schema retry).
+Sources: docs/superpowers/specs/* (gitignored — cited by local path) + public pkg/rt/core/ir/passes/*.lg impls.
