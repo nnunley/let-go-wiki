@@ -7,12 +7,18 @@ Catalog of pages by category. Updated on every ingest.
 
 ## Concepts
 - [concepts/bytecode-compiler](concepts/bytecode-compiler.md) — How let-go compiles source code to bytecode: the reader, Indexed-RPN IR intermediate form, and code emission pipeline.
+- [concepts/exec-context](concepts/exec-context.md) — How the ExecContext carries execution state (scopes and dynamic bindings) through the VM, threaded rather than stored in goroutine-local maps.
 - [concepts/go-interop](concepts/go-interop.md) — Two-way Go ↔ let-go interoperability: calling Go from let-go, embedding let-go in Go, struct/channel roundtripping, and code generation.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
+- [concepts/io-host-decoupling](concepts/io-host-decoupling.md) — How the runtime decouples I/O operations from the host platform, enabling the same runtime to run natively, in WASM, and on exotic hosts.
 - [concepts/ir-pipeline](concepts/ir-pipeline.md) — let-go's compiler IR framework, written in let-go itself: building, optimizing, and lowering to bytecode.
 - [concepts/lg-compile](concepts/lg-compile.md) — Ahead-of-time compilation of let-go source files to Go packages with cross-package function calls.
 - [concepts/lginterop](concepts/lginterop.md) — Wrapping Go packages as callable functions in let-go via code generation.
+- [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
+- [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.
 - [concepts/stack-vm](concepts/stack-vm.md) — The stack-based virtual machine that executes let-go bytecode.
+- [concepts/type-inference](concepts/type-inference.md) — How the let-go compiler infers types during IR lowering and uses a mergeable cache to make parallel lowering both fast and deterministic.
+- [concepts/value-representation](concepts/value-representation.md) — How let-go represents values in memory and optimizes numeric operations on the stack VM.
 - [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup.
 
 ## Projects
@@ -25,10 +31,13 @@ Catalog of pages by category. Updated on every ingest.
 ## Ideas
 - [ideas/bytecode-to-go-translation](ideas/bytecode-to-go-translation.md) — Translate let-go bytecode (.lgb) to idiomatic Go source code, enabling faster/native execution paths alongside the stack VM.
 - [ideas/clojure-at-your-go-dayjob](ideas/clojure-at-your-go-dayjob.md) — Make it feasible and idiomatic to write Clojure code in Go codebases via two-way interop and single-binary deployment.
+- [ideas/malli-on-let-go](ideas/malli-on-let-go.md) — Feasibility of running metosin's malli (Clojure data-schema library) on let-go via Babashka-compatible reader branches and Go-backed interop.
 - [ideas/nrepl-in-browser](ideas/nrepl-in-browser.md) — Run the let-go VM in WASM in the browser with an nREPL server reachable over WebSocket, enabling external editor connections to live in-browser runtimes.
+- [ideas/self-hosting-aot](ideas/self-hosting-aot.md) — Roadmap for let-go compiling itself ahead-of-time to native Go: using the IR pipeline and Go AOT backend to bootstrap a self-hosted runtime.
 
 
 ## References
+- [references/clojure-compat](references/clojure-compat.md) — Where let-go IS and ISN'T compatible with Clojure JVM: known limitations, feature parity, and behavioral differences.
 - [references/clojure.core/apply](references/clojure.core/apply.md) — Applies a function to a sequence of arguments, unpacking the final argument list.
 - [references/clojure.core/comp](references/clojure.core/comp.md) — Composes functions, returning a new function that applies them from right to left.
 - [references/clojure.core/defn](references/clojure.core/defn.md) — Defines a named function and binds it to the current namespace.

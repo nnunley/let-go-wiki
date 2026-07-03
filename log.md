@@ -37,3 +37,8 @@ lginterop (wrapping Go pkgs to call Go FROM let-go), lg-compile (AOT to Go packa
 ## [2026-07-02] ingest | ideas (roadmap)
 Authored ideas/{nrepl-in-browser,bytecode-to-go-translation,clojure-at-your-go-dayjob} from let-go's
 README Goals (unchecked roadmap). Speculative by nature (unbuilt); cross-linked to existing concepts.
+
+## [2026-07-02] ingest | design-doc capture (9 pages)
+From ~/development/let-go/docs: concepts value-representation, exec-context, io-host-decoupling,
+runtime-image, type-inference, pods; references/clojure-compat; ideas malli-on-let-go, self-hosting-aot.
+Grounded in docs/design + docs/guide + shareable superpowers analyses. Concepts/ref → stable; ideas speculative.
