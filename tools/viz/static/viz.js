@@ -24,6 +24,18 @@
   const nodeIndex = {};
   for (const n of bundle.nodes) nodeIndex[n.data.id] = n.data;
 
+  // Read the active theme (light/dark) from CSS variables so canvas-drawn
+  // node labels match the page and stay legible against the background.
+  const _css = getComputedStyle(document.documentElement);
+  const _v = (name, fallback) => (_css.getPropertyValue(name).trim() || fallback);
+  const THEME = {
+    fg: _v("--fg", "#1d180f"),
+    bg: _v("--bg", "#f4ecdb"),
+    accent: _v("--accent", "#b45309"),
+    rule: _v("--rule", "#d6c8a8"),
+    muted: _v("--muted", "#877a5e"),
+  };
+
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: [...bundle.nodes, ...bundle.edges],
@@ -33,8 +45,14 @@
         style: {
           "background-color": "data(color)",
           "label": "data(label)",
-          "color": "#0f172a",
+          // Foreground-colored text with a background-colored halo: readable on
+          // any node fill and in both light and dark themes.
+          "color": THEME.fg,
+          "text-outline-color": THEME.bg,
+          "text-outline-width": 2.5,
+          "text-outline-opacity": 1,
           "font-size": 11,
+          "font-weight": 600,
           "text-valign": "bottom",
           "text-margin-y": 4,
           "text-wrap": "wrap",
@@ -42,22 +60,22 @@
           "width": "data(size)",
           "height": "data(size)",
           "border-width": 1,
-          "border-color": "#0f172a",
+          "border-color": THEME.muted,
         },
       },
       {
         selector: "node:selected",
         style: {
           "border-width": 3,
-          "border-color": "#f59e0b",
+          "border-color": THEME.accent,
         },
       },
       {
         selector: "edge",
         style: {
           "width": 1.5,
-          "line-color": "#cbd5e1",
-          "target-arrow-color": "#cbd5e1",
+          "line-color": THEME.rule,
+          "target-arrow-color": THEME.rule,
           "target-arrow-shape": "triangle",
           "curve-style": "bezier",
           "arrow-scale": 0.9,
@@ -66,8 +84,8 @@
       {
         selector: "edge:selected",
         style: {
-          "line-color": "#f59e0b",
-          "target-arrow-color": "#f59e0b",
+          "line-color": THEME.accent,
+          "target-arrow-color": THEME.accent,
           "width": 2.5,
         },
       },
