@@ -36,6 +36,7 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 - Validate before commit: `python tools/check_wiki.py` (or `lgx doctor`).
 
 ## Build & publish
+- First-time setup: `mise install` (fetches python + lgx), then `lgx deps` (Python deps into `.venv`).
 - `lgx doctor` — validate pages.  `lgx viz` — regenerate the graph.
 - `lgx site` — build the styled site into `site/`.  `lgx serve` — local preview.
 

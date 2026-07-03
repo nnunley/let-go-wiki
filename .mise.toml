@@ -1,11 +1,19 @@
 # Dev tools for let-go-wiki (managed by mise — https://mise.jdx.dev).
-# Provides the `lgx` task runner so contributors get it reproducibly:
+# Provides the `lgx` task runner AND the Python runtime the tasks shell out to,
+# so contributors get a working toolchain reproducibly:
 #   mise trust          # trust this repo config (first use)
-#   mise install        # fetch pinned tools
+#   mise install        # fetch pinned tools (python + lgx)
+#   lgx deps            # install the Python tooling deps into .venv
 #   mise exec -- lgx doctor   (or, with mise activated: lgx doctor)
+# The [env] block auto-creates and auto-activates .venv, so `python`/`pip` inside
+# tasks resolve there — no global pollution, no manual `source .../activate`.
 # NOTE: `lg` (the let-go binary, >= 1.11.1) is a prerequisite but is NOT pinned
 # here — there is no mise registry entry for it yet. Install it separately:
 #   brew install nooga/tap/let-go   (or a release tarball from
 #   https://github.com/nooga/let-go/releases — current: v1.11.1)
 [tools]
+python = "3.13"
 "github:abogoyavlensky/lgx" = "0.1.0-rc2"
+
+[env]
+_.python.venv = { path = ".venv", create = true, uv_create_args = ["--seed"] }
