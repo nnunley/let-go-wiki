@@ -1,8 +1,10 @@
 # let-go-wiki
 
 A knowledge base for **developing and using** [let-go](https://github.com/nooga/let-go),
-a Clojure dialect on a Go bytecode VM. Markdown + YAML frontmatter (llm_wiki ⊕ OKF),
+a Clojure dialect on a Go bytecode VM. Markdown + YAML frontmatter (llm_wiki ⊕ [OKF](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)),
 agent-authored and agent-maintained, published as a styled static site.
+OKF is Google's [Open Knowledge Format](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing),
+the open standard that formalizes the llm_wiki pattern.
 
 **Live site:** https://nnunley.github.io/let-go-wiki/ (built from `main` by GitHub Pages) — [OKF graph](https://nnunley.github.io/let-go-wiki/viz.html).
 
