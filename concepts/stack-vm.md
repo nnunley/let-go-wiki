@@ -124,17 +124,17 @@ case OP_ADD:
     // ...
 ```
 
-These opcodes avoid `NativeFn.Invoke`, interface boxing, and panic-based error recovery on the common path; integer arithmetic is overflow-checked and promotes to the wider numeric types on overflow or non-integer operands.
+These opcodes avoid `NativeFn.Invoke`, interface boxing, and panic-based error recovery on the common path. The `int64` path is overflow-checked, but overflow does **not** promote: `ADD`, `SUB`, `MUL`, `INC`, and `DEC` raise an `"integer overflow"` error. Promotion to the wider numeric tower happens only when an operand is not an `Int`, via the generic `NumXxx` fallback.
 
 # Recursion, tail calls, and exceptions
 
-- **`recur`** compiles to `RECUR` (a back-edge to a `loop`/fn head that rebinds slots and jumps) so iteration runs in constant stack space rather than growing Go frames.
-- **`TAIL_CALL`** reuses the current `Frame` for a call in tail position instead of nesting a new one.
-- **Exceptions** use a handler stack on the frame. `TRY_PUSH` records a catch IP and the stack pointer to restore; on an error the loop unwinds to the innermost handler, resets `sp` to `savedSP`, pushes the error value, and jumps to the catch IP — all without unwinding the Go call stack.
+- **`recur`** compiles to `RECUR` for a `loop` back-edge and to `RECUR_FN` for function self-recursion — either way a slot-rebinding jump, so iteration runs in constant stack space rather than growing Go frames.
+- **`TAIL_CALL`** reuses the current `Frame` only when the callee is a direct `*Func`; other callable types (native fns, and anything else) still dispatch through `ec.Invoke` and get their own frame.
+- **Exceptions** use a per-frame handler stack. `TRY_PUSH` records a catch IP and the stack pointer to restore. When an error surfaces at a site that consults the handler stack, the loop unwinds to the innermost handler *in this frame*, resets `sp` to `savedSP`, pushes the error value, and jumps to the catch IP — no Go-stack unwinding within the frame. Two caveats: an error raised in a nested call propagates the ordinary way (each `Invoke` returns it up the Go stack) until some frame's handler catches it, so cross-frame propagation *does* unwind Go frames; and not every interpreter error consults the handler stack — some (e.g. out-of-bounds const/arg lookups) return directly.
 
 # Debug info
 
-`CodeChunk` carries a `SourceMap` (`ip` → source location) and a `localVars` table (stack slot → binding name) so crash traces name source positions and local variables, even for code loaded from a precompiled bundle under WASM. See [debug info & source maps](debug-info.md); the serialized on-disk form is the [lgb bytecode format](lgb-bytecode-format.md).
+`CodeChunk` carries a `SourceMap` (`ip` → source location), which error construction consults via `LookupSource` to attach source positions to crash traces — including for code loaded from a precompiled bundle under WASM. It also carries a `localVars` table (stack slot → binding name); that table is compiled and serialized into the [lgb format](lgb-bytecode-format.md), but the runtime does not yet read it when formatting errors — only the `SourceMap` is consumed today, so traces name source positions but not local variables. See [debug info & source maps](debug-info.md).
 
 # Examples
 
