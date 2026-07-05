@@ -1,5 +1,11 @@
 # let-go-wiki Log
 
+## [2026-07-05] expand | concept: Stack VM
+Fleshed out concepts/stack-vm from stub to full internals page, authored from pkg/vm/vm.go
+(opcode table, CodeChunk bytecode encoding, Frame, Frame.Run dispatch loop, specialized
+arithmetic fast-paths, frame pooling, recur/tail-call/exception handling, debug info). All
+four examples verified with `lg -e` (3, 7, 10, 15). Promoted to stable.
+
 ## [2026-07-01] init | scaffold
 Created repo structure, taxonomy, schema docs (AGENTS.md/CLAUDE.md), and seed pages.
 
