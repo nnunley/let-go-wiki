@@ -9,8 +9,8 @@ sources:
   - design: docs/superpowers/specs/2026-06-14-deftype-defprotocol-native-lowering-design.md (local, 2026-07-02)
   - design: docs/superpowers/specs/2026-06-22-catalog-op-dispatch-deftype-iteration-design.md (local, 2026-07-02)
   - design: docs/superpowers/specs/2026-05-31-invokable-deref-protocols-design.md (local, 2026-07-02)
-created: 2026-07-02
-updated: 2026-07-02
+created: "2026-07-02"
+updated: "2026-07-02"
 status: speculative
 ---
 

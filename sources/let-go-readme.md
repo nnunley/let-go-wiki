@@ -6,8 +6,8 @@ description: "Official project README documenting let-go's design, features, ben
 tags: [clojure, runtime, compiler, reference, go]
 resource: "https://github.com/nooga/let-go#readme"
 sources: ["repo: nooga/let-go README.md, 2026-07-03"]
-created: 2026-07-03
-updated: 2026-07-03
+created: "2026-07-03"
+updated: "2026-07-03"
 status: stable
 ---
 

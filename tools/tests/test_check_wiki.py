@@ -157,3 +157,39 @@ def test_private_letgo_body_link_is_flagged(tmp_path):
                'tags: [go]\nstatus: stable',
                body="See [design](https://github.com/nooga/let-go/tree/main/docs/superpowers).")
     assert any("non-public" in e for e in validate_page(p, tags={"go"}))
+
+
+# NEW: well-formedness checks
+_OK_FM = ('type: Concept\ncategory: concept\ntitle: "C"\ndescription: "d"\n'
+          'tags: [go]\nstatus: stable')
+
+def test_bad_status_vocab_flagged(tmp_path):
+    p = _write(tmp_path / "c.md", _OK_FM.replace("status: stable", "status: planning"))
+    assert any("status 'planning'" in e for e in validate_page(p, tags={"go"}))
+
+def test_bad_category_vocab_flagged(tmp_path):
+    p = _write(tmp_path / "c.md", _OK_FM.replace("category: concept", "category: thing"))
+    assert any("category 'thing'" in e for e in validate_page(p, tags={"go"}))
+
+def test_unquoted_date_flagged(tmp_path):
+    # Bare YAML date parses as a date object, not a string — flag it.
+    p = _write(tmp_path / "c.md", _OK_FM + "\ncreated: 2026-07-02")
+    assert any("created must be a quoted" in e for e in validate_page(p, tags={"go"}))
+
+def test_quoted_date_not_flagged(tmp_path):
+    p = _write(tmp_path / "c.md", _OK_FM + '\ncreated: "2026-07-02"')
+    assert not any("created" in e for e in validate_page(p, tags={"go"}))
+
+def test_duplicate_frontmatter_key_flagged(tmp_path):
+    p = _write(tmp_path / "c.md", _OK_FM + "\ntags: [vm]")
+    assert any("duplicate frontmatter key 'tags'" in e for e in validate_page(p, tags={"go", "vm"}))
+
+def test_unbalanced_code_fence_flagged(tmp_path):
+    p = _write(tmp_path / "concepts" / "c.md", _OK_FM, body="```python\nx = 1\n(no close)")
+    assert any("code fence" in e for e in validate_page(p, tags={"go"}))
+
+def test_multiline_description_flagged(tmp_path):
+    fm = ('type: Concept\ncategory: concept\ntitle: "C"\n'
+          'description: |\n  line one\n  line two\ntags: [go]\nstatus: stable')
+    p = _write(tmp_path / "c.md", fm)
+    assert any("description must be a single-line string" in e for e in validate_page(p, tags={"go"}))

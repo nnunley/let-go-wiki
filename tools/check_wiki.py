@@ -10,6 +10,12 @@ REQUIRED_KEYS = ("type", "category", "title", "description", "tags", "status")
 RESERVED = {"index.md", "log.md"}
 _FM_RE = re.compile(r"^---\n(.*?)\n---\n?(.*)$", re.DOTALL)
 _ABS_LINK_RE = re.compile(r"\]\((/[^)]+\.md)\)")
+# Well-formedness vocabularies and formats.
+_STATUS_VOCAB = {"speculative", "active", "stable", "archived"}
+_CATEGORY_VOCAB = {"concept", "entity", "idea", "project", "source", "reference"}
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_FM_KEY_RE = re.compile(r"^([A-Za-z_][\w-]*):", re.MULTILINE)
+_FENCE = "`" * 3
 
 def extract_links(markdown_body: str) -> list[str]:
     """Extract link destinations from markdown body using markdown-it-py."""
@@ -181,7 +187,32 @@ def validate_page(
     for key in REQUIRED_KEYS:
         if key not in fm or fm[key] in (None, "", []):
             errors.append(f"{path}: missing/empty required key '{key}'")
+
+    # Well-formedness of the frontmatter itself.
+    fm_keys = _FM_KEY_RE.findall(m.group(1))
+    for dup in sorted({k for k in fm_keys if fm_keys.count(k) > 1}):
+        errors.append(f"{path}: duplicate frontmatter key '{dup}'")
+    status = fm.get("status")
+    if status is not None and status not in _STATUS_VOCAB:
+        errors.append(
+            f"{path}: status '{status}' not in {sorted(_STATUS_VOCAB)}")
+    category = fm.get("category")
+    if category is not None and category not in _CATEGORY_VOCAB:
+        errors.append(
+            f"{path}: category '{category}' not in {sorted(_CATEGORY_VOCAB)}")
+    for k in ("created", "updated"):
+        v = fm.get(k)
+        if v is not None and not (isinstance(v, str) and _DATE_RE.match(v)):
+            errors.append(
+                f"{path}: {k} must be a quoted YYYY-MM-DD string (got {v!r})")
+    for k in ("title", "description"):
+        v = fm.get(k)
+        if v is not None and (not isinstance(v, str) or "\n" in v):
+            errors.append(f"{path}: {k} must be a single-line string")
+
     body = m.group(2)
+    if body.count(_FENCE) % 2 != 0:
+        errors.append(f"{path}: unbalanced code fence (odd number of ``` markers)")
     for lm in _ABS_LINK_RE.finditer(body):
         errors.append(f"{path}: absolute link '{lm.group(1)}' — use a file-relative link")
 

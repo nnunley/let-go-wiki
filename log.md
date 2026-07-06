@@ -86,3 +86,10 @@ Populated sources/ (one page per ingested source: README, codebase map, 8 design
 verified (external refs Opus-verified — caught 2 bad resource URLs + fabrication, fixed). Rewrote index.md:
 curated altitude-grouped Map of Content on top (human path) + full flat catalog below (LLM retrieval path),
 now including the Sources section. Graph: 49 -> 70 nodes. Sources tab now on the top bar.
+
+## [2026-07-05] lint | well-formedness audit + check_wiki hardening
+Audited all 70 pages (frontmatter validity, balanced fences, dup keys, date formats, placeholders):
+only issue was 5 pages with unquoted dates (parsed as YAML date objects) — quoted them. Hardened
+check_wiki with well-formedness gates: status/category controlled vocab, created/updated must be
+quoted YYYY-MM-DD strings, no duplicate frontmatter keys, single-line title/description, balanced
+code fences. +7 tests (59 total).

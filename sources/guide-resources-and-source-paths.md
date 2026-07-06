@@ -10,8 +10,8 @@ tags:
 resource: https://github.com/nooga/let-go/blob/main/docs/guide/resources-and-source-paths.md
 sources:
   - "repo: nooga/let-go docs/guide/resources-and-source-paths.md, 2026-07-03"
-created: 2026-07-03
-updated: 2026-07-03
+created: "2026-07-03"
+updated: "2026-07-03"
 status: stable
 ---
 

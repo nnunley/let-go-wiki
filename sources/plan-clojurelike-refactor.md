@@ -6,8 +6,8 @@ description: "Staged plan to refactor VM data structures toward Clojure semantic
 tags: [clojure, runtime, compiler]
 resource: https://github.com/nooga/let-go/blob/main/docs/clojurelike-refactor-plan.md
 sources: ["repo: nooga/let-go docs/clojurelike-refactor-plan.md, 2026-07-03"]
-created: 2026-07-03
-updated: 2026-07-03
+created: "2026-07-03"
+updated: "2026-07-03"
 status: active
 ---
 
