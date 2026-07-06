@@ -13,4 +13,6 @@
          status {:doc "Report wiki authoring coverage vs the enrich manifest"
                  :do [{:sh "python -m tools.enrich.status"}]}
          next   {:doc "Generate authoring briefs for the next batch of pending concepts"
-                 :do [{:sh "python -m tools.enrich.next_batch --count 5"}]}}}
+                 :do [{:sh "python -m tools.enrich.next_batch --count 5"}]}
+         enhance {:doc "Suggest enhancements to existing pages (thin/orphan/uncited/speculative) + review worklist"
+                 :do [{:sh "python -m tools.enrich.enhance"}]}}}

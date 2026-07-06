@@ -51,3 +51,13 @@ Author new pages with the repeatable loop in
 output) → `lgx doctor` → accuracy-review → promote to `stable` → publish. When
 reading source repos, skip non-useful large files (debug logs, media, binaries)
 and use the `rlm` skill to subdivide large *useful* files.
+
+## Enhance (improve existing pages)
+`lgx enhance` scores existing pages on structural deficits (thin body, no
+outbound/inbound links, no citations, still `speculative`) and writes briefs to
+`.enrich/enhance/`. Each brief has two parts: **mechanical fixes** (act
+directly) and a **Needs review (LLM)** worklist (promotion, staleness,
+grounding, contradictions) — the driver routes these to a judgment pass; it does
+not decide them. When re-authoring from a brief, obey the no-regression guard:
+`tools/enrich/enhance.py:regressed(old, new)` must return `[]` (never drop
+citations or sections).

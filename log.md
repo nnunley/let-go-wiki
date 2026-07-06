@@ -100,3 +100,11 @@ From a clone of abogoyavlensky/lgx (README + docs/ARCHITECTURE, branch master): 
 references/lgx-edn (lgx.edn config: paths/main/lg-version/deps/tasks/contexts), and concepts/lgx-build-model
 (git dep resolution + how build/run drive let-go compilation). Adversarially verified — caught invented flags
 + overstated compilation claims, fixed. Surfaced lgx in the MOC Build & run line. Graph 70 -> 73 nodes.
+
+## [2026-07-06] tooling | add `enrich enhance` (existing-page improvement driver)
+Built tools/enrich/enhance.py (+ lgx enhance task): scores existing pages on structural deficits
+(thin body, no outbound/inbound links, no citations, still speculative) and writes briefs splitting
+mechanical fixes from a "Needs review (LLM)" worklist (promotion/staleness/grounding/contradiction).
+Includes a no-regression guard (regressed(): a re-authored page must not lose citations/sections),
+mirroring the Google OKF driver's completeness guardrail + llm_wiki's Lint suggestions. +6 tests (65 total).
+On the current wiki it flags 36/73 pages (thin stdlib refs, an uncited source page, speculative nrepl-server).
