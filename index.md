@@ -14,7 +14,7 @@ Runtime internals: [Value Representation](concepts/value-representation.md) · [
 
 ## Using let-go — building programs
 - **Interop:** [Go Interop](concepts/go-interop.md) · [lginterop](concepts/lginterop.md) · [Go Structs](concepts/go-structs.md)
-- **Build & run:** [lg-compile](concepts/lg-compile.md) · [WASM Compilation](concepts/wasm-compilation.md) · [nREPL Server](concepts/nrepl-server.md) · [Pods](concepts/pods.md)
+- **Build & run:** [lg-compile](concepts/lg-compile.md) · [WASM Compilation](concepts/wasm-compilation.md) · [nREPL Server](concepts/nrepl-server.md) · [Pods](concepts/pods.md) · [lgx build tool](projects/lgx.md)
 - **Compatibility & stdlib:** [Clojure Compatibility](references/clojure-compat.md) · [clojure.core reference](references/clojure.core/map.md)
 
 ## Built with let-go
@@ -51,6 +51,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/lg-compile](concepts/lg-compile.md) — Ahead-of-time compilation of let-go source files to Go packages with cross-package function calls.
 - [concepts/lgb-bytecode-format](concepts/lgb-bytecode-format.md) — Binary serialization format for let-go compiled code, with per-tag versioning, batch collection decoding, and capability-mask extensibility.
 - [concepts/lginterop](concepts/lginterop.md) — Wrapping Go packages as callable functions in let-go via code generation.
+- [concepts/lgx-build-model](concepts/lgx-build-model.md) — How lgx resolves git-pinned dependencies via a gitlibs cache, invokes let-go compilation, bundles executables, and runs tests.
 - [concepts/nrepl-server](concepts/nrepl-server.md) — A TCP server exposing let-go's compiler and runtime over the nREPL protocol for editor tooling and interactive development.
 - [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
 - [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.
@@ -72,6 +73,8 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [references/clojure.core/mapv](references/clojure.core/mapv.md) — Like map, but returns a vector instead of a lazy sequence.
 - [references/clojure.core/partial](references/clojure.core/partial.md) — Creates a new function with some arguments already supplied.
 - [references/clojure.core/when](references/clojure.core/when.md) — Evaluates body forms only if the condition is truthy, otherwise returns nil.
+- [references/lgx-commands](references/lgx-commands.md) — Common lgx subcommands for managing, running, building, and testing let-go projects.
+- [references/lgx-edn](references/lgx-edn.md) — Top-level keys and schema for lgx.edn project configuration files.
 - [references/testing-conformance](references/testing-conformance.md) — How let-go validates correctness through unit tests, conformance suites, property testing, and performance guardrails.
 
 ## Ideas

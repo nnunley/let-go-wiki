@@ -93,3 +93,10 @@ only issue was 5 pages with unquoted dates (parsed as YAML date objects) — quo
 check_wiki with well-formedness gates: status/category controlled vocab, created/updated must be
 quoted YYYY-MM-DD strings, no duplicate frontmatter keys, single-line title/description, balanced
 code fences. +7 tests (59 total).
+
+## [2026-07-05] ingest | focused lgx import (usage + compilation, 4 pages)
+From a clone of abogoyavlensky/lgx (README + docs/ARCHITECTURE, branch master): expanded projects/lgx
+(hub; noted lgx is itself written in let-go), added references/lgx-commands (new/run/repl/build/test),
+references/lgx-edn (lgx.edn config: paths/main/lg-version/deps/tasks/contexts), and concepts/lgx-build-model
+(git dep resolution + how build/run drive let-go compilation). Adversarially verified — caught invented flags
++ overstated compilation claims, fixed. Surfaced lgx in the MOC Build & run line. Graph 70 -> 73 nodes.
