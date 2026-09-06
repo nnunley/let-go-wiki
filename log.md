@@ -133,3 +133,16 @@ speculative pages get a dashed outline. Clicking a node lights its neighbourhood
 with counts doubles as the kind filter; minor components (stdlib reference clusters) are packed in a grid
 beside the main graph so the fitted view stays large. Detail panel: tag chips, legible type chip, forward
 links, wide mermaid with sideways scroll, stacks under the graph below 900px. Browser-verified light + dark.
+## [2026-09-05] ingest | architecture spine (7 concepts, 5 sources) against let-go main @ 0911118
+Authored with lg -e transcripts: reader, namespaces-and-vars, native-primitives, compile-paths (the direct
+compiler, the *ir-compile* path with its hybrid fallback and the #580 census, Go lowering + gogen_ir
+overrides, ir-stress gates), generated-artifacts, perf-ratchet, go-backend. Each batch adversarially reviewed
+by a second agent re-reading the cited code (7 + 14 + 9 findings, all fixed) and promoted to stable. Findings
+that are facts about let-go, not just the drafts: core_go_lowered/ is gitignored; `lg` has no --target flag
+(lgbgen's, core-only); //lg:private is parsed but unread; check-generated regenerates in place; emitted
+direct-call sites never consult vm.GuardedRootsIntact (only rt/native-prims-intact? reads it); #649's
+TAIL_CALL fusion has no lower_go twin; BenchmarkInitFromLGB is in the default ratchet gate; historical/
+holds only v1.8.0. Sources: design-ir-dynamic-vars, docs-perf-ratchet, docs-regenerating-generated-artifacts,
+pr-native-hoist-stack, pr-native-entry-gate. MOC: Reader at the head of the path, "Compile Paths · Go
+Backend", "Build and measure", Namespaces and Vars under runtime internals. Plan D recorded in
+docs/superpowers/plans/ with the landing plan by confidence.
