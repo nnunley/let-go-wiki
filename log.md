@@ -146,3 +146,10 @@ holds only v1.8.0. Sources: design-ir-dynamic-vars, docs-perf-ratchet, docs-rege
 pr-native-hoist-stack, pr-native-entry-gate. MOC: Reader at the head of the path, "Compile Paths · Go
 Backend", "Build and measure", Namespaces and Vars under runtime internals. Plan D recorded in
 docs/superpowers/plans/ with the landing plan by confidence.
+
+## [2026-09-05] update | fold in nnunley's corrections on our PRs
+generated-artifacts: the auxiliary embed is gogen-only and transitional; lg.compiler enrolls in the standard
+embedded/generated set immediately (decision on #735, 2026-09-02). go-backend: lg_no_http is a stopgap, the
+set direction is an AOT-driven tree-shaker over runtime subpackages (#652 comment, 2026-07-31); lg-compile is
+the shim over orchestration moving behind lg.compiler (#735). native-primitives: the hoist gap #686 found is
+tracked under #531.
