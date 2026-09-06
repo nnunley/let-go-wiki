@@ -22,6 +22,7 @@ Open issue by Norman Nunley (nnunley), filed 2026-09 against #735's proposed `lg
 - **Compatibility:** `scripts/lg-compile` stays as a shim until an explicit deprecation; `lg script.lg`, `lg -e`, and bare `lg` keep working; subcommands are not made mandatory.
 - **Six migration steps** that may land as separate PRs but each preserve the whole destination.
 - **Non-goals:** fixing lowering gaps, removing `lg-compile`, replacing the scripting CLI.
+- **Refined on #735 (2026-09-02):** `lg.compiler` enrolls in the standard embedded and generated set immediately, no temporary auxiliary-embed exception; the shim stays; a contract test pins `EMIT-FAIL`.
 
 ## Derived pages
 
