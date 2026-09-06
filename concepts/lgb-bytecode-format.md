@@ -7,10 +7,11 @@ tags: [bytecode, vm, compiler, runtime]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/bytecode/tags.go"
 sources:
   - "repo: nooga/let-go pkg/bytecode/{tags,encoder,decoder,capabilities,strip,debug_companion}.go @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#443 (opcode-set capability), #608/#622 (capability reject messages, lg -v), #501 (DEFLATE body), #502 (compressed embedded core), #745 (func chunk identity), #624 (split debug), 2026-09-05"
+  - "pr: nooga/let-go#443 (opcode-set capability), #608/#622 (capability reject messages, lg -v), #501 (DEFLATE body), #502 (compressed embedded core), #745 (func chunk identity), #624 (split debug), #781 (TagDefMetaPairs, the first version-1 tag, merged 2026-09-06), 2026-09-05"
+  - "repo: nooga/let-go pkg/bytecode/tags.go @ ee55803 (re-verified for #781), 2026-09-06"
   - "design: docs/superpowers/specs/2026-05-23-lgb-v2-design.md (local, 2026-07-02)"
 created: "2026-07-02"
-updated: "2026-09-05"
+updated: "2026-09-06"
 status: stable
 ---
 
@@ -84,7 +85,7 @@ Sections in order:
 
 ### Tag encoding
 
-Each value's tag byte is `0bVV_TTTTTT`: two bits of tag version and a six-bit tag ID. All current tags are version 0, byte-identical to v1. When a tag's semantics change, its version bits increment, so an old decoder sees an unknown byte and fails instead of misreading the payload.
+Each value's tag byte is `0bVV_TTTTTT`: two bits of tag version and a six-bit tag ID. Every tag was version 0, byte-identical to v1, until #781 (merged 2026-09-06, b0397f6) added the first version-1 tag: `TagDefMetaPairs = TagIDMap | TagVer1` carries a var's metadata as alternating keys and values in the map payload shape, so the decoder can keep the pairs and build the map on first use instead of eagerly at load. A v2 decoder from before #781 sees the non-zero version bits and rejects the byte rather than reading the pairs as an ordinary map. That is what the version bits are for: when a tag's semantics change, its version increments, and an old decoder fails instead of misreading the payload.
 
 Tag IDs: scalars `0x00`–`0x0C` (nil, true, false, int, float, string, keyword, symbol, char, big-int, void, UUID, instant), code `0x10`–`0x11` (func, var-ref), collections `0x20`–`0x24` (empty-list, list, vector, map, set), user types `0x30`–`0x33` (record-type, record, regex, atom). `0x34`–`0x3F` are reserved (`TagIDReserved0`–`TagIDReserved11`).
 

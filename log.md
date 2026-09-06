@@ -117,3 +117,8 @@ concepts/debug-info: shipped `.debug` companion (digest-bound Tier 0 data), Tier
 lgbstat (47 KB source maps + 7.7 KB locals, ~18% of 308 KB), local names still stored not rendered, the
 .lgsym design marked design-only; speculative -> active. Adversarially reviewed (7 findings fixed).
 Sources: pr-lgb-format-evolution.
+
+## [2026-09-06] update | lgb-bytecode-format: #781 landed the first version-1 tag
+
+Re-verified against nooga/let-go main @ ee55803. `TagDefMetaPairs = TagIDMap | TagVer1` (#781, b0397f6)
+replaces the "all current tags are version 0" claim; pre-#781 v2 decoders reject it by design.
