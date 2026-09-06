@@ -172,7 +172,6 @@ source page now describe #684's window seeding (five snapshots per key, median i
 three, mixed-capture rejection). reader re-pinned at a6763e77 with all six divergences re-probed; notes
 #787's `#_` comment-skip. namespaces-and-vars, generated-artifacts (seven outputs), native-primitives,
 compile-paths, go-backend: no claim moved.
-
 ## [2026-09-07] ingest | docs/known-divergences.md (#771, renamed by #825) as a source page
 New sources/docs-known-divergences.md: the two intentional divergence groups (intrinsic map order, rune
 character model), the temporary entries, the shared-suite `:lg` overrides, and what moved after the ledger
@@ -193,3 +192,15 @@ the rest of `ir.*`), says why the skip must precede pool population, and records
 bootstrap puts ir.data's chunks in the shared pool, so `lgbstat` finds 111 of 937 bundle chunks under
 `<embedded:ir.data:lgbgen-bootstrap>` at a9c183f9. The first draft cited `isBundleSkippedTool` and
 `compileToolsForLowering`, which exist only on #735's branch; corrected to main's names.
+## [2026-09-05] ingest | compiler architecture (nnunley's 2026 refactors): 4 concepts, 2 ideas, 5 sources
+op-catalog (#612/#666/#667/#712, epic #268), structurize (#574/#674/#675), block-interface-and-liveness
+(#575, liveness.lg + blockarg.lg), bytecode-lowering (#579/#647/#648/#649/#580); ideas/compiler-namespace-
+architecture (#786) and ideas/ir-representation-roadmap (#574/#575). Adversarially reviewed at 0911118: 2
+findings fixed (only lower_go.lg requires ir.structurize on main; check-cross-block! exempts cheap loads
+except :load-var, contrary to its docstring). Concepts marked stable, ideas active; per the landing plan this
+slice is for discussion with Norman before it lands, since it restates his PRs and open proposals.
+
+## [2026-09-06] update | structurize + bytecode-lowering: #675 and #779 merged
+
+structurize: keyword-cond chains now absorb into :switch (b7e04d6). bytecode-lowering: fn-template consts
+are exempt from cheap-load re-emission (a32767d, closure identity).
