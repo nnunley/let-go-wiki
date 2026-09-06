@@ -88,18 +88,34 @@ def _rewrite_body_links(body: str, concept_dir: str) -> str:
     return _BODY_LINK_RE.sub(replace_link, body)
 
 
-_TYPE_PALETTE = {
-    "Entity": "#b45309",
-    "Concept": "#877a5e",
-    "Reference": "#10b981",
-    "Project": "#3b82f6",
-    "Idea": "#8b5cf6",
-    "Function": "#877a5e",
-    "Macro": "#877a5e",
-    "Namespace": "#b45309",
-    "Package": "#3b82f6",
+# Each OKF type folds into one of six display kinds; the kind picks the node
+# colour (light/dark pairs so nodes stay distinguishable on both page themes)
+# and the legend entry. Function/Macro pages are stdlib references.
+_TYPE_KIND = {
+    "Entity": "Entity",
+    "Concept": "Concept",
+    "Reference": "Reference",
+    "Function": "Reference",
+    "Macro": "Reference",
+    "Namespace": "Reference",
+    "Package": "Project",
+    "Project": "Project",
+    "Idea": "Idea",
+    "Source": "Source",
 }
-_DEFAULT_NODE_COLOR = "#877a5e"
+_KIND_PALETTE = {
+    "Entity":    {"light": "#b45309", "dark": "#f5b041"},
+    "Concept":   {"light": "#2e7d80", "dark": "#6cc0c3"},
+    "Reference": {"light": "#5f7a1f", "dark": "#a9c65c"},
+    "Project":   {"light": "#3f4fae", "dark": "#93a0ea"},
+    "Idea":      {"light": "#8a3d8f", "dark": "#d494d8"},
+    "Source":    {"light": "#a39477", "dark": "#6b5f47"},
+}
+_KIND_ORDER = ["Entity", "Concept", "Reference", "Project", "Idea", "Source"]
+_DEFAULT_KIND = "Concept"
+# Kept for callers/tests that read the legacy per-type map.
+_TYPE_PALETTE = {t: _KIND_PALETTE[k]["light"] for t, k in _TYPE_KIND.items()}
+_DEFAULT_NODE_COLOR = _KIND_PALETTE[_DEFAULT_KIND]["light"]
 
 
 @dataclass
@@ -111,21 +127,37 @@ class Concept:
     resource: str
     tags: list[str]
     body: str
+    status: str = ""
     links_to: list[str] = field(default_factory=list)
+    cited_by: int = 0
+
+    @property
+    def kind(self) -> str:
+        return _TYPE_KIND.get(self.type, _DEFAULT_KIND)
 
     def to_node(self) -> dict[str, Any]:
-        color = _TYPE_PALETTE.get(self.type, _DEFAULT_NODE_COLOR)
+        kind = self.kind
+        pal = _KIND_PALETTE[kind]
+        # Size tracks how often a page is cited (its weight in the graph), not
+        # body length: a long stub is still a leaf, a short hub is still a hub.
+        size = 14 + min(30, 4 * self.cited_by)
+        if kind == "Source":
+            size = 12  # provenance nodes stay small and uniform
         return {
             "data": {
                 "id": self.id,
                 "label": self.title or self.id,
                 "type": self.type,
+                "kind": kind,
+                "status": self.status,
                 "description": self.description,
                 "resource": self.resource,
                 "tags": self.tags,
                 "url": f"{self.id}/",
-                "color": color,
-                "size": 30 + min(60, len(self.body) // 200),
+                "color": pal["light"],
+                "colorDark": pal["dark"],
+                "size": size,
+                "citedBy": self.cited_by,
             }
         }
 
@@ -179,6 +211,7 @@ def _walk_concepts(bundle_root: Path) -> list[Concept]:
             resource=str(fm.get("resource") or ""),
             tags=[str(t) for t in tags],
             body=body,
+            status=str(fm.get("status") or ""),
             links_to=_extract_links(doc.body or "", md_path.parent, bundle_root),
         )
         concepts.append(concept)
@@ -187,6 +220,11 @@ def _walk_concepts(bundle_root: Path) -> list[Concept]:
 
 def _build_graph(concepts: list[Concept]) -> dict[str, Any]:
     ids = {c.id for c in concepts}
+    by_id = {c.id: c for c in concepts}
+    for c in concepts:
+        for target in c.links_to:
+            if target != c.id and target in ids:
+                by_id[target].cited_by += 1
     nodes = [c.to_node() for c in concepts]
     edges: list[dict[str, Any]] = []
     seen_edges: set[tuple[str, str]] = set()
@@ -207,12 +245,15 @@ def _build_graph(concepts: list[Concept]) -> dict[str, Any]:
             })
     bodies = {c.id: c.body for c in concepts}
     types = sorted({c.type for c in concepts})
+    kinds = [k for k in _KIND_ORDER if any(c.kind == k for c in concepts)]
     return {
         "nodes": nodes,
         "edges": edges,
         "bodies": bodies,
         "types": types,
+        "kinds": kinds,
         "palette": _TYPE_PALETTE,
+        "kindPalette": _KIND_PALETTE,
     }
 
 

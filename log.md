@@ -126,3 +126,10 @@ replaces the "all current tags are version 0" claim; pre-#781 v2 decoders reject
 The page said the var is true only during `-w`; `pkg/cli/cli.go` sets it when any of `-c`, `-b`, `-w` is
 given, and `docs/guide/usage.md` (already in the page's sources) says the same. Verified at let-go
 `638b4a6a`.
+## [2026-09-05] update | graph viewer legibility pass
+Node colour now encodes page kind (Entity/Concept/Reference/Project/Idea/Source; Concept and Source were
+both the same grey), size tracks how often a page is cited instead of body length, Source pages are squares,
+speculative pages get a dashed outline. Clicking a node lights its neighbourhood and dims the rest; a legend
+with counts doubles as the kind filter; minor components (stdlib reference clusters) are packed in a grid
+beside the main graph so the fitted view stays large. Detail panel: tag chips, legible type chip, forward
+links, wide mermaid with sideways scroll, stacks under the graph below 900px. Browser-verified light + dark.
