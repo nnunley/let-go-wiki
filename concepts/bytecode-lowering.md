@@ -7,9 +7,9 @@ tags: [compiler, bytecode, vm]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg"
 sources:
   - "repo: nooga/let-go pkg/rt/core/ir/lower.lg, pkg/rt/core/core.lg (defn), test/ir_lower_stack_discipline_test.lg @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#579 (var-load re-emission + shape ratchet), #648 (block-junk agreement, RPO, deferrable-branch guards), #649 (tail-call fusion), #647 (def+name* seam), #580 (census), 2026-09-05"
+  - "pr: nooga/let-go#579 (var-load re-emission + shape ratchet), #648 (block-junk agreement, RPO, deferrable-branch guards), #649 (tail-call fusion), #647 (def+name* seam), #580 (census), #779 (fn-template consts are not rematerialised, merged 2026-09-06 as a32767d), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-06"
 status: stable
 ---
 
@@ -23,7 +23,7 @@ The header of the file states it:
 
 - Body-emit every node in source order and record a stable stack slot at each definition site.
 - A multi-use value lands at its slot and later uses `DUP_NTH` from there; a single-use value consumed at the top of the stack is used in place.
-- Cheap loads (`Const`, `LoadArg`, `LoadVar`, `LoadClosed`, the `cheap?` column of the [op catalog](op-catalog.md)) defer to use-site re-emission when single-use and not the consumer's first reference, which matches the direct compiler's natural layout.
+- Cheap loads (`Const`, `LoadArg`, `LoadVar`, `LoadClosed`, the `cheap?` column of the [op catalog](op-catalog.md)) defer to use-site re-emission when single-use and not the consumer's first reference, which matches the direct compiler's natural layout. A `:const` whose aux is a `:fn-template` or `:multi-fn-template` is the exception since #779 (merged 2026-09-06, a32767d): a function literal is an allocation with observable identity, so it is materialised once per lowering site and every reuse goes through `DUP_NTH`; re-running the template made `(let [f (fn [x] x) g f] (identical? f g))` false under `*ir-compile*` and true under the direct compiler.
 - Branch terminators recognise two fast paths: arguments already at the target positions, and arguments already at the top of the stack.
 
 The lowerer's state is one atom holding a map; every mutation is a `swap!`.

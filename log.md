@@ -204,3 +204,8 @@ slice is for discussion with Norman before it lands, since it restates his PRs a
 
 structurize: keyword-cond chains now absorb into :switch (b7e04d6). bytecode-lowering: fn-template consts
 are exempt from cheap-load re-emission (a32767d, closure identity).
+
+## [2026-09-06] update | structurize + bytecode-lowering: #675 and #779 merged
+
+structurize: keyword-cond chains now absorb into :switch (b7e04d6). bytecode-lowering: fn-template consts
+are exempt from cheap-load re-emission (a32767d, closure identity).
