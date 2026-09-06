@@ -5,10 +5,13 @@ title: "Debug Info & Source Maps"
 description: "Mapping bytecode back to source locations and local variable names for readable crash traces and error reporting."
 tags: [compiler, bytecode, vm, tooling]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/vm/source.go"
-sources: ["design: docs/superpowers/specs/2026-05-30-debug-info-and-symmap-design.md (local, 2026-07-02)"]
+sources:
+  - "design: docs/superpowers/specs/2026-05-30-debug-info-and-symmap-design.md (local, 2026-07-02)"
+  - "repo: nooga/let-go pkg/bytecode/{strip,debug_companion}.go, pkg/rt/run.go, pkg/vm/errfmt.go @ 0911118, 2026-09-05"
+  - "pr: nooga/let-go#624 (split debug companion), 2026-09-05"
 created: "2026-07-02"
-updated: "2026-07-02"
-status: speculative
+updated: "2026-09-05"
+status: active
 ---
 
 # Debug Info & Source Maps
@@ -19,7 +22,7 @@ The system is organized in tiers by cost, sensitivity, and deployment model:
 
 ## Tier 0: Always In — File, Function, Line (+ Local Names Captured)
 
-Tier 0 debug data (source file, function name, line/column) is serialized into every `.lgb` bundle by default. This costs approximately 20 KB per core bundle (+4.7%) and exposes only identifiers, not values.
+Tier 0 debug data (source file, function name, line/column) is serialized into every `.lgb` bundle by default and exposes only identifiers, not values. The design doc's figure was about 20 KB (+4.7%) on the 2026-05-30 bundle; at `0911118` (2026-09-05) `cmd/lgbstat` measures the source maps at 47,476 bytes and the local-variable tables at 7,745, together about 18% of a 308,176-byte core bundle.
 
 As of PR #131 (merged 2026-06-01), **local variable names** are also captured and stored, enabling future rendering in error traces. The data layer is complete; rendering is planned.
 
@@ -29,7 +32,7 @@ As of PR #131 (merged 2026-06-01), **local variable names** are also captured an
 - **Local variable tables** (PR #131, `pkg/bytecode`): Each `CodeChunk` carries a table of **(slot, name)** pairs. A slot maps to a runtime stack frame position; the name is the original identifier from source. Serialized under `FlagLocalVars` in the `.lgb` format, decoded and reconstructed into each chunk at bundle load time. Available via `CodeChunk.LocalVars()`, but not yet rendered by error formatters.
 
 **Usage in Error Reporting:**
-Tier 0 data is fully captured and serialized: local variable names are stored in each `CodeChunk` via `LocalVars()` (populated by PR #131). However, rendering these names into stack traces is not yet implemented. Currently, the VM's `FormatError` function (in `pkg/vm/errfmt.go`) displays source location, file, line, and function name when rendering a frame, but does not yet query the `LocalVars` table. Wiring local-variable rendering into `FormatError` is a planned next step: the design doc describes it as "a natural next increment after #131."
+Tier 0 data is fully captured and serialized: local variable names are stored in each `CodeChunk` via `LocalVars()` (populated by PR #131). However, rendering these names into stack traces is not yet implemented. Currently, the VM's `FormatError` function (in `pkg/vm/errfmt.go`) displays source location, file, line, and function name when rendering a frame, but does not yet query the `LocalVars` table. Wiring local-variable rendering into `FormatError` is a planned next step: the design doc describes it as "a natural next increment after #131." As of 2026-09-05 no non-test code outside `pkg/bytecode` reads `CodeChunk.LocalVars()` (the one other reader is `pkg/compiler/localvars_test.go`); the names are still stored and not shown.
 
 **Planned rendering** (not yet shipped):
 ```
@@ -40,6 +43,18 @@ function div/2 at app.lg:42:8
 ```
 
 Tier 0 data capture is enabled by default and requires no deployment changes. Tier 0 rendering (displaying locals in error output) is planned.
+
+## Split debug companion — Tier 0 data, externalized (shipped)
+
+Since #624 (merged 2026-09-04) the Tier 0 tables no longer have to travel inside the shipped artifact. `lg -strip -c app.lgb app.lg` writes `app.lgb` without its source maps and local-variable tables plus `app.lgb.debug`, a companion that restores them; `lg -strip -b myapp app.lg` does the same for a standalone bundle, and `-debug-output <path>` picks another location. The stripped artifact carries `FlagDebugSplit` in its [`.lgb` header](lgb-bytecode-format.md).
+
+What the companion is:
+
+- A small binary (`LGD\x01`, version 1) holding the SHA-256 of the exact stripped payload, a string table, and per chunk the source-map entries and `(slot, name)` local-variable pairs. On the fib sample it is 201 bytes against a 1,421-byte runtime artifact; on the core bundle the debug sections are about 20% of the file.
+- **Digest-bound.** A companion whose digest does not match the artifact is rejected rather than symbolizing a trace with the wrong tables. This is the build-id matching the Tier 1 design asked for, applied to Tier 0 data.
+- **Optional at run time.** `lg app.lgb`, a standalone bundle, and `lg-runtime` load `<artifact>.debug` from beside the artifact when it exists; `LG_DEBUG_FILE=<path>` loads one from elsewhere, and `LG_DEBUG_FILE=` (empty) disables loading. Without a companion the program runs and reports frames without source locations.
+
+What it is not: it contains no source text and no forms index, so it symbolizes to file, function, and line, not to highlighted form context. The embedded core and the `-w`/WASI paths are not stripped.
 
 ## Tier 1: Opt-In — Forms Index, Source Text, Build-ID Matching (Design)
 
@@ -68,7 +83,7 @@ A **.lgsym sidecar** (debug-only artifact, shipped separately from the `.lgb`) c
 
 The forms index makes source **highlighting** practical: store a base line/column per form, express all inner `SourceInfo` relative to that base, and slice the exact form text from the blob—no need to load or search the whole source file.
 
-Tier 1 is not yet shipped; the design awaits implementation.
+Tier 1 is not shipped as designed: no `.lgsym` sidecar, forms index, or source blob exists in the tree as of 2026-09-05. The digest-bound companion above took over the build-id and sidecar roles for Tier 0 data; the forms index and source text remain open.
 
 ## Tier "Values": Never Default
 
@@ -99,13 +114,14 @@ Result: a readable, context-rich trace indistinguishable from source-level debug
 
 | Tier | Contents | Status | Cost | In Bundle? | Sensitivity | Use Case |
 |---|---|---|---|---|---|---|
-| **0 (file, function, line)** | source location | shipped | ~20 KB (+4.7%) | always | low | live REPL, self-describing errors |
+| **0 (file, function, line)** | source location | shipped | ~47 KB (15%) of the core bundle at 0911118 | always | low | live REPL, self-describing errors |
 | **0 (local names, data layer)** | local var names captured | shipped (PR #131) | included | always | low | future trace rendering |
 | **0 (local names, rendering)** | display locals in errors | planned | — | — | — | richer live debugging |
-| **1 (forms index, source text)** | forms index, source blob | planned | ~50–100 KB | opt-in / sidecar | medium | offline symbolization, web deployment |
+| **0, split** (`-strip`) | source maps + local names moved to `.debug` | shipped (#624) | −9% (fib), −20% (core) | companion, digest-bound | low | smaller deploy artifact, symbol store |
+| **1 (forms index, source text)** | forms index, source blob | design only | ~50–100 KB | opt-in / sidecar | medium | offline symbolization, web deployment |
 | **values** | variable values | never (out of scope) | varies | never | high | redaction / explicit flag only |
 
-Production deployments typically ship a lean `.lgb` (Tier 0 only) + keep `.lgsym` private. Local development and REPLs benefit from embedded Tier 1 for instant, detailed traces.
+Production deployments can ship a stripped `.lgb` and keep the `.debug` companion in build artifacts or a symbol store. Local development and REPLs benefit from embedded Tier 1 for instant, detailed traces.
 
 # Citations
 
@@ -124,10 +140,16 @@ https://github.com/nooga/let-go/blob/main/pkg/bytecode/localvars_test.go
 [5] **Error Formatting — Trace Rendering**  
 https://github.com/nooga/let-go/blob/main/pkg/vm/errfmt.go
 
-[6] **Bytecode Compiler** (this wiki)  
+[6] **Split debug: strip, companion, loader**  
+https://github.com/nooga/let-go/blob/main/pkg/bytecode/strip.go  
+https://github.com/nooga/let-go/blob/main/pkg/bytecode/debug_companion.go  
+https://github.com/nooga/let-go/blob/main/pkg/rt/run.go  
+https://github.com/nooga/let-go/pull/624
+
+[7] **Bytecode Compiler** (this wiki)  
 [bytecode-compiler.md](bytecode-compiler.md)
 
-[7] **Stack VM** (this wiki)  
+[8] **Stack VM** (this wiki)  
 [stack-vm.md](stack-vm.md)
 
 ---
