@@ -7,10 +7,11 @@ tags: [runtime, vm, clojure, compiler]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/vm/namespace.go"
 sources:
   - "repo: nooga/let-go pkg/vm/{namespace,var,binding_stack,root_bindings}.go, pkg/rt/lang.go (nsAliases, LookupOrRegisterNSNoLoad), pkg/rt/core/core.lg (ns macro) @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#548 (alias before core shortcut), #610 (alias guard by name), #734 (core-shadow warning, open), #781 (lazy var metadata, open), 2026-09-05"
+  - "pr: nooga/let-go#548 (alias before core shortcut), #610 (alias guard by name), #734 (core-shadow warning, merged 2026-09-06 as 928c217), #781 (lazy var metadata, merged 2026-09-06 as b0397f6), 2026-09-05"
+  - "repo: nooga/let-go pkg/vm/namespace.go @ ee55803 (re-verified for #734/#781), 2026-09-06"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-06"
 status: stable
 ---
 
@@ -56,14 +57,14 @@ $ lg -e "(find-ns 'clojure.string)"
 
 ### The shadow warning
 
-`Namespace.Def` prints Clojure's `WARNING: x already refers to: #'clojure.core/x` when a definition shadows a core name, with guards for core itself, `:exclude`, unmapped names, private core vars, generated-primitive re-registration, and a name the namespace already owns. It has never fired for user code: the `def` special form interns through `LookupOrAdd`, not `Def`, so only Go-side callers reached the check.
+`warnOnCoreShadow` prints Clojure's `WARNING: x already refers to: #'clojure.core/x` when a definition shadows a name referred in from core, with guards for core itself, `:exclude`, unmapped names, and a suppression flag. Both intern paths call it: `Def`, the Go-side path, and `LookupOrAdd`, which the `def` special form uses. Until #734 (merged 2026-09-06, 928c217) only `Def` checked, so the warning had never fired for user code. The transcript below is from 0911118, before the fix:
 
 ```
 $ lg -e '(do (def inc 5) inc)'
 5
 ```
 
-No warning is printed. #734 (open) factors the check into `warnOnCoreShadow`, calls it from both intern paths, and declares the one intentional shadow it uncovered (`edn/read-string`) with `:refer-clojure :exclude`.
+No warning was printed. #734 factored the check into `warnOnCoreShadow`, calls it from both intern paths, matches Clojure JVM in warning only on shadow-of-refer (a namespace that never referred the name stays silent), and declares the one intentional shadow it uncovered (`edn/read-string`) with `:refer-clojure :exclude`.
 
 ## Var
 
@@ -95,7 +96,7 @@ $ lg -e "(meta #'map)"
 {:line 374 :file "<embedded:core>" :column 1}
 ```
 
-#781 (open) changes how that metadata is stored in the core bundle: today `InitFromLGB` eagerly builds a map for each of the 485 vars that carry metadata, and the change keeps compact pairs and builds the map on first use, cutting boot allocations by about half in its measurement.
+#781 (merged 2026-09-06, b0397f6) changed how that metadata is stored in the core bundle. Before it, `InitFromLGB` eagerly built a map for each of the 485 vars that carried metadata at 0911118; now the bundle writes the pairs under the version-1 `TagDefMetaPairs` tag (see [.lgb format](lgb-bytecode-format.md)) and the map is built on first use, which its measurement put at about half the boot allocations.
 
 ## Citations
 
@@ -105,6 +106,6 @@ $ lg -e "(meta #'map)"
 - [pkg/vm/binding_stack.go](https://github.com/nooga/let-go/blob/main/pkg/vm/binding_stack.go) and [root_bindings.go](https://github.com/nooga/let-go/blob/main/pkg/vm/root_bindings.go): the two binding chains
 - [pkg/rt/lang.go](https://github.com/nooga/let-go/blob/main/pkg/rt/lang.go): `nsAliases`, `LookupOrRegisterNSNoLoad`, `NameCoreNS`
 - [pkg/rt/core/core.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/core.lg): the `ns` macro
-- PRs: [#548](https://github.com/nooga/let-go/pull/548), [#610](https://github.com/nooga/let-go/pull/610) alias resolution; [#734](https://github.com/nooga/let-go/pull/734) shadow warning (open); [#781](https://github.com/nooga/let-go/pull/781) lazy var metadata (open)
+- PRs: [#548](https://github.com/nooga/let-go/pull/548), [#610](https://github.com/nooga/let-go/pull/610) alias resolution; [#734](https://github.com/nooga/let-go/pull/734) shadow warning (merged); [#781](https://github.com/nooga/let-go/pull/781) lazy var metadata (merged)
 
 See also: [Execution Context](exec-context.md), [Concurrency Model](concurrency-model.md), [Runtime Image](runtime-image.md), [let-go](../entities/let-go.md)

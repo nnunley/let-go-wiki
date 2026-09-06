@@ -8,9 +8,10 @@ resource: "https://github.com/nooga/let-go/blob/main/pkg/compiler/reader.go"
 sources:
   - "repo: nooga/let-go pkg/compiler/reader.go, pkg/compiler/eval.go (read-string, read-all-string, load-string, set-read-clj!, set-read-bb!), docs/guide/clojure-compatibility.md @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#736 (set literals as data, open), #770 (custom data readers, open), #768 (raw #go fragments, open), 2026-09-05"
+  - "issue: nooga/let-go#801 (map metadata and a discard in value position, filed 2026-09-06), 2026-09-06"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-06"
 status: stable
 ---
 
@@ -47,7 +48,7 @@ The reader is the first stage of every [compile path](compile-paths.md): `LispRe
 
 ### No-value forms and VOID
 
-A line comment, a `#_` discard, and a reader conditional with no matching branch all read as the `VOID` sentinel rather than as nothing. This is load-bearing: the collection readers call `Read` in element position and rely on seeing `VOID` to drop an orphaned map key or splice nothing, so `{:a #_ 1 :b 2}` reads as `{:b 2}`. `ReadSkipNoValue` is the single-form entry point `read-string` uses; it loops past leading no-value forms and never returns `VOID`.
+A line comment, a `#_` discard, and a reader conditional with no matching branch all read as the `VOID` sentinel rather than as nothing. This is load-bearing: the collection readers call `Read` in element position and rely on seeing `VOID` to drop an orphaned map key or splice nothing, so `{:a #_ 1 :b 2}` reads as `{:b 2}`. The skip covers an orphaned entry, not a form inside one: a discard between a key and its value, `{:a #_[:x] 1}`, fails with `map literal must contain even number of forms` at 0911118, and `reader.go` is unchanged through ee55803. Norman filed that gap, with metadata on map literals, as #801 (2026-09-06). `ReadSkipNoValue` is the single-form entry point `read-string` uses; it loops past leading no-value forms and never returns `VOID`.
 
 ```
 $ lg -e "(read-string \";c\n(1)\")"
@@ -85,7 +86,7 @@ $ lg -e '[0x1F 2r101 36rZZ 1N 1.5M (type 1/2) 0377 ##Inf]'
 These hold at `0911118` (2026-09-05); three are the subject of open PRs.
 
 - **Set literals read as a call.** `'#{1 2 3}` reads as `(hash-set 3 2 1)`, so `(set? (read-string "#{1}"))` is false. Evaluation is unaffected. #736 (open) makes `#{}` read as a set, as maps and vectors already do.
-- **Metadata reads as a form.** `'^:foo bar` reads as `(with-meta bar {:foo true})` rather than the symbol `bar` carrying metadata, so `(meta (eval ''^:foo bar))` is `nil`. Consumers that need the name, such as `defn` and the wiki's own enumeration tooling, unwrap that form.
+- **Metadata reads as a form.** `'^:foo bar` reads as `(with-meta bar {:foo true})` rather than the symbol `bar` carrying metadata, so `(meta (eval ''^:foo bar))` is `nil`. Consumers that need the name, such as `defn` and the wiki's own enumeration tooling, unwrap that form. #801 (2026-09-06) reports the same behaviour on map literals, where `(meta (read-string "^{:doc 1} {:a 1}"))` is `nil`, as a bug for configuration data read with `read-string`.
 - **Unknown tags pass through.** `#foo/bar 1` reads as `1`; there is no `*data-readers*` or `*default-data-reader-fn*`. #770 (open) adds a Clojure-compatible `*data-readers*` and a per-compiler registry for embedders, and #768 (open; depends on #770 and carries its commits, though its PR base is `main`) adds a raw `#go{...}` reader that preserves Go source verbatim.
 - **Namespaced map syntax is not supported.** `#:a{:b 1}` fails with `invalid hash macro`.
 - **Duplicate map keys do not throw.** `'{:a 1 :a 2}` reads as `{:a 2}`; Clojure rejects the literal.

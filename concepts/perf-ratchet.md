@@ -8,9 +8,9 @@ resource: "https://github.com/nooga/let-go/blob/main/docs/perf/ratchet.md"
 sources:
   - "doc: nooga/let-go docs/perf/ratchet.md (last-verified 2026-08-04), scripts/ir-stress.md @ 0911118, 2026-09-05"
   - "repo: nooga/let-go cmd/bench-ratchet, docs/perf/{baseline.json,ir-stress-baseline.edn}, .pre-commit-config.yaml, Makefile, .github/workflows/perf-timeline.yml @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#561/#564 (median sampling), #740 (per-release baseline), #780 (deterministic rebaseline, Go 1.26.5 baseline, pre-push gate), #579 (lowering-shape ratchet), #795 (bench-baton, open); issue #791 (the regression the gate caught), 2026-09-05"
+  - "pr: nooga/let-go#561/#564 (median sampling), #740 (per-release baseline), #780 (deterministic rebaseline, Go 1.26.5 baseline, pre-push gate), #579 (lowering-shape ratchet), #795 (bench-baton, open), #794 (PrepareCall allocation-free, merged 2026-09-06 as 3ae0a08); issue #791 (the regression the gate caught), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-06"
 status: stable
 ---
 
@@ -53,7 +53,7 @@ A run needs a quiet machine. `cmd/bench-baton` (#795, open at the time of writin
 
 ### What it caught
 
-#791 is the worked example. After #780 recaptured the baseline on 2026-09-02, the pre-push gate went red on `main` itself. Bisecting on an M3 attributed it: #727's `PrepareCall` allocates an argument slice, a frame, and a struct on every `reduce`, about 1,900 extra allocations per `BenchmarkIRCompile` iteration (+2.4% bytes/op, over the deterministic bar), and #723 and #730 each added several percent of time to both compiler benchmarks. The same report recorded two false positives worth knowing: macOS Low Power Mode moved the anchor 74%, so `pmset -g | grep lowpowermode` is the first check when the anchor shifts on the same machine class; and the bytes/op bar is not architecture-dependent, since an amd64 build under Rosetta allocated the same as arm64.
+#791 is the worked example. After #780 recaptured the baseline on 2026-09-02, the pre-push gate went red on `main` itself. Bisecting on an M3 attributed it: #727's `PrepareCall` allocates an argument slice, a frame, and a struct on every `reduce`, about 1,900 extra allocations per `BenchmarkIRCompile` iteration (+2.4% bytes/op, over the deterministic bar), and #723 and #730 each added several percent of time to both compiler benchmarks. #794 (merged 2026-09-06, 3ae0a08) removed the `PrepareCall` allocations for native fold loops. The same report recorded two false positives worth knowing: macOS Low Power Mode moved the anchor 74%, so `pmset -g | grep lowpowermode` is the first check when the anchor shifts on the same machine class; and the bytes/op bar is not architecture-dependent, since an amd64 build under Rosetta allocated the same as arm64.
 
 ## ir-stress-gate: lowering coverage
 

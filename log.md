@@ -153,3 +153,10 @@ embedded/generated set immediately (decision on #735, 2026-09-02). go-backend: l
 set direction is an AOT-driven tree-shaker over runtime subpackages (#652 comment, 2026-07-31); lg-compile is
 the shim over orchestration moving behind lg.compiler (#735). native-primitives: the hoist gap #686 found is
 tracked under #531.
+
+## [2026-09-06] update | re-verify spine pages against let-go main ee55803
+
+namespaces-and-vars: #734 and #781 merged (928c217, b0397f6), shadow-warning section rewritten for the
+fixed code. reader: the discard skip does not cover a discard between a map key and its value (#801,
+filed by nnunley 2026-09-06); metadata divergence cites #801. perf-ratchet: #794 (3ae0a08) closed the
+PrepareCall allocation #791 found.
