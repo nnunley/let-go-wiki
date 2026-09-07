@@ -37,7 +37,7 @@ def test_prepare_deduplicates_manifest_by_id(tmp_path):
         encoding="utf-8"
     )
     cfg = tmp_path / "config.toml"
-    cfg.write_text(f'[[source]]\nfile = "duped.lg"\nns = "test.core"\n',
+    cfg.write_text('[[source]]\nfile = "duped.lg"\nns = "test.core"\n',
                    encoding="utf-8")
     manifest = prepare(cfg, tmp_path / "work", tmp_path)
     records = json.loads(Path(manifest).read_text(encoding="utf-8"))

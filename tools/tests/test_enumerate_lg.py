@@ -1,4 +1,6 @@
-import json, shutil, subprocess
+import json
+import shutil
+import subprocess
 from pathlib import Path
 import pytest
 
@@ -25,7 +27,6 @@ def _run_enumerate():
     r = subprocess.run(lg + [str(script), str(FIX)], cwd=ROOT,
                        capture_output=True, text=True, timeout=120)
     assert r.returncode == 0, r.stderr
-    import re
     # enumerate.lg prints one EDN map per line; convert EDN-ish to python via a
     # tolerant parse: names/ops are strings, arglists are lists. The script emits
     # JSON (not EDN) to keep the Python side dependency-free — see Step 3.

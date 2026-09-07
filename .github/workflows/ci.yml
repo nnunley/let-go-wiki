@@ -1,0 +1,28 @@
+name: CI
+# Pull-request gate. The same checks pages.yml runs before deploying from main,
+# plus the test suite and the Python lint, so a page that fails the schema or a
+# tool regression is caught on the PR instead of by a broken deploy.
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -r requirements.txt
+      - name: Validate wiki pages
+        run: python tools/check_wiki.py .
+      - name: Lint authored Python (check only; `make lint` autofixes locally)
+        run: ruff check tools/check_wiki.py tools/build_site.py tools/viz/render_viz.py tools/tests
+      - name: Test
+        run: python -m pytest tools -q
+      - name: Site builds
+        run: python tools/build_site.py
