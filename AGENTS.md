@@ -24,6 +24,7 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 
 - Cross-links are **file-relative** markdown links (`[stack vm](../concepts/stack-vm.md)`), never `/absolute`.
 - `resource`/`sources` must cite where a claim comes from. Agent drafts start `speculative`; promote to `stable` only after checking against the actual code/runtime.
+- A claim backed by let-go code or runtime output names the commit or release it was checked against, and the date, in its `sources` entry: `repo: nooga/let-go pkg/vm @ 0911118, 2026-09-05` or `lg -e transcripts on lg 1.12.2, 2026-09-05`. A later reader can then diff the source since that point instead of re-reading it; the `updated` date alone does not say what was checked.
 - Diagrams: use a ```` ```mermaid ```` fenced block (flowchart/sequence/etc.). It renders as a diagram on the built site **and** natively on GitHub. Prefer a diagram over a plain-text arrow chain for pipelines/state machines.
 
 ## Directories

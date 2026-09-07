@@ -12,7 +12,7 @@ the open standard that formalizes the llm_wiki pattern.
 - Python 3.13 (`make install` for deps).
 - **`lg` ≥ 1.11.1** (the let-go binary) — the authoring engine reads `.lg` source
   through let-go's own reader and relies on `*command-line-args*` (added in
-  1.11.0). Current release: [v1.11.1](https://github.com/nooga/let-go/releases).
+  1.11.0); the [releases page](https://github.com/nooga/let-go/releases) has the current version.
   Install via `brew install nooga/tap/let-go` or a release tarball. (There is no
   mise registry entry for `lg` yet; `lgx` is pinned in `.mise.toml`, `lg` is not.)
 
