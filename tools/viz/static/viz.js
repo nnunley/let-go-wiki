@@ -11,6 +11,17 @@
     const pal = (bundle.kindPalette || {})[kind];
     return pal ? (isDark ? pal.dark : pal.light) : (isDark ? "#6cc0c3" : "#2e7d80");
   };
+  // Pick chip text from the fill's own luminance rather than the page theme:
+  // the dark palette is not uniformly light (Source is #6b5f47), so a single
+  // dark-theme foreground fell below 4.5:1 on it.
+  const chipForeground = (hex) => {
+    const m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
+    if (!m) return "#fff";
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255);
+    const lin = (c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    return lum > 0.25 ? "#1a1610" : "#fff";
+  };
 
   // Read the active theme (light/dark) from CSS variables so canvas-drawn
   // node labels match the page and stay legible against the background.
@@ -380,7 +391,7 @@
     const chip = document.getElementById("detail-type");
     chip.textContent = data.type;
     chip.style.background = kindColor(data.kind);
-    chip.style.color = isDark ? "#1a1610" : "#fff";
+    chip.style.color = chipForeground(kindColor(data.kind));
 
     const status = document.getElementById("detail-status");
     status.textContent = data.status || "";
