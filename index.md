@@ -49,7 +49,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/ir-passes](concepts/ir-passes.md) — Lisp-implemented optimization passes that transform the semantic IR to improve runtime performance.
 - [concepts/ir-pipeline](concepts/ir-pipeline.md) — let-go's compiler IR framework, written in let-go itself: building, optimizing, and lowering to bytecode.
 - [concepts/lg-compile](concepts/lg-compile.md) — Ahead-of-time compilation of let-go source files to Go packages with cross-package function calls.
-- [concepts/lgb-bytecode-format](concepts/lgb-bytecode-format.md) — Binary serialization format for let-go compiled code, with per-tag versioning, batch collection decoding, and capability-mask extensibility.
+- [concepts/lgb-bytecode-format](concepts/lgb-bytecode-format.md) — Binary serialization format for let-go compiled code: versioned header, capability mask with opcode-set signature, per-tag versioning, opt-in DEFLATE body, and split debug companions.
 - [concepts/lginterop](concepts/lginterop.md) — Wrapping Go packages as callable functions in let-go via code generation.
 - [concepts/lgx-build-model](concepts/lgx-build-model.md) — How lgx resolves git-pinned dependencies via a gitlibs cache, invokes let-go compilation, bundles executables, and runs tests.
 - [concepts/nrepl-server](concepts/nrepl-server.md) — A TCP server exposing let-go's compiler and runtime over the nREPL protocol for editor tooling and interactive development.
@@ -112,6 +112,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [sources/plan-clojurelike-refactor](sources/plan-clojurelike-refactor.md) — Staged plan to refactor VM data structures toward Clojure semantics: persistent collections, seq tower, structural equality, and transducers.
 - [sources/plan-jvm-compat](sources/plan-jvm-compat.md) — Three-layer architecture for loading real-world Clojure libraries in let-go via class-symbol resolution, protocol fallback, and receiver method dispatch.
 - [sources/plan-master](sources/plan-master.md) — Official 9-phase roadmap for let-go development, from baseline semantics through AOT compilation and advanced optimizations.
+- [sources/pr-lgb-format-evolution](sources/pr-lgb-format-evolution.md) — mparrett's 2026-07 to 2026-09 changes to the bytecode container: the opcode-set capability and its named reject messages, opt-in DEFLATE bodies as format 3, func-chunk identity, and split debug companions.
 - [sources/ref-block-param-irs](sources/ref-block-param-irs.md) — Swift SIL, Cranelift, and MLIR — three compiler IRs that employ block parameters instead of phi nodes for SSA-style cross-block value threading.
 - [sources/ref-carbon-sem-ir](sources/ref-carbon-sem-ir.md) — Block-parameter SSA intermediate representation design used as reference for let-go's indexed-RPN IR control flow.
 - [sources/ref-indexed-rpn-emir](sources/ref-indexed-rpn-emir.md) — Emir's design for positional value numbering in postfix form, the foundation for let-go's IR encoding.

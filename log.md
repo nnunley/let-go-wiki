@@ -108,3 +108,17 @@ mechanical fixes from a "Needs review (LLM)" worklist (promotion/staleness/groun
 Includes a no-regression guard (regressed(): a re-authored page must not lose citations/sections),
 mirroring the Google OKF driver's completeness guardrail + llm_wiki's Lint suggestions. +6 tests (65 total).
 On the current wiki it flags 36/73 pages (thin stdlib refs, an uncited source page, speculative nrepl-server).
+
+## [2026-09-05] update | re-verify .lgb format and debug-info against let-go main @ 0911118
+concepts/lgb-bytecode-format re-checked against pkg/bytecode: format 3 (opt-in DEFLATE body, #501; embedded
+core #502), FlagCompressed + FlagDebugSplit with per-version flag admission, CapOpcodeSet signature reject
+(#443, #608, #622), func-chunk identity (#745), split debug companion (#624); "(v2)" dropped from the title.
+concepts/debug-info: shipped `.debug` companion (digest-bound Tier 0 data), Tier 0 cost re-measured with
+lgbstat (47 KB source maps + 7.7 KB locals, ~18% of 308 KB), local names still stored not rendered, the
+.lgsym design marked design-only; speculative -> active. Adversarially reviewed (7 findings fixed).
+Sources: pr-lgb-format-evolution.
+
+## [2026-09-06] update | lgb-bytecode-format: #781 landed the first version-1 tag
+
+Re-verified against nooga/let-go main @ ee55803. `TagDefMetaPairs = TagIDMap | TagVer1` (#781, b0397f6)
+replaces the "all current tags are version 0" claim; pre-#781 v2 decoders reject it by design.

@@ -1,98 +1,133 @@
 ---
 type: Concept
 category: concept
-title: ".lgb Bytecode Format (v2)"
-description: "Binary serialization format for let-go compiled code, with per-tag versioning, batch collection decoding, and capability-mask extensibility."
+title: ".lgb Bytecode Format"
+description: "Binary serialization format for let-go compiled code: versioned header, capability mask with opcode-set signature, per-tag versioning, opt-in DEFLATE body, and split debug companions."
 tags: [bytecode, vm, compiler, runtime]
-resource: "https://github.com/nooga/let-go/blob/main/pkg/bytecode/decoder.go"
+resource: "https://github.com/nooga/let-go/blob/main/pkg/bytecode/tags.go"
 sources:
+  - "repo: nooga/let-go pkg/bytecode/{tags,encoder,decoder,capabilities,strip,debug_companion}.go @ 0911118, 2026-09-05"
+  - "pr: nooga/let-go#443 (opcode-set capability), #608/#622 (capability reject messages, lg -v), #501 (DEFLATE body), #502 (compressed embedded core), #745 (func chunk identity), #624 (split debug), #781 (TagDefMetaPairs, the first version-1 tag, merged 2026-09-06), 2026-09-05"
+  - "repo: nooga/let-go pkg/bytecode/tags.go @ ee55803 (re-verified for #781), 2026-09-06"
   - "design: docs/superpowers/specs/2026-05-23-lgb-v2-design.md (local, 2026-07-02)"
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-09-06"
 status: stable
 ---
 
 ## What is `.lgb`?
 
-The `.lgb` format is let-go's binary bytecode representation. It encodes compiled modules—code chunks, constants, and namespace tables—in a compact, versioned wire format. The `lg` compiler emits `.lgb` files via the `-c` flag; the runtime loads them via `DecodeToExecUnit` for execution.
+The `.lgb` format is let-go's binary bytecode representation. It encodes compiled modules (code chunks, constants, namespace tables, and optional debug tables) in a compact, versioned wire format. `lg -c` emits `.lgb` files, `lg -b` appends one to a copy of the `lg` binary, and the runtime loads either through `DecodeToExecUnit`. The core library ships the same way: `pkg/rt/core_compiled.lgb` is the bytecode the runtime boots from instead of compiling `core.lg` (see [runtime image](runtime-image.md)).
 
 ## When it matters
 
-- **Startup speed**: Decoding is faster than recompiling. Bytecode caching trades compile time for decode time.
-- **Format stability**: Per-tag versioning lets the decoder refuse incompatible future versions early instead of silently misinterpreting data.
-- **Collection decode efficiency**: v2 batch construction reduces allocation churn for large vectors/maps/sets.
+- **Startup speed**: decoding is faster than recompiling, so bytecode caching trades compile time for decode time.
+- **Version skew**: the header carries enough to refuse a bundle from a different `lg` before any instruction runs. The costly failure this prevents is an opcode enum that moved between the compiling tree and the running tree, which used to surface deep in execution as `unknown instruction op=37`.
+- **Artifact size**: compression and split debug information are both opt-in trades of size against convenience.
 
-## Structure
+## Header
 
-### Header
 ```
-Magic       [4]byte   "LGB\x01"
-Version     uint16    = 2
-Flags       uint16    (FlagConstsBase, FlagCapabilities, FlagLocalVars)
-[Capabilities] uint32 (optional, if FlagCapabilities set)
+Magic          [4]byte   "LGB\x01"
+Version        uint16    1, 2, or 3
+Flags          uint16    see below
+[Capabilities] uint32    only when FlagCapabilities is set
+[OpcodeSet]    varint count + uint64 FNV-64a   only when CapOpcodeSet is set
 ```
 
-The optional capability mask allows decoders to reject `.lgb` files with unsupported features:
-```
-if fileCaps & ~decoderCaps != 0 { return error }
-```
-This reserves capacity bits for future features (varint operands, lazy const loading, SSA metadata) without breaking old decoders.
+Everything in the header stays plaintext, including in compressed bundles, so version, flag, and capability checks run before any inflate.
 
-### Sections (in order)
-1. **String table** — deduplicated string pool
-2. **Chunks** — bytecode instructions and metadata for each function
-3. **Consts** — value constants (literals, functions, types)
-4. **NS table** — namespace → chunk index mapping
-5. **Local var tables** (optional) — debug symbols for slots
+### Format versions
+
+| Version | Written when | Adds |
+|---|---|---|
+| 1 | never (read only) | original encoding; decoded by a frozen `decodeToExecUnitV1` path |
+| 2 | default | per-tag versioning, batch collection decode, local-variable tables |
+| 3 | `-z` is passed | compressed-body framing; the body is one DEFLATE stream |
+
+The encoder picks the lowest version that admits the module's flags, so a plain bundle stays byte-identical to what a pre-compression `lg` wrote. `lg -v` reports both numbers: `lgb: format 2 (default write), 3 (max)`.
+
+### Flags
+
+Bits are positional in declaration order, and each version admits only the flags that existed when it was defined. A flag from a later version is rejected at the header with `unsupported LGB flags 0x%04x for version %d (supported: 0x%04x)`.
+
+| Flag | Since | Meaning |
+|---|---|---|
+| `FlagConstsBase` | v1 | a `ConstsBase` field is present in the consts section |
+| `FlagCapabilities` | v1 | a capability mask follows the header |
+| `FlagLocalVars` | v2 | per-chunk local-variable tables follow the NS table |
+| `FlagCompressed` | v3 | the body after the header is a declared-size, codec-tagged compressed stream |
+| `FlagDebugSplit` | v3 | source maps and local-variable tables were moved to an external `.debug` companion |
+
+### Capability mask and opcode-set signature
+
+The capability mask reserves bits for features a decoder must understand to run the bundle at all. One bit is defined:
+
+- `CapOpcodeSet` (bit 0, since v1.12.0): the mask is followed by the producer's opcode count and an FNV-64a hash of the opcode mnemonics in enum order. The decoder compares it with the running VM's `vm.OpcodeSetSignature()` and rejects a mismatch:
+
+```
+opcode set mismatch: bundle compiled with 52 opcodes (signature 8c6f19e2a4b07d31), runtime has 44 (ecde554a791d0f51) — recompile the bundle with a matching lg
+```
+
+(The bundle side is illustrative; the runtime side is what `lg -v` reports at `0911118`.)
+
+Unknown capability bits are rejected too. The message names the unsupported bits (known ones with the `lg` release that introduced them, unknown ones as `unknown bit N`), then the runtime's supported set, then the minimum `lg` version when one is known, so a "recompile or upgrade" decision can be made from the error alone. `lg -v` and `lg-runtime -v` print the supported mask and the local opcode signature.
+
+## Body
+
+Sections in order:
+
+1. **String table**: deduplicated string pool; later sections reference strings by index.
+2. **Chunks**: one entry per `CodeChunk` with its instruction words, `maxStack`, and source map.
+3. **Consts**: value constants (literals, functions, types). A function constant names its chunk by index; the encoder uses the module builder's live `*vm.CodeChunk` pointer index for that mapping, because two functions can have identical bytecode and different source metadata (#745).
+4. **NS table**: namespace name to chunk index, in load order.
+5. **Local-variable tables** (only with `FlagLocalVars`): per chunk, `(slot, name)` pairs in chunk-index order.
 
 ### Tag encoding
-Each value's tag byte is `0bVV_TTTTTT`:
-- `VV` (2 bits): tag version. `00` = v1 semantics, `01` = v2, etc.
-- `TTTTTT` (6 bits): tag ID
 
-For v2.0, all tags are version 0 (unchanged wire bytes from v1). When a tag semantics changes, its version bits increment; old decoders see a new byte value and fail safely instead of misinterpreting.
+Each value's tag byte is `0bVV_TTTTTT`: two bits of tag version and a six-bit tag ID. Every tag was version 0, byte-identical to v1, until #781 (merged 2026-09-06, b0397f6) added the first version-1 tag: `TagDefMetaPairs = TagIDMap | TagVer1` carries a var's metadata as alternating keys and values in the map payload shape, so the decoder can keep the pairs and build the map on first use instead of eagerly at load. A v2 decoder from before #781 sees the non-zero version bits and rejects the byte rather than reading the pairs as an ordinary map. That is what the version bits are for: when a tag's semantics change, its version increments, and an old decoder fails instead of misreading the payload.
 
-Known tag IDs (6-bit):
-- Scalars: nil, true, false, int, float, string, keyword, symbol, char, big-int, void, UUID, instant
-- Code: func, var-ref
-- Collections: empty-list, list, vector, map, set
-- User types: record-type, record, regex, atom
+Tag IDs: scalars `0x00`–`0x0C` (nil, true, false, int, float, string, keyword, symbol, char, big-int, void, UUID, instant), code `0x10`–`0x11` (func, var-ref), collections `0x20`–`0x24` (empty-list, list, vector, map, set), user types `0x30`–`0x33` (record-type, record, regex, atom). `0x34`–`0x3F` are reserved (`TagIDReserved0`–`TagIDReserved11`).
 
-Reserved slots: `0x34`–`0x3F` (12 future tags).
+### Batch collection construction (v2)
 
-## v2 optimizations
+Collections decode through batch constructors rather than per-element `Assoc`: a vector preallocates its slice, and a map or set accumulates its entries and calls `NewPersistentMap` or `NewPersistentSet` once. This removed the per-element persistent copies that dominated decode time for large literals.
 
-### Batch collection construction
-Instead of building maps/sets with O(N log N) per-element `Assoc` calls, v2 decodes collections via batch constructors:
+## Compression (v3)
 
-- **Vector**: preallocate slice, populate directly
-- **Map**: accumulate key/value pairs, call `NewPersistentMap` once (builds tree from sorted keys)
-- **Set**: accumulate values, call `NewPersistentSet` once
+`lg -c app.lgb -z app.lg` and `lg -b myapp -z app.lg` write a version-3 bundle whose body is one raw DEFLATE stream (`compress/flate`, chosen because it is stdlib and works under TinyGo and wasip1). After the plaintext header come a varint with the exact uncompressed body size and a codec byte (`1` = flate; the byte is a value rather than a flag bit so a future codec such as zstd costs no flag space). The decoder caps the declared size at 256 MiB and rejects a stream that stops short of, or runs past, the declaration. A version-2 decoder rejects the bundle by version before touching the stream.
 
-This eliminates per-element persistent copies and reduces heap churn measurably for large collections.
+The embedded core bundle can be compressed the same way at `lgbgen` time; that is off by default (#502).
 
-### Backward compatibility
-The decoder is dual-path:
-- v1 `.lgb` files → frozen `decodeToExecUnitV1()` path (no changes)
-- v2 `.lgb` files → new `decodeToExecUnitV2()` path (batch decode, tag versioning)
+## Split debug information (v3)
 
-Encoder always writes v2; old files still load.
+`lg -strip -c app.lgb app.lg` writes `app.lgb` without its source maps and local-variable tables plus `app.lgb.debug`, a companion that can restore them. `lg -strip -b myapp app.lg` does the same for a bundle (`myapp` + `myapp.debug`), and `-debug-output <path>` picks another location. On the fib sample the stripped runtime artifact is about 9% smaller; on the core bundle the debug sections are about 20%.
+
+The companion (`LGD\x01`, version 1) stores the SHA-256 of the exact stripped payload, a string table, and per chunk the source-map entries (`StartIP`, file, line, column, end line, end column) and local-variable `(slot, name)` pairs. A companion whose digest does not match is rejected rather than producing misleading tracebacks. `SplitDebug` also re-decodes the stripped output and checks chunk count, code, and `maxStack` against the original before emitting a companion.
+
+At load time `lg app.lgb`, a standalone bundle, and `lg-runtime` look for `<artifact>.debug` beside the artifact; `LG_DEBUG_FILE=<path>` loads one from elsewhere, and `LG_DEBUG_FILE=` (empty) disables loading. Without a companion the stripped artifact runs and reports frames without source locations. Stripping applies to program bytecode from `-c` and `-b`; the embedded core and the `-w`/WASI paths are not stripped. See [debug info](debug-info.md) for what the tables hold.
 
 ## Implementation
 
 The [bytecode package](https://github.com/nooga/let-go/tree/main/pkg/bytecode) provides:
-- `Encode(w, m *Module)` — serialize to binary
-- `Decode(r io.Reader) (*Module, error)` — deserialize
-- `DecodeToExecUnit(r, resolve VarResolver) (*ExecUnit, error)` — decode ready-to-run
 
-The core library (`pkg/rt/core_compiled.lgb`) is regenerated during compilation via `go generate`.
+- `Encode(w, m *Module)` and `Decode(r) (*Module, error)`: serialize and deserialize.
+- `DecodeToExecUnit(r, resolve VarResolver) (*ExecUnit, error)`: decode ready to run.
+- `StripDebug` and `SplitDebug`: produce the stripped artifact and its companion; `HasSplitDebug` is the cheap header probe the loaders use.
+- `DescribeCapabilities` and `FormatVersionReport`: the human-readable capability and version text used by reject errors and `lg -v`.
+
+`pkg/rt/core_compiled.lgb` is regenerated by `make generate` whenever `pkg/rt/core/**/*.lg` changes; `make check-generated` verifies it is in sync.
 
 ## Citations
 
-**Resource:** [pkg/bytecode/decoder.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/decoder.go) — dual-path v1/v2 decoder with batch collection decode  
+**Resource:** [pkg/bytecode/tags.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/tags.go): magic, versions, flags, capability bits, tag layout  
 **Related:**
-- [pkg/bytecode/encoder.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/encoder.go) — v2 encoder
-- [pkg/bytecode/tags.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/tags.go) — tag definitions and version bits
-- [pkg/bytecode/bench_test.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/bench_test.go) — startup/decode benchmarks
+- [pkg/bytecode/encoder.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/encoder.go): version selection, section order, compressed framing
+- [pkg/bytecode/decoder.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/decoder.go): per-version flag admission, dual v1/v2 paths, batch collection decode
+- [pkg/bytecode/capabilities.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/capabilities.go): capability registry and `lg -v` report
+- [pkg/bytecode/strip.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/strip.go) and [debug_companion.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/debug_companion.go): split debug
+- [pkg/rt/run.go](https://github.com/nooga/let-go/blob/main/pkg/rt/run.go): `LoadDebugCompanion` and `LG_DEBUG_FILE`
+- [docs/guide/usage.md](https://github.com/nooga/let-go/blob/main/docs/guide/usage.md): `-z`, `-strip`, `-debug-output`
+- PRs: [#443](https://github.com/nooga/let-go/pull/443) opcode-set signature, [#608](https://github.com/nooga/let-go/pull/608) and [#622](https://github.com/nooga/let-go/pull/622) capability reject messages, [#501](https://github.com/nooga/let-go/pull/501) compression, [#502](https://github.com/nooga/let-go/pull/502) compressed embedded core, [#745](https://github.com/nooga/let-go/pull/745) chunk identity, [#624](https://github.com/nooga/let-go/pull/624) split debug
 
-**Design doc:** Local design spec at `docs/superpowers/specs/2026-05-23-lgb-v2-design.md` details format versioning, migration from v1, and success criteria (allocation reduction, no startup regression).
+**Design doc:** the v2 design spec (`docs/superpowers/specs/2026-05-23-lgb-v2-design.md`, local) covers format versioning, migration from v1, and the allocation and startup success criteria.
