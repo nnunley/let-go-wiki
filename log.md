@@ -160,3 +160,10 @@ namespaces-and-vars: #734 and #781 merged (928c217, b0397f6), shadow-warning sec
 fixed code. reader: the discard skip does not cover a discard between a map key and its value (#801,
 filed by nnunley 2026-09-06); metadata divergence cites #801. perf-ratchet: #794 (3ae0a08) closed the
 PrepareCall allocation #791 found.
+
+## [2026-09-08] update | spine: spot check against let-go main dc310b6f before landing
+Eight let-go merges since ee55803 (#787, #776, #778, #799, #800, #764, #684, #825). perf-ratchet and its
+source page now describe #684's window seeding (five snapshots per key, median in ratio space, min window
+three, mixed-capture rejection). reader re-pinned at a6763e77 with all six divergences re-probed; notes
+#787's `#_` comment-skip. namespaces-and-vars, generated-artifacts (seven outputs), native-primitives,
+compile-paths, go-backend: no claim moved.
