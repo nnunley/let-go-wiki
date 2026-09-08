@@ -5,9 +5,9 @@ title: "WASM Compilation"
 description: "Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup."
 tags: [wasm, compiler, runtime]
 resource: "https://github.com/nooga/let-go/tree/main/wasm"
-sources: ["repo: nooga/let-go wasm/, docs/guide/usage.md, pkg/bundle, 2026-07-02"]
+sources: ["repo: nooga/let-go wasm/, docs/guide/usage.md, pkg/bundle, 2026-07-02", "repo: nooga/let-go pkg/cli/cli.go, docs/guide/usage.md @ 638b4a6a, 2026-09-07"]
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-09-07"
 status: stable
 ---
 
@@ -50,7 +50,7 @@ When `index.html` loads, it:
 ## Compile-Time Predicates
 
 Programs can branch on compilation target:
-- `*compiling-aot*` is `true` during `-w` compilation; `false` at runtime (useful for skipping side effects at compile time).
+- `*compiling-aot*` is `true` while `lg` compiles with `-c`, `-b`, or `-w`, and `false` at runtime (useful for skipping side effects at compile time). It is set in `pkg/cli/cli.go` wherever any of the three output flags is given, so a guard written for WASM builds also fires for bytecode and bundle compiles.
 - `*in-wasm*` is `true` when running inside a WASM build; `false` for native.
 
 Use `:lg` reader conditionals to guard WASM-only or native-only code:
@@ -80,6 +80,9 @@ https://github.com/nooga/xsofy
 
 [7] **Stack VM** (this wiki)  
 [stack-vm.md](stack-vm.md)
+
+[8] **pkg/cli/cli.go** — sets `*compiling-aot*` when `-c`, `-b`, or `-w` is given  
+https://github.com/nooga/let-go/blob/main/pkg/cli/cli.go
 
 ---
 
