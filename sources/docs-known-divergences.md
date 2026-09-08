@@ -4,8 +4,8 @@ category: source
 title: Known Clojure divergences
 description: let-go's ledger of behavioral differences from Clojure JVM, intentional and temporary, with the shared-suite overrides each one owns.
 tags: [clojure, runtime, lisp]
-resource: "https://github.com/nooga/let-go/blob/main/docs/KNOWN_DIVERGENCES.md"
-sources: ["repo: nooga/let-go docs/KNOWN_DIVERGENCES.md @ 638b4a6a (added by #771, 7aa1ab1a, 2026-09-06; in-doc last-verified 2026-08-23), 2026-09-07", "nooga/let-go#764 (merged 2026-09-07), nooga/let-go#812 (closed 2026-09-06)", "lg -e transcripts on let-go a6763e77, 2026-09-08"]
+resource: "https://github.com/nooga/let-go/blob/main/docs/known-divergences.md"
+sources: ["repo: nooga/let-go docs/known-divergences.md @ dc310b6f (added by #771 as KNOWN_DIVERGENCES.md, 7aa1ab1a, 2026-09-06; renamed by #825, 2026-09-08; in-doc last-verified 2026-08-23), 2026-09-08", "nooga/let-go#764 (merged 2026-09-07), nooga/let-go#812 (closed 2026-09-06)", "lg -e transcripts on let-go a6763e77, 2026-09-08"]
 created: "2026-09-07"
 updated: "2026-09-08"
 status: active
@@ -13,7 +13,7 @@ status: active
 
 ## What this source is
 
-`docs/KNOWN_DIVERGENCES.md` is the ledger of known behavioral differences between let-go and Clojure JVM. Each entry is classified as an intentional language decision or a temporary compatibility mismatch: intentional entries say why let-go does not follow Clojure and how portable code should behave; temporary entries state the intended contract and what resolves them. It is separate from the engine-differential ledgers (`test/parity-divergence.txt` for bytecode-versus-gogen output, `test/gogen_aot_xfail.txt` for gogen fixture divergences), which compare let-go with itself. Added to let-go by #771 on 2026-09-06.
+`docs/known-divergences.md` is the ledger of known behavioral differences between let-go and Clojure JVM. Each entry is classified as an intentional language decision or a temporary compatibility mismatch: intentional entries say why let-go does not follow Clojure and how portable code should behave; temporary entries state the intended contract and what resolves them. It is separate from the engine-differential ledgers (`test/parity-divergence.txt` for bytecode-versus-gogen output, `test/gogen_aot_xfail.txt` for gogen fixture divergences), which compare let-go with itself. Added to let-go by #771 on 2026-09-06 as `KNOWN_DIVERGENCES.md`; renamed to the lowercase path by #825 on 2026-09-08.
 
 ## Key takeaways
 
@@ -40,8 +40,8 @@ The ledger's in-doc `last-verified` is 2026-08-23 and it has not been edited sin
 
 ## Citations
 
-[1] **docs/KNOWN_DIVERGENCES.md** — the ledger  
-https://github.com/nooga/let-go/blob/main/docs/KNOWN_DIVERGENCES.md
+[1] **docs/known-divergences.md** — the ledger  
+https://github.com/nooga/let-go/blob/main/docs/known-divergences.md
 
 [2] **PR #771** — docs: catalog known Clojure divergences (merged 2026-09-06)  
 https://github.com/nooga/let-go/pull/771
