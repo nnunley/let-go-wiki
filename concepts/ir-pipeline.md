@@ -5,9 +5,11 @@ title: "IR Pipeline"
 description: "let-go's compiler IR framework, written in let-go itself: building, optimizing, and lowering to bytecode."
 tags: [compiler, bytecode, vm]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/README.md"
-sources: ["repo: nooga/let-go pkg/rt/core/ir/README.md, pkg/rt/core/ir/*.lg (implementation), 2026-07-02"]
+sources:
+  - "repo: nooga/let-go pkg/rt/core/ir/README.md, pkg/rt/core/ir/*.lg (implementation), 2026-07-02"
+  - "repo: nooga/let-go cmd/lgbgen/main.go @ a6763e7 (bundle-skip mechanism, re-verified), 2026-09-08"
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-09-08"
 status: stable
 ---
 
@@ -181,6 +183,8 @@ Everything else (data structures, passes, analysis) is implemented in Lisp.
 The IR layer's load-time dance is normally invisible but worth knowing:
 
 - `data.lg` is **not** in the precompiled bundle; it loads from source. The intern block at the bottom needs live function values to register accessors.
+- The exclusion is not specific to `data.lg`. `cmd/lgbgen`'s `isBundleSkippedTool` skips the whole `ir` family — `ir` itself and any `ir.` descendant — so none of the pipeline is compiled into `core_compiled.lgb`. The stated reason is startup cost: a plain `lg` script never touches these namespaces, so decoding them on every process start is pure overhead. They are still embedded as *source* and load on demand.
+- The skip has to happen before the bundle is encoded, not merely be filtered out of the namespace order. `EncodeBundleOrdered` emits every const in the pool and each func const drags its chunk in, so a skipped namespace must never enter the pool ahead of `writeBundle`. `compileToolsForLowering` compiles them afterwards, so Go lowering can still resolve them.
 - `ir.build` declares `(:require ir.data)`, so loading build automatically triggers data's source load.
 - At precompile time (`lgbgen`), `data.lg` is bootstrapped first so downstream namespaces can resolve `ir/*` symbols.
 
