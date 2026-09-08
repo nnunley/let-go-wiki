@@ -4,10 +4,10 @@ category: concept
 title: "Go Structs via defgostruct"
 description: "Defining and using Go structs from let-go via compile-time code generation."
 tags: [go, interop, compiler]
-resource: "https://github.com/nooga/let-go/blob/main/scripts/lginterop.lg"
+resource: "https://github.com/nooga/let-go/blob/main/cmd/lginterop/lginterop.lg"
 sources: ["design: docs/superpowers/specs/2026-05-22-defgostruct.md (local, 2026-07-02)", "design: docs/superpowers/specs/2026-05-21-clojure-interop-alignment-design.md (local, 2026-07-02)"]
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-09-07"
 status: speculative
 ---
 
@@ -128,8 +128,8 @@ As part of the clojure-interop alignment effort, let-go also gains `.getBytes()`
 [1] **defgostruct design** — spec for codegen-driven Go-struct ↔ Lisp bimap  
 (local, 2026-05-22)
 
-[2] **lginterop generator** — Go package reflection and wrapper generation  
-https://github.com/nooga/let-go/blob/main/scripts/lginterop.lg
+[2] **lginterop generator** — Go package reflection and wrapper generation (moved from `scripts/lginterop.lg` to `cmd/lginterop` in #773)  
+https://github.com/nooga/let-go/blob/main/cmd/lginterop/lginterop.lg
 
 [3] **clojure-interop-alignment design** — Clojure JVM compatibility improvements  
 (local, 2026-05-21)
