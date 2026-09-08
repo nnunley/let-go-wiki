@@ -133,3 +133,37 @@ speculative pages get a dashed outline. Clicking a node lights its neighbourhood
 with counts doubles as the kind filter; minor components (stdlib reference clusters) are packed in a grid
 beside the main graph so the fitted view stays large. Detail panel: tag chips, legible type chip, forward
 links, wide mermaid with sideways scroll, stacks under the graph below 900px. Browser-verified light + dark.
+## [2026-09-05] ingest | architecture spine (7 concepts, 5 sources) against let-go main @ 0911118
+Authored with lg -e transcripts: reader, namespaces-and-vars, native-primitives, compile-paths (the direct
+compiler, the *ir-compile* path with its hybrid fallback and the #580 census, Go lowering + gogen_ir
+overrides, ir-stress gates), generated-artifacts, perf-ratchet, go-backend. Each batch adversarially reviewed
+by a second agent re-reading the cited code (7 + 14 + 9 findings, all fixed) and promoted to stable. Findings
+that are facts about let-go, not just the drafts: core_go_lowered/ is gitignored; `lg` has no --target flag
+(lgbgen's, core-only); //lg:private is parsed but unread; check-generated regenerates in place; emitted
+direct-call sites never consult vm.GuardedRootsIntact (only rt/native-prims-intact? reads it); #649's
+TAIL_CALL fusion has no lower_go twin; BenchmarkInitFromLGB is in the default ratchet gate; historical/
+holds only v1.8.0. Sources: design-ir-dynamic-vars, docs-perf-ratchet, docs-regenerating-generated-artifacts,
+pr-native-hoist-stack, pr-native-entry-gate. MOC: Reader at the head of the path, "Compile Paths · Go
+Backend", "Build and measure", Namespaces and Vars under runtime internals. Plan D recorded in
+docs/superpowers/plans/ with the landing plan by confidence.
+
+## [2026-09-05] update | fold in nnunley's corrections on our PRs
+generated-artifacts: the auxiliary embed is gogen-only and transitional; lg.compiler enrolls in the standard
+embedded/generated set immediately (decision on #735, 2026-09-02). go-backend: lg_no_http is a stopgap, the
+set direction is an AOT-driven tree-shaker over runtime subpackages (#652 comment, 2026-07-31); lg-compile is
+the shim over orchestration moving behind lg.compiler (#735). native-primitives: the hoist gap #686 found is
+tracked under #531.
+
+## [2026-09-06] update | re-verify spine pages against let-go main ee55803
+
+namespaces-and-vars: #734 and #781 merged (928c217, b0397f6), shadow-warning section rewritten for the
+fixed code. reader: the discard skip does not cover a discard between a map key and its value (#801,
+filed by nnunley 2026-09-06); metadata divergence cites #801. perf-ratchet: #794 (3ae0a08) closed the
+PrepareCall allocation #791 found.
+
+## [2026-09-08] update | spine: spot check against let-go main dc310b6f before landing
+Eight let-go merges since ee55803 (#787, #776, #778, #799, #800, #764, #684, #825). perf-ratchet and its
+source page now describe #684's window seeding (five snapshots per key, median in ratio space, min window
+three, mixed-capture rejection). reader re-pinned at a6763e77 with all six divergences re-probed; notes
+#787's `#_` comment-skip. namespaces-and-vars, generated-artifacts (seven outputs), native-primitives,
+compile-paths, go-backend: no claim moved.

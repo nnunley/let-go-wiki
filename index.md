@@ -8,12 +8,16 @@ A knowledge base for **developing and using [let-go](entities/let-go.md)** — a
 
 ## Developing let-go — internals
 The path from source to execution:
-[Bytecode Compiler](concepts/bytecode-compiler.md) → [Indexed-RPN IR](concepts/indexed-rpn-ir.md) → [IR Pipeline](concepts/ir-pipeline.md) → [IR Passes](concepts/ir-passes.md) / [IR Optimizations](concepts/ir-optimizations.md) → [Stack VM](concepts/stack-vm.md)
+[Reader](concepts/reader.md) → [Bytecode Compiler](concepts/bytecode-compiler.md) → [Indexed-RPN IR](concepts/indexed-rpn-ir.md) → [IR Pipeline](concepts/ir-pipeline.md) → [IR Passes](concepts/ir-passes.md) / [IR Optimizations](concepts/ir-optimizations.md) → [Stack VM](concepts/stack-vm.md)
 
-Runtime internals: [Value Representation](concepts/value-representation.md) · [Exec Context](concepts/exec-context.md) · [Concurrency Model](concepts/concurrency-model.md) · [Runtime Image](concepts/runtime-image.md) · [Type Inference](concepts/type-inference.md) · [deftype & Protocols](concepts/deftype-and-protocols.md) · [Debug Info](concepts/debug-info.md) · [.lgb Format](concepts/lgb-bytecode-format.md) · [I/O Host Decoupling](concepts/io-host-decoupling.md)
+Which path a function takes, and what falls back to what: [Compile Paths](concepts/compile-paths.md) · [Go Backend](concepts/go-backend.md)
+
+Build and measure: [Generated Artifacts](concepts/generated-artifacts.md) · [Native Primitives](concepts/native-primitives.md) · [Performance Ratchet](concepts/perf-ratchet.md)
+
+Runtime internals: [Namespaces and Vars](concepts/namespaces-and-vars.md) · [Value Representation](concepts/value-representation.md) · [Exec Context](concepts/exec-context.md) · [Concurrency Model](concepts/concurrency-model.md) · [Runtime Image](concepts/runtime-image.md) · [Type Inference](concepts/type-inference.md) · [deftype & Protocols](concepts/deftype-and-protocols.md) · [Debug Info](concepts/debug-info.md) · [.lgb Format](concepts/lgb-bytecode-format.md) · [I/O Host Decoupling](concepts/io-host-decoupling.md)
 
 ## Using let-go — building programs
-- **Interop:** [Go Interop](concepts/go-interop.md) · [lginterop](concepts/lginterop.md) · [Go Structs](concepts/go-structs.md)
+- **Interop:** [Go Interop](concepts/go-interop.md) · [lginterop](concepts/lginterop.md) · [Go Structs](concepts/go-structs.md) · [Native Primitives](concepts/native-primitives.md)
 - **Build & run:** [lg-compile](concepts/lg-compile.md) · [WASM Compilation](concepts/wasm-compilation.md) · [nREPL Server](concepts/nrepl-server.md) · [Pods](concepts/pods.md) · [lgx build tool](projects/lgx.md)
 - **Compatibility & stdlib:** [Clojure Compatibility](references/clojure-compat.md) · [clojure.core reference](references/clojure.core/map.md)
 
@@ -37,10 +41,13 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 
 ## Concepts
 - [concepts/bytecode-compiler](concepts/bytecode-compiler.md) — How let-go compiles source code to bytecode: the reader, Indexed-RPN IR intermediate form, and code emission pipeline.
+- [concepts/compile-paths](concepts/compile-paths.md) — The three ways a let-go form becomes executable: the direct bytecode compiler, the IR path behind *ir-compile*, and Go lowering; the hybrid fallback between them and how coverage is measured.
 - [concepts/concurrency-model](concepts/concurrency-model.md) — Goroutine-local dynamic bindings and scoped async supervision for concurrent namespace and binding isolation.
 - [concepts/debug-info](concepts/debug-info.md) — Mapping bytecode back to source locations and local variable names for readable crash traces and error reporting.
 - [concepts/deftype-and-protocols](concepts/deftype-and-protocols.md) — Custom types and protocol-based polymorphism in let-go, unifying Clojure's deftype/defprotocol with native Go lowering.
 - [concepts/exec-context](concepts/exec-context.md) — How the ExecContext carries execution state (scopes and dynamic bindings) through the VM, threaded rather than stored in goroutine-local maps.
+- [concepts/generated-artifacts](concepts/generated-artifacts.md) — The seven generated outputs the runtime loads instead of source (core_compiled.lgb, core_go_lowered/, the IR op and data tables, the primitive registrars), the content-hash manifest that decides what is stale, and the bootstrap build tag that keeps regeneration independent of the running binary.
+- [concepts/go-backend](concepts/go-backend.md) — The shipped Go backend as distinct from its design proposal: how ir.lower-go emits Go through the gogen layer, what makes a function direct-callable, the entry frame that turns a program into a standalone native binary, the runtime-only lg-runtime, and the gates and open defects around it.
 - [concepts/go-interop](concepts/go-interop.md) — Two-way Go ↔ let-go interoperability: calling Go from let-go, embedding let-go in Go, struct/channel roundtripping, and code generation.
 - [concepts/go-structs](concepts/go-structs.md) — Defining and using Go structs from let-go via compile-time code generation.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
@@ -52,8 +59,12 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/lgb-bytecode-format](concepts/lgb-bytecode-format.md) — Binary serialization format for let-go compiled code: versioned header, capability mask with opcode-set signature, per-tag versioning, opt-in DEFLATE body, and split debug companions.
 - [concepts/lginterop](concepts/lginterop.md) — Wrapping Go packages as callable functions in let-go via code generation.
 - [concepts/lgx-build-model](concepts/lgx-build-model.md) — How lgx resolves git-pinned dependencies via a gitlibs cache, invokes let-go compilation, bundles executables, and runs tests.
+- [concepts/namespaces-and-vars](concepts/namespaces-and-vars.md) — How names resolve in let-go: the Namespace's five maps and its lookup order, the Var's lock-free root and its two binding chains, refer and alias semantics including the core short-name aliases, the guarded-root fast path for native primitives, and the shadow warning that never fired.
+- [concepts/native-primitives](concepts/native-primitives.md) — How Go functions become clojure.core (and other) vars: the //lg:native annotation surface, the runtime-free lgprimgen registrar generator, contribute vs own mode, the direct-call registry, and the reapply lifecycle that keeps natives in place.
 - [concepts/nrepl-server](concepts/nrepl-server.md) — A TCP server exposing let-go's compiler and runtime over the nREPL protocol for editor tooling and interactive development.
+- [concepts/perf-ratchet](concepts/perf-ratchet.md) — How let-go catches regressions without same-machine benchmarking: the anchor-normalized bench-ratchet, its one-way baseline, the deterministic allocation bars, the lowering-coverage and lowering-shape ratchets, and where each one gates.
 - [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
+- [concepts/reader](concepts/reader.md) — How let-go turns text into forms: the dispatch tables, reader conditionals with the :lg/:clj/:bb feature switches, the VOID sentinel for no-value forms, number literals, tagged literals, and the places its behaviour diverges from Clojure's reader.
 - [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.
 - [concepts/stack-vm](concepts/stack-vm.md) — The stack-based bytecode interpreter: operand-stack frames, the fetch-decode-dispatch loop, and specialized arithmetic opcodes.
 - [concepts/type-inference](concepts/type-inference.md) — How the let-go compiler infers types during IR lowering and uses a mergeable cache to make parallel lowering both fast and deterministic.
@@ -98,11 +109,14 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [sources/design-exec-context](sources/design-exec-context.md) — Design for eliminating goroutine-ID keying and unifying Scope + dynamic-var bindings into an explicitly-threaded ExecContext.
 - [sources/design-go-aot-backend](sources/design-go-aot-backend.md) — Design for a second backend that compiles let-go code to Go while preserving runtime semantics and enabling mixed compiled+interpreted execution.
 - [sources/design-io-host-decoupling](sources/design-io-host-decoupling.md) — Design for decoupling runtime I/O from concrete host implementations across native, Go embedder, and WebAssembly platforms.
+- [sources/design-ir-dynamic-vars](sources/design-ir-dynamic-vars.md) — The single index of every ^:dynamic var the IR compile and lowering pipeline reads: compilation-mode knobs, pass toggles, cross-package lowering control, per-compile state, and how to verify a var change with the ir-stress harness.
 - [sources/design-parallel-lowering](sources/design-parallel-lowering.md) — Investigation into parallelizing IR lowering passes and a proposed mergeable type-discovery cache for deterministic, full-precision parallel compilation.
 - [sources/design-pods](sources/design-pods.md) — Babashka-compatible external process integration via EDN-based RPC for script-friendly access to system APIs, databases, and tools.
 - [sources/design-runtime-image](sources/design-runtime-image.md) — Design specification for dumping/loading self-contained runtime images and precompiling the standard library for fast startup and reproducible deployments.
 - [sources/design-value-representation](sources/design-value-representation.md) — Design documentation on value representation in let-go and performance optimizations for numeric operations in Go.
 - [sources/design-vm-performance](sources/design-vm-performance.md) — Design document detailing VM interpreter bottlenecks, calling convention optimization, and a phased plan to reduce GC pressure and improve bytecode call performance.
+- [sources/docs-perf-ratchet](sources/docs-perf-ratchet.md) — The contributor doc for bench-ratchet: anchor-relative measurement, the capture and aggregate phases, what the baseline records, how check compares, seeding from CI, the one-way update rule, and the -force policy.
+- [sources/docs-regenerating-generated-artifacts](sources/docs-regenerating-generated-artifacts.md) — The contributor rule that .lg edits do nothing until make generate runs, why staleness is content-hashed rather than mtime-based, where a stale artifact is caught, and the git merge drivers for the binary bundle and the digest.
 - [sources/guide-clojure-compatibility](sources/guide-clojure-compatibility.md) — Comprehensive reference documenting let-go's Clojure dialect compatibility, including passing test suite results, supported standard namespaces, unimplemented features, and behavioral differences from JVM Clojure.
 - [sources/guide-embedding-in-go](sources/guide-embedding-in-go.md) — Guide to embedding let-go as a scripting layer in Go programs, with struct roundtripping, channel integration, and function interop.
 - [sources/guide-resources-and-source-paths](sources/guide-resources-and-source-paths.md) — Guide to let-go resource loading and namespace resolution via `-resource-paths` and `-source-paths` flags.
@@ -113,6 +127,8 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [sources/plan-jvm-compat](sources/plan-jvm-compat.md) — Three-layer architecture for loading real-world Clojure libraries in let-go via class-symbol resolution, protocol fallback, and receiver method dispatch.
 - [sources/plan-master](sources/plan-master.md) — Official 9-phase roadmap for let-go development, from baseline semantics through AOT compilation and advanced optimizations.
 - [sources/pr-lgb-format-evolution](sources/pr-lgb-format-evolution.md) — mparrett's 2026-07 to 2026-09 changes to the bytecode container: the opcode-set capability and its named reject messages, opt-in DEFLATE bodies as format 3, func-chunk identity, and split debug companions.
+- [sources/pr-native-entry-gate](sources/pr-native-entry-gate.md) — nnunley's gate proving that --entry-frame binaries execute lowered entries as generated Go, and the frame defect it found: a single-file program's empty namespace table left every namespace-level var undefined.
+- [sources/pr-native-hoist-stack](sources/pr-native-hoist-stack.md) — nnunley's four-PR stack that turned inline core primitives into annotated Go functions with generated registrars, then generalized the registrar per package and added a provenance manifest for selective regeneration.
 - [sources/ref-block-param-irs](sources/ref-block-param-irs.md) — Swift SIL, Cranelift, and MLIR — three compiler IRs that employ block parameters instead of phi nodes for SSA-style cross-block value threading.
 - [sources/ref-carbon-sem-ir](sources/ref-carbon-sem-ir.md) — Block-parameter SSA intermediate representation design used as reference for let-go's indexed-RPN IR control flow.
 - [sources/ref-indexed-rpn-emir](sources/ref-indexed-rpn-emir.md) — Emir's design for positional value numbering in postfix form, the foundation for let-go's IR encoding.
