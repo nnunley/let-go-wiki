@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OKF Bundle Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Boldonse&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.34.0/dist/cytoscape.min.js"></script>
 <!-- fcose force layout (needs layout-base -> cose-base first) -->
 <script src="https://cdn.jsdelivr.net/npm/layout-base@2.0.1/layout-base.js"></script>
@@ -19,35 +22,39 @@
 <header>
   <div class="title">
     <a class="home" href="." target="_top">← let-go-wiki</a>
-    <strong id="bundle-name"></strong>
-    <span class="muted">OKF bundle</span>
+    <strong id="bundle-name">Knowledge graph</strong>
+    <span class="muted" id="graph-stats"></span>
   </div>
   <div class="controls">
-    <input id="search" type="search" placeholder="Search title / id / tag">
-    <select id="filter-type">
-      <option value="">All types</option>
+    <input id="search" type="search" placeholder="Find a page or tag" aria-label="Find a page or tag">
+    <select id="filter-type" aria-label="Show only one kind of page">
+      <option value="">Every kind</option>
     </select>
-    <select id="layout">
-      <option value="fcose">fcose (force)</option>
-      <option value="cose">cose (force)</option>
-      <option value="concentric">concentric</option>
-      <option value="breadthfirst">breadth-first</option>
-      <option value="circle">circle</option>
-      <option value="grid">grid</option>
+    <select id="layout" aria-label="Layout">
+      <option value="fcose">Force layout</option>
+      <option value="concentric">Concentric</option>
+      <option value="breadthfirst">Tree</option>
+      <option value="circle">Circle</option>
+      <option value="grid">Grid</option>
     </select>
-    <button id="reset">Reset view</button>
+    <button id="reset">Fit to view</button>
   </div>
 </header>
 
 <main>
-  <section id="graph"></section>
+  <section id="graph">
+    <div id="legend" aria-label="Legend"></div>
+  </section>
   <section id="detail">
-    <div id="detail-empty" class="muted">Click a node to see its details.</div>
+    <div id="detail-empty" class="muted">Select a node to read the page. Its neighbours light up; everything else fades.</div>
     <article id="detail-content" hidden>
       <header class="detail-header">
-        <span class="type-chip" id="detail-type"></span>
+        <div class="detail-meta">
+          <span class="type-chip" id="detail-type"></span>
+          <span class="status-chip" id="detail-status"></span>
+        </div>
         <h1 id="detail-title"></h1>
-        <div class="muted" id="detail-id"></div>
+        <div class="detail-id muted" id="detail-id"></div>
       </header>
       <dl class="frontmatter">
         <dt>Description</dt><dd id="detail-description"></dd>
@@ -56,6 +63,10 @@
       </dl>
       <hr>
       <div id="detail-body"></div>
+      <section id="detail-links" hidden>
+        <h2>Links to</h2>
+        <ul id="links-list"></ul>
+      </section>
       <section id="detail-backlinks" hidden>
         <h2>Cited by</h2>
         <ul id="backlinks-list"></ul>
