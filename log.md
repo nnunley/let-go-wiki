@@ -122,3 +122,7 @@ Sources: pr-lgb-format-evolution.
 
 Re-verified against nooga/let-go main @ ee55803. `TagDefMetaPairs = TagIDMap | TagVer1` (#781, b0397f6)
 replaces the "all current tags are version 0" claim; pre-#781 v2 decoders reject it by design.
+## [2026-09-07] update | wasm-compilation: `*compiling-aot*` is true for -c and -b as well as -w
+The page said the var is true only during `-w`; `pkg/cli/cli.go` sets it when any of `-c`, `-b`, `-w` is
+given, and `docs/guide/usage.md` (already in the page's sources) says the same. Verified at let-go
+`638b4a6a`.
