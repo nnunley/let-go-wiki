@@ -73,7 +73,7 @@ let-go is a Clojure dialect, not a drop-in JVM Clojure replacement. Most idiomat
 
 ### Maps and characters
 
-- Traversal order of map literals and `hash-map` is unspecified by contract. Since #764 (2026-09-07) maps of up to eight entries, `array-map`, and the builders on them (`assoc` chains, `into`, `zipmap`, `merge`, `select-keys`) keep insertion order, and the ninth `assoc` promotes to hash order. Use `sorted-map` for comparator order.
+- Traversal order of map literals and `hash-map` is unspecified by contract. Since #764 (2026-09-07) maps of up to eight entries, `array-map`, and the builders on them (`assoc` chains, `into`, `zipmap`, `merge`, `select-keys`) keep insertion order, and the ninth `assoc` promotes to hash order. An `array-map` constructed with more than eight pairs promotes at construction, unlike Clojure's. Use `sorted-map` for comparator order.
 - A character is one Unicode scalar value (a Go rune), not a UTF-16 code unit: `(count "😀")` is 1 where JVM Clojure gives 2, and `(char 65895)` yields U+10167 where the JVM throws. `char` does not yet reject surrogate-range integers. The ledger for these and their shared-suite overrides is [Known Clojure divergences](../sources/docs-known-divergences.md).
 
 ## Reader-level feature detection

@@ -5,9 +5,9 @@ title: Known Clojure divergences
 description: let-go's ledger of behavioral differences from Clojure JVM, intentional and temporary, with the shared-suite overrides each one owns.
 tags: [clojure, runtime, lisp]
 resource: "https://github.com/nooga/let-go/blob/main/docs/KNOWN_DIVERGENCES.md"
-sources: ["repo: nooga/let-go docs/KNOWN_DIVERGENCES.md @ 638b4a6a (added by #771, 7aa1ab1a, 2026-09-06; in-doc last-verified 2026-08-23), 2026-09-07", "nooga/let-go#764 (merged 2026-09-07), nooga/let-go#812 (closed 2026-09-06)"]
+sources: ["repo: nooga/let-go docs/KNOWN_DIVERGENCES.md @ 638b4a6a (added by #771, 7aa1ab1a, 2026-09-06; in-doc last-verified 2026-08-23), 2026-09-07", "nooga/let-go#764 (merged 2026-09-07), nooga/let-go#812 (closed 2026-09-06)", "lg -e transcripts on let-go a6763e77, 2026-09-08"]
 created: "2026-09-07"
-updated: "2026-09-07"
+updated: "2026-09-08"
 status: active
 ---
 
@@ -31,7 +31,7 @@ status: active
 
 The ledger's in-doc `last-verified` is 2026-08-23 and it has not been edited since #771 landed. Two things moved:
 
-- **#764 merged on 2026-09-07 (`638b4a6a`), resolving #763.** `PersistentMap` gained an array-map mode behind the same `MapType`: maps with at most eight entries keep insertion order in a paired key/value slice, the ninth `assoc` promotes to the HAMT, and `dissoc` never demotes a non-empty map. Map literals, `array-map`, `assoc` chains, `zipmap`, `merge`, `select-keys`, and `into` preserve insertion order up to eight entries; `hash-map` order stays unspecified by contract and is incidentally insertion-ordered when small. `test/map_order_test.lg` pins this. The "Temporary `array-map` mismatch" entry is therefore resolved in code, and the ledger still describes the pre-#764 state; per its own maintenance rule the entry is due for removal. The intentional entry above it stands: the contract is still "unspecified", and the small-map order is an implementation detail that #764 happens to make match Clojure's.
+- **#764 merged on 2026-09-07 (`638b4a6a`), resolving #763.** `PersistentMap` gained an array-map mode behind the same `MapType`: maps with at most eight entries keep insertion order in a paired key/value slice, the ninth `assoc` promotes to the HAMT, and `dissoc` never demotes a non-empty map. Map literals, `array-map`, `assoc` chains, `zipmap`, `merge`, `select-keys`, and `into` preserve insertion order up to eight entries; `hash-map` order stays unspecified by contract and is incidentally insertion-ordered when small. `test/map_order_test.lg` pins this. It narrows the "Temporary `array-map` mismatch" entry rather than closing it: `(array-map ...)` with more than eight pairs is built through the same transient and promotes during construction, so `(keys (array-map :i 1 :h 2 :g 3 :f 4 :e 5 :d 6 :c 7 :b 8 :a 9))` comes back in hash order on `a6763e77` where Clojure keeps a directly constructed array map ordered at any size. The ledger still describes the pre-#764 state; nooga/let-go#826 rewrites the entry to that residual. The intentional entry above it stands: the contract is still "unspecified", and the small-map order is an implementation detail that #764 happens to make match Clojure's.
 - **#812 closed as not planned on 2026-09-06.** Norman's report that `(count "😀")` is 1 in let-go and 2 in JVM Clojure was confirmed by the project owner as the accepted rune-counting divergence. That is the character-model entry applied to `count`, and a concrete example the ledger's entry lacks.
 
 ## Pages derived from this source
