@@ -6,9 +6,9 @@ description: "Norman's proposal to consolidate the IR, AOT orchestration, and th
 tags: [compiler, idea, tooling, go]
 resource: "https://github.com/nooga/let-go/issues/786"
 sources:
-  - "issue: nooga/let-go#786 (open, nnunley) and mparrett's step-1 inventory comment there (2026-08-28); nnunley's review and comments on #735 (2026-08-26, 2026-09-02); #596, #425, #557 as related work, 2026-09-05"
+  - "issue: nooga/let-go#786 (open, nnunley) and mparrett's step-1 inventory comment there (2026-08-28); nnunley's review and comments on #735 (2026-08-26, 2026-09-02); #596, #425, #557 as related work; #735 revised to lg.compiler and verified against the decisions at head d2d26524, 2026-09-08"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-08"
 status: active
 ---
 
@@ -23,9 +23,9 @@ The compiler implementation spans four places that grew separately:
 - `ir.*` owns the IR, analyses, optimization passes, and the lowering pipeline (see [IR pipeline](../concepts/ir-pipeline.md)).
 - `gogen` owns Go source construction and emission, embedded as an auxiliary source behind the `!bootstrap` tag (see [generated artifacts](../concepts/generated-artifacts.md) and [Go backend](../concepts/go-backend.md)).
 - `scripts/lg-compile` owns program-level AOT orchestration (see [lg-compile](../concepts/lg-compile.md)).
-- #735 proposes extracting that orchestration into a new `lg.aotdriver` namespace as groundwork for #596, the first-class `lg compile` command.
+- #735 extracts that orchestration into a namespace of its own as groundwork for #596, the first-class `lg compile` command. It proposed `lg.aotdriver`; after the review below it now lands as `lg.compiler`.
 
-The objection to #735 as it stands is not the extraction but the destination: `lg.aotdriver` would be a second permanent compiler architecture beside `ir.*`, and it treats `gogen`'s auxiliary embed as where the Go backend lives. That embed solved shipped-binary self-containment (#557); it was never meant to be the permanent home of a backend that is intended to become bootstrapped.
+The objection was not to the extraction but to the destination: `lg.aotdriver` would have been a second permanent compiler architecture beside `ir.*`, and it treated `gogen`'s auxiliary embed as where the Go backend lives. That embed solved shipped-binary self-containment (#557); it was never meant to be the permanent home of a backend that is intended to become bootstrapped.
 
 ## The proposed shape
 
@@ -62,6 +62,10 @@ The issue was written against Matt's #735, and Norman's review there is where th
 - **2026-09-02, "Architecture decision":** enroll `lg.compiler` immediately in the standard embedded and generated namespace set (`EmbeddedNSNames` plus the genmanifest source specs), with no temporary auxiliary-embed exception; keep `scripts/lg-compile` as the compatibility shim; add the promised contract test pinning `EMIT-FAIL` stdout and its non-fatal exit status; then rebase and rerun the default, `bootstrap`, AOT, and native-entry checks.
 
 So the one exception in the tree today, `gogen`'s auxiliary embed, is not to be copied: a new compiler namespace goes into the bootstrap universe from the start. What remains gated on the fixpoint work is moving `gogen` itself, not `lg.compiler`.
+
+#735 was revised to match, and as of 2026-09-08 satisfies both. The driver is `lg.compiler` at `pkg/rt/core/lg/compiler.lg`; `EmbeddedNSNames` walks `core/` only, so living there is what enrolls it, and the genmanifest sweep picks it up from the same location. `pkg/rt/aotdriver/` is gone. `gogen` stays outside `core/` and so stays out of `EmbeddedNSNames`: the PR drops its `!bootstrap` build gate so lgbgen can *resolve* it while compiling `lg.compiler`, which is not the same as enrolling it, and leaves step 4's fixpoint work untouched.
+
+One decision the issue does not cover is bundle membership, which is a separate axis from embedded-source enrollment. `lg.compiler` is excluded from the bytecode bundle by `cmd/lgbgen`'s `isBundleSkippedTool`, the same function that already excludes `ir.*`, and matched by family prefix so the `lg.compiler.ir.*` rename in step 3 does not silently drop the exclusion. Both families load from embedded source on demand. The question of whether to bundle the driver eagerly and raise the boot budget instead was put to Norman on #735 and is open.
 
 Matt's step-1 inventory (comment on #786, 2026-08-28, against `0003a0bb`): 33 `ir.*` namespaces under `pkg/rt/core/ir/`, 58 `.lg` files outside that tree referencing one, 64 Go files referencing `core/ir` or `gogen`, and 137 manifest lines naming `ir` paths, so the manifest moves with the rename rather than after it.
 
