@@ -125,6 +125,11 @@ replaces the "all current tags are version 0" claim; pre-#781 v2 decoders reject
 ## [2026-09-07] update | wasm-compilation: `*compiling-aot*` is true for -c and -b as well as -w
 The page said the var is true only during `-w`; `pkg/cli/cli.go` sets it when any of `-c`, `-b`, `-w` is
 given, and `docs/guide/usage.md` (already in the page's sources) says the same. Verified at let-go
+## [2026-09-07] update | lginterop pages: the generator moved to cmd/lginterop (#773)
+lginterop.md rewritten for the post-#773 tool: `cmd/lginterop` scans with go/types and runs the embedded
+`lginterop.lg` emitter in-process, so no checkout or `lg` binary is needed; in-tree vs `-out-pkg` output
+differ in how the installer is invoked (RegisterInstaller queue vs a direct init() call); `-smart` is opt-in.
+go-structs.md re-pointed at the new path. Both cited the deleted `scripts/lginterop.lg`. Verified at let-go
 `638b4a6a`.
 ## [2026-09-05] update | graph viewer legibility pass
 Node colour now encodes page kind (Entity/Concept/Reference/Project/Idea/Source; Concept and Source were
