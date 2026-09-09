@@ -186,3 +186,10 @@ nooga/let-go#826 (ebd9a7bd) narrowed the ledger's array-map entry to constructio
 pointed it at #827, so the source page no longer says the ledger describes the pre-#764 state. Re-pinned
 at ebd9a7bd; claims re-probed on an lg built at a9c183f9 (nine-pair array-map in hash order, eight ordered,
 ninth assoc promotes, dissoc never demotes, rune count, char range).
+## [2026-09-09] update | ir-pipeline: the bundle-skip mechanism behind the data.lg note
+
+§Loading Order now separates the two exclusions (data.lg's `lgbgen:skip` directive; `isIRBundleSkipped` for
+the rest of `ir.*`), says why the skip must precede pool population, and records the leak: the phase-0
+bootstrap puts ir.data's chunks in the shared pool, so `lgbstat` finds 111 of 937 bundle chunks under
+`<embedded:ir.data:lgbgen-bootstrap>` at a9c183f9. The first draft cited `isBundleSkippedTool` and
+`compileToolsForLowering`, which exist only on #735's branch; corrected to main's names.
