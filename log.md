@@ -179,3 +179,10 @@ character model), the temporary entries, the shared-suite `:lg` overrides, and w
 was written (#764 merged 2026-09-07 making maps of up to eight entries insertion-ordered; #812 closed as the
 accepted rune-count divergence). clojure-compat.md gains a "Maps and characters" subsection pointing at it.
 Verified at let-go `638b4a6a`.
+
+## [2026-09-09] update | known-divergences: #826 merged, the ledger now carries the residual
+
+nooga/let-go#826 (ebd9a7bd) narrowed the ledger's array-map entry to construction past eight pairs and
+pointed it at #827, so the source page no longer says the ledger describes the pre-#764 state. Re-pinned
+at ebd9a7bd; claims re-probed on an lg built at a9c183f9 (nine-pair array-map in hash order, eight ordered,
+ninth assoc promotes, dissoc never demotes, rune count, char range).
