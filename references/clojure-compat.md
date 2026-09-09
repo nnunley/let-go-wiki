@@ -5,9 +5,9 @@ title: "Clojure Compatibility"
 description: "Where let-go IS and ISN'T compatible with Clojure JVM: known limitations, feature parity, and behavioral differences."
 tags: [clojure, lisp, runtime]
 resource: "https://github.com/nooga/let-go/blob/main/docs/guide/clojure-compatibility.md"
-sources: ["docs/guide/clojure-compatibility.md", "docs/clojure-compat-roadmap.md", "repo: nooga/let-go docs/known-divergences.md, test/map_order_test.lg @ 638b4a6a, 2026-09-07"]
+sources: ["docs/guide/clojure-compatibility.md", "docs/clojure-compat-roadmap.md", "repo: nooga/let-go docs/known-divergences.md, test/map_order_test.lg @ ebd9a7bd, 2026-09-09"]
 created: "2026-07-02"
-updated: "2026-09-07"
+updated: "2026-09-09"
 status: stable
 ---
 
