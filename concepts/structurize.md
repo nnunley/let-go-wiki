@@ -44,7 +44,8 @@ The `bid` leaves let the backend emit each block's instructions and edge copies.
 
 ## Citations
 
-**Resource:** [pkg/rt/core/ir/structurize.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/structurize.lg): the pass and the tree grammar in its header  
+**Resource:** [pkg/rt/core/ir/structurize.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/structurize.lg): the pass and the tree grammar in its header
+
 **Related:**
 - [pkg/rt/core/ir/lower_go.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower_go.lg): the only consumer at `a9c183f9`
 - [pkg/rt/core/ir/lower.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg): the backend that has not adopted it

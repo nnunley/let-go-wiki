@@ -172,6 +172,7 @@ source page now describe #684's window seeding (five snapshots per key, median i
 three, mixed-capture rejection). reader re-pinned at a6763e77 with all six divergences re-probed; notes
 #787's `#_` comment-skip. namespaces-and-vars, generated-artifacts (seven outputs), native-primitives,
 compile-paths, go-backend: no claim moved.
+
 ## [2026-09-07] ingest | docs/known-divergences.md (#771, renamed by #825) as a source page
 New sources/docs-known-divergences.md: the two intentional divergence groups (intrinsic map order, rune
 character model), the temporary entries, the shared-suite `:lg` overrides, and what moved after the ledger

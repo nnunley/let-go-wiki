@@ -5,7 +5,11 @@ title: "Catalog-driven dispatch (PRs #612, #666, #667, #712)"
 description: "nnunley's refactors that moved per-op and per-form facts into single-source catalogs with load-time coherence checks, and closed the accessor seam around the IR function's shape."
 tags: [compiler, bytecode, go]
 resource: "https://github.com/nooga/let-go/pull/612"
-sources: ["pr: https://github.com/nooga/let-go/pull/612, 2026-09-05"]
+sources:
+  - "pr: https://github.com/nooga/let-go/pull/612, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/666, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/667, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/712, 2026-09-05"
 created: "2026-09-05"
 updated: "2026-09-05"
 status: active
@@ -28,4 +32,7 @@ Four PRs by Norman Nunley under the consolidation epic #268, merged 2026-07-22 t
 
 # Citations
 
-[1] https://github.com/nooga/let-go/pull/612
+- [PR #612 — catalog-driven op dispatch](https://github.com/nooga/let-go/pull/612)
+- [PR #666 — per-op runtime contribution rules](https://github.com/nooga/let-go/pull/666)
+- [PR #667 — catalog-driven form-head dispatch](https://github.com/nooga/let-go/pull/667)
+- [PR #712 — IR function accessors](https://github.com/nooga/let-go/pull/712)

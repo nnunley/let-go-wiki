@@ -50,7 +50,8 @@ Grammar-style rule definitions of the shape `(def NAME (name* ... (fn ...) ...))
 
 ## Citations
 
-**Resource:** [pkg/rt/core/ir/lower.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg): strategy header, `record-block-junk!`, `check-cross-block!`, RPO emission  
+**Resource:** [pkg/rt/core/ir/lower.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg): strategy header, `record-block-junk!`, `check-cross-block!`, RPO emission
+
 **Related:**
 - [test/ir_lower_stack_discipline_test.lg](https://github.com/nooga/let-go/blob/main/test/ir_lower_stack_discipline_test.lg): the shape ratchet
 - [pkg/rt/core/core.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/core.lg): the `defn` hybrid fallback that catches an aborted lowering

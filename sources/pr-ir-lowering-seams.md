@@ -5,7 +5,12 @@ title: "IR lowering seams and census (PRs #579, #580, #647, #648, #649)"
 description: "nnunley's 2026-07/08 changes to the bytecode lowering and its measurement: var-load re-emission with a shape ratchet, strict mode with the first bytecode-path census, the def+name* seam, block-junk agreement with RPO order, and tail-call fusion."
 tags: [compiler, bytecode, vm]
 resource: "https://github.com/nooga/let-go/pull/580"
-sources: ["pr: https://github.com/nooga/let-go/pull/580, 2026-09-05"]
+sources:
+  - "pr: https://github.com/nooga/let-go/pull/579, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/580, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/647, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/648, 2026-09-05"
+  - "pr: https://github.com/nooga/let-go/pull/649, 2026-09-05"
 created: "2026-09-05"
 updated: "2026-09-05"
 status: active
@@ -29,4 +34,8 @@ Five PRs by Norman Nunley, merged 2026-07-22 to 2026-08-18.
 
 # Citations
 
-[1] https://github.com/nooga/let-go/pull/580
+- [PR #579 — var-load re-emission and lowering-shape ratchet](https://github.com/nooga/let-go/pull/579)
+- [PR #580 — strict IR compilation and bytecode-path census](https://github.com/nooga/let-go/pull/580)
+- [PR #647 — the `def` + `name*` IR seam](https://github.com/nooga/let-go/pull/647)
+- [PR #648 — block-junk agreement and RPO order](https://github.com/nooga/let-go/pull/648)
+- [PR #649 — tail-call fusion](https://github.com/nooga/let-go/pull/649)

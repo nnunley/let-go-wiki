@@ -59,7 +59,8 @@ The catalogs describe ops; the function's shape is a separate representation, an
 
 ## Citations
 
-**Resource:** [pkg/ir/ir_ops.lg](https://github.com/nooga/let-go/blob/main/pkg/ir/ir_ops.lg): the op table and the generator  
+**Resource:** [pkg/ir/ir_ops.lg](https://github.com/nooga/let-go/blob/main/pkg/ir/ir_ops.lg): the op table and the generator
+
 **Related:**
 - [pkg/rt/core/ir/ops.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/ops.lg): `IROp`, `op-registry`, the load-time coherence check
 - [pkg/rt/core/ir/form_heads.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/form_heads.lg): the form-head catalog

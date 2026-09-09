@@ -63,7 +63,8 @@ The pending tail is held until the EPIC-016 re-check verdict on an index-RPN mai
 
 ## Citations
 
-**Resource:** [pkg/rt/core/ir/passes/liveness.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/passes/liveness.lg): the analysis and its equations  
+**Resource:** [pkg/rt/core/ir/passes/liveness.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/passes/liveness.lg): the analysis and its equations
+
 **Related:**
 - [pkg/rt/core/ir/passes/blockarg.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/passes/blockarg.lg): `classify-block-arg`, `classify-census`
 - [pkg/rt/core/ir/lower.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg): `check-cross-block!`
