@@ -5,9 +5,9 @@ title: "Clojure Compatibility"
 description: "Where let-go IS and ISN'T compatible with Clojure JVM: known limitations, feature parity, and behavioral differences."
 tags: [clojure, lisp, runtime]
 resource: "https://github.com/nooga/let-go/blob/main/docs/guide/clojure-compatibility.md"
-sources: ["docs/guide/clojure-compatibility.md", "docs/clojure-compat-roadmap.md"]
+sources: ["docs/guide/clojure-compatibility.md", "docs/clojure-compat-roadmap.md", "repo: nooga/let-go docs/known-divergences.md, test/map_order_test.lg @ 638b4a6a, 2026-09-07"]
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-09-07"
 status: stable
 ---
 
@@ -70,6 +70,11 @@ let-go is a Clojure dialect, not a drop-in JVM Clojure replacement. Most idiomat
 ### Sequence operations
 
 - `concat*` (used internally by quasiquote) is eager; user-facing `concat` is lazy.
+
+### Maps and characters
+
+- Traversal order of map literals and `hash-map` is unspecified by contract. Since #764 (2026-09-07) maps of up to eight entries, `array-map`, and the builders on them (`assoc` chains, `into`, `zipmap`, `merge`, `select-keys`) keep insertion order, and the ninth `assoc` promotes to hash order. An `array-map` constructed with more than eight pairs promotes at construction, unlike Clojure's. Use `sorted-map` for comparator order.
+- A character is one Unicode scalar value (a Go rune), not a UTF-16 code unit: `(count "😀")` is 1 where JVM Clojure gives 2, and `(char 65895)` yields U+10167 where the JVM throws. `char` does not yet reject surrogate-range integers. The ledger for these and their shared-suite overrides is [Known Clojure divergences](../sources/docs-known-divergences.md).
 
 ## Reader-level feature detection
 
