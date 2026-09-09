@@ -193,3 +193,27 @@ the rest of `ir.*`), says why the skip must precede pool population, and records
 bootstrap puts ir.data's chunks in the shared pool, so `lgbstat` finds 111 of 937 bundle chunks under
 `<embedded:ir.data:lgbgen-bootstrap>` at a9c183f9. The first draft cited `isBundleSkippedTool` and
 `compileToolsForLowering`, which exist only on #735's branch; corrected to main's names.
+## [2026-09-05] ingest | compiler architecture (nnunley's 2026 refactors): 4 concepts, 2 ideas, 5 sources
+op-catalog (#612/#666/#667/#712, epic #268), structurize (#574/#674/#675), block-interface-and-liveness
+(#575, liveness.lg + blockarg.lg), bytecode-lowering (#579/#647/#648/#649/#580); ideas/compiler-namespace-
+architecture (#786) and ideas/ir-representation-roadmap (#574/#575). Adversarially reviewed at 0911118: 2
+findings fixed (only lower_go.lg requires ir.structurize on main; check-cross-block! exempts cheap loads
+except :load-var, contrary to its docstring). Concepts marked stable, ideas active; per the landing plan this
+slice is for discussion with Norman before it lands, since it restates his PRs and open proposals.
+
+## [2026-09-06] update | structurize + bytecode-lowering: #675 and #779 merged
+
+structurize: keyword-cond chains now absorb into :switch (b7e04d6). bytecode-lowering: fn-template consts
+are exempt from cheap-load re-emission (a32767d, closure identity).
+
+## [2026-09-09] update | compiler-architecture slice re-verified against let-go main a9c183f9
+
+structurize: the Go emission for a folded chain is a type switch on vm.Keyword guarding a string switch on
+the keyword's full name (not vm.KeywordName); the gate also needs three arms, false-edge ownership of each
+absorbed block, and no loop headers or targets among them; absorbed blocks and instructions are reported
+back and liveness's reachable-nids skips them. block-interface-and-liveness: reachable-nids and the
+pipeline.lg load-time injection into lower_go recorded. compiler-namespace-architecture and its source:
+#735 approved 2026-09-08 (head ab699061, re-verified there); the bundle-membership question answered
+2026-09-09 (Norman is fine with gogen and the compiler in the bundle); the 23 ms boot figure withdrawn,
+replaced by the interleaved measurement; the 2026-09-08 #786 comment (step 5 surface, step 3 prefix trap).
+op-catalog and bytecode-lowering: no claim moved. log: one duplicated 2026-09-06 entry dropped.
