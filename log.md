@@ -205,7 +205,14 @@ slice is for discussion with Norman before it lands, since it restates his PRs a
 structurize: keyword-cond chains now absorb into :switch (b7e04d6). bytecode-lowering: fn-template consts
 are exempt from cheap-load re-emission (a32767d, closure identity).
 
-## [2026-09-06] update | structurize + bytecode-lowering: #675 and #779 merged
+## [2026-09-09] update | compiler-architecture slice re-verified against let-go main a9c183f9
 
-structurize: keyword-cond chains now absorb into :switch (b7e04d6). bytecode-lowering: fn-template consts
-are exempt from cheap-load re-emission (a32767d, closure identity).
+structurize: the Go emission for a folded chain is a type switch on vm.Keyword guarding a string switch on
+the keyword's full name (not vm.KeywordName); the gate also needs three arms, false-edge ownership of each
+absorbed block, and no loop headers or targets among them; absorbed blocks and instructions are reported
+back and liveness's reachable-nids skips them. block-interface-and-liveness: reachable-nids and the
+pipeline.lg load-time injection into lower_go recorded. compiler-namespace-architecture and its source:
+#735 approved 2026-09-08 (head ab699061, re-verified there); the bundle-membership question answered
+2026-09-09 (Norman is fine with gogen and the compiler in the bundle); the 23 ms boot figure withdrawn,
+replaced by the interleaved measurement; the 2026-09-08 #786 comment (step 5 surface, step 3 prefix trap).
+op-catalog and bytecode-lowering: no claim moved. log: one duplicated 2026-09-06 entry dropped.

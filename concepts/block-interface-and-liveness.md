@@ -6,10 +6,10 @@ description: "Block-args as the stack VM's substitute for locals, the shared per
 tags: [compiler, vm, bytecode]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/passes/liveness.lg"
 sources:
-  - "repo: nooga/let-go pkg/rt/core/ir/passes/{liveness,blockarg}.lg, pkg/rt/core/ir/lower.lg (check-cross-block!) @ 0911118, 2026-09-05"
+  - "repo: nooga/let-go pkg/rt/core/ir/passes/{liveness,blockarg,pipeline}.lg, pkg/rt/core/ir/lower.lg (check-cross-block!) @ a9c183f9 (liveness re-read after #675), 2026-09-09"
   - "issue: nooga/let-go#575 (EPIC-018, story ledger), #574 (EPIC-017); pr: #580 (why the not-on-stack bucket exists), #579 (DUP_NTH measurement), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-09"
 status: stable
 ---
 
@@ -29,7 +29,7 @@ live-out[B] = ⋃ over targets t of
                 {v ∈ live-in[t] : v ∉ params(t)} ∪ {arg[i] : param[i] ∈ live-in[t]}
 ```
 
-Results are memoised on a content-based structural signature, never on object identity. `lower_go`'s own `live-nids` was the one genuine duplicate of this analysis and was relocated onto it (#575, STORY-0069).
+Results are memoised on a content-based structural signature, never on object identity. `lower_go`'s own `live-nids` was the one genuine duplicate of this analysis and was relocated onto it (#575, STORY-0069). The file also owns `reachable-nids`, the read-set the Go lowering's dead-code elimination uses: backward reachability from value-reading terminators and calls through refs and block-arg edges. Since #675 it skips the instructions [structurize](structurize.md) folded into a `:switch`, and `ir.passes.pipeline` hands it to `lower_go` through a setter at load time (`set-reachable-nids-fn!`) rather than a `:require`, deferring the reference to runtime so bootstrap load order does not matter.
 
 ## Classifying block-args
 

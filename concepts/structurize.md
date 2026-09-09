@@ -6,10 +6,10 @@ description: "The pass that recovers a target-independent control tree from the 
 tags: [compiler, go, bytecode]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/structurize.lg"
 sources:
-  - "repo: nooga/let-go pkg/rt/core/ir/structurize.lg, pkg/rt/core/ir/lower_go.lg, pkg/rt/core/ir/lower.lg @ 0911118, 2026-09-05"
+  - "repo: nooga/let-go pkg/rt/core/ir/structurize.lg, pkg/rt/core/ir/lower_go.lg, pkg/rt/core/ir/lower.lg, pkg/rt/core/ir/passes/liveness.lg @ a9c183f9 (structurize and lower_go re-read after the #675 re-land, b7e04d6), 2026-09-09"
   - "issue: nooga/let-go#574 (EPIC-017, the structural level as root cause), #674 (param-carrying keyword-cond chains); pr: #675 (keyword-cond to switch, merged 2026-09-06 as b7e04d6), #579 (the bytecode backend never adopted it), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-06"
+updated: "2026-09-09"
 status: stable
 ---
 
@@ -40,13 +40,13 @@ The `bid` leaves let the backend emit each block's instructions and edge copies.
 ## Two known gaps
 
 - **`:try` is not a structural node.** try/catch leaks to the op level, and `lower_go` special-cases it outside the tree walk. Capturing the guarded region once at the structural level is the other unscheduled EPIC-017 story.
-- **Keyword-cond chains.** `case` and `cond` over keywords lowered to nested `if`/`else` in Go until #675 (merged 2026-09-06, b7e04d6), which teaches structurize to absorb a chain into a `:switch` node and emit a native Go `switch` through `vm.KeywordName`, gated to the maximally conservative shape: every absorbed test block has zero block params and only pure `:const` and `:eq` instructions, with a side-effecting test block falling back. That gate excludes the canonical `(cond (= x :a) 1 (= x :b) 2 ...)`, whose discriminant `build.lg` threads through block params; #674 tracks the boundary analysis needed to admit it, with the two Go-compile failure signatures (`declared and not used`, `undefined: step_*`) as the adversarial test set, after several attempts oscillated between under- and over-rejection.
+- **Keyword-cond chains.** `case` and `cond` over keywords lowered to nested `if`/`else` in Go until #675 (merged 2026-09-06, b7e04d6), which teaches structurize to absorb a chain into a `:switch` node. The Go backend emits it as a type switch on `vm.Keyword` guarding an inner `switch` on the keyword's full name (namespace included, so `:foo/a` and `:bar/a` stay distinct), with any non-keyword discriminant falling to the default arm. The fold is gated to the maximally conservative shape: at least three arms testing one canonical discriminant (single-predecessor block-arg copies are followed back to the root value), every absorbed test block with zero block params and only pure `:const` and `:eq` instructions, each owned by the previous test's false edge, and none of them a loop header, continue target, or break target. Anything else falls back to nested `:if`. The pass reports what it folded as `:absorbed-blocks` and `:absorbed-insts`, and `reachable-nids` in [liveness](block-interface-and-liveness.md) skips those instructions so the folded loads and comparisons are not emitted as dead code. That gate excludes the canonical `(cond (= x :a) 1 (= x :b) 2 ...)`, whose discriminant `build.lg` threads through block params; #674 tracks the boundary analysis needed to admit it, with the two Go-compile failure signatures (`declared and not used`, `undefined: step_*`) as the adversarial test set, after several attempts oscillated between under- and over-rejection.
 
 ## Citations
 
 **Resource:** [pkg/rt/core/ir/structurize.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/structurize.lg): the pass and the tree grammar in its header  
 **Related:**
-- [pkg/rt/core/ir/lower_go.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower_go.lg): the only consumer at `0911118`
+- [pkg/rt/core/ir/lower_go.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower_go.lg): the only consumer at `a9c183f9`
 - [pkg/rt/core/ir/lower.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg): the backend that has not adopted it
 - Issues and PRs: [#574](https://github.com/nooga/let-go/issues/574), [#674](https://github.com/nooga/let-go/issues/674), [#675](https://github.com/nooga/let-go/pull/675), [#579](https://github.com/nooga/let-go/pull/579)
 
