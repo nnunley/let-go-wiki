@@ -7,9 +7,9 @@ tags: [compiler, bytecode, vm]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/README.md"
 sources:
   - "repo: nooga/let-go pkg/rt/core/ir/README.md, pkg/rt/core/ir/*.lg (implementation), 2026-07-02"
-  - "repo: nooga/let-go cmd/lgbgen/main.go, cmd/lgbstat on pkg/rt/core_compiled.lgb @ a9c183f9 (bundle-skip mechanism and the ir.data bootstrap leak, re-verified), 2026-09-09"
+  - "repo: nooga/let-go cmd/lgbgen/main.go @ 83931029 (bundle-skip mechanism; ir.data bootstrap moved after the bundle write by #838), cmd/lgbstat on pkg/rt/core_compiled.lgb @ a9c183f9 and 83931029, 2026-09-10"
 created: "2026-07-02"
-updated: "2026-09-09"
+updated: "2026-09-10"
 status: stable
 ---
 
@@ -185,7 +185,7 @@ The IR layer's load-time dance is normally invisible but worth knowing:
 - `data.lg` is **not** loaded from the precompiled bundle; it loads from source. Its `;; lgbgen:skip` directive keeps it out of the bundle's namespace list, because the intern block at the bottom needs live function values to register accessors.
 - The rest of the family is excluded by a second, separate rule. `cmd/lgbgen`'s `isIRBundleSkipped` matches `ir` and every `ir.` descendant, so no other pipeline namespace is compiled into `core_compiled.lgb`. The stated reason is startup cost: the pipeline is more source than the rest of core, a plain `lg` script never touches it, and decoding it on every process start measured about 6 ms. It stays embedded as *source* and loads on demand.
 - The skip has to happen before the bundle is encoded, not merely be filtered out of the namespace order. `EncodeBundleOrdered` emits every const in the pool and each func const drags its chunk in, so a skipped namespace must never enter the pool ahead of `writeBundle`. `compileIRForLowering` compiles the `ir.*` set afterwards, so the Go-lowering target can still resolve them.
-- `data.lg` is the exception to that ordering, and it leaks. `lgbgen` bootstraps it into the shared const pool first (phase 0) so downstream namespaces can resolve `ir/*` symbols, and that pool is what the bundle serialises. `cmd/lgbstat` on the shipped bundle at `a9c183f9` attributes 111 of 937 chunks (4,773 of 49,821 code int32s) to `<embedded:ir.data:lgbgen-bootstrap>`: the namespace is not in the bundle's list, but its compiled functions are in the file.
+- `data.lg` was the exception to that ordering until #838 (merged 2026-09-10, `83931029`). `lgbgen` bootstrapped it into the shared const pool first so downstream namespaces could resolve `ir/*` symbols, and that pool is what the bundle serialises, so its compiled functions rode along: `cmd/lgbstat` at `a9c183f9` attributed 111 of 937 chunks to `<embedded:ir.data:lgbgen-bootstrap>`. The bootstrap now runs inside `compileIRForLowering`, after the bundle is written, which took `core_compiled.lgb` from 311,302 to 273,748 bytes and boot with it.
 - `ir.build` declares `(:require ir.data)`, so loading build automatically triggers data's source load.
 
 If you see "nil is not a function" errors during compilation, the most likely cause is that `data.lg` didn't finish loading before the caller compiled. Add `ir.data` to a `:require` clause or load it explicitly.

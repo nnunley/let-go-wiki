@@ -217,3 +217,9 @@ pipeline.lg load-time injection into lower_go recorded. compiler-namespace-archi
 2026-09-09 (Norman is fine with gogen and the compiler in the bundle); the 23 ms boot figure withdrawn,
 replaced by the interleaved measurement; the 2026-09-08 #786 comment (step 5 surface, step 3 prefix trap).
 op-catalog and bytecode-lowering: no claim moved. log: one duplicated 2026-09-06 entry dropped.
+
+## [2026-09-10] update | ir-pipeline: #838 closed the ir.data bootstrap leak
+
+nooga/let-go#838 (83931029) moved lgbgen's ir.data bootstrap into compileIRForLowering, after the bundle
+is written; core_compiled.lgb 311,302 -> 273,748 bytes. §Loading Order's fourth bullet now records the
+leak as closed and re-pins at 83931029.
