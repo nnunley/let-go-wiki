@@ -13,6 +13,14 @@ _ABS_LINK_RE = re.compile(r"\]\((/[^)]+\.md)\)")
 # Well-formedness vocabularies and formats.
 _STATUS_VOCAB = {"speculative", "active", "stable", "archived"}
 _CATEGORY_VOCAB = {"concept", "entity", "idea", "project", "source", "reference"}
+# Mirrors the kinds AGENTS.md documents. Source is included because every page
+# under sources/ already uses it; it was missing from the documented list, and
+# with only the key checked and never its value the two were free to disagree.
+# Var, Namespace and Package are unused so far but are documented kinds.
+_TYPE_VOCAB = {
+    "Concept", "Entity", "Source", "Idea", "Project", "Reference",
+    "Function", "Macro", "Var", "Namespace", "Package",
+}
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _FM_KEY_RE = re.compile(r"^([A-Za-z_][\w-]*):", re.MULTILINE)
 _FENCE = "`" * 3
@@ -200,6 +208,10 @@ def validate_page(
     if category is not None and category not in _CATEGORY_VOCAB:
         errors.append(
             f"{path}: category '{category}' not in {sorted(_CATEGORY_VOCAB)}")
+    page_type = fm.get("type")
+    if page_type is not None and page_type not in _TYPE_VOCAB:
+        errors.append(
+            f"{path}: type '{page_type}' not in {sorted(_TYPE_VOCAB)}")
     for k in ("created", "updated"):
         v = fm.get(k)
         if v is not None and not (isinstance(v, str) and _DATE_RE.match(v)):
