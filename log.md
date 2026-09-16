@@ -226,7 +226,7 @@ leak as closed and re-pins at 83931029.
 
 ## [2026-09-16] update | int width: :int lowers to int64, and vm.Int already is one
 
-nooga/let-go#859 (merged) made `vm.Int` an `int64` on every host; #862 (open, approved) follows it
+nooga/let-go#859 (merged) made `vm.Int` an `int64` on every host; #862 (merged 2026-09-16 as a044ead1) follows it
 through the Go backend so a let-go `:int` lowers to `int64` rather than host-width `int`. go-backend:
 the proven-type list and the direct-call example signature re-spelled, with a note that the
 override-eligible boxing list keeps `int` on purpose. native-primitives: the `Subs` example and the

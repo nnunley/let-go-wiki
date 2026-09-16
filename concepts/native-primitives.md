@@ -9,7 +9,7 @@ sources:
   - "repo: nooga/let-go internal/primgen/*.go, cmd/lgprimgen, cmd/hoist-natives, pkg/rt/{native_prims,native_prims_lifecycle,native_direct,native_direct_install,installers}.go, pkg/rt/corefns, Makefile @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#639 (hoist 222 primitives), #640 (per-package registrar surface), #654 (in-process go/format), #613 (direct-call natives), 2026-09-05"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
-  - "pr: nooga/let-go#862 (int64 scalar params on Subs/Nth/Deref) @ eb58159, 2026-09-16"
+  - "pr: nooga/let-go#862 (int64 scalar params on Subs/Nth/Deref) @ a044ead1, 2026-09-16"
 created: "2026-09-05"
 updated: "2026-09-16"
 status: stable

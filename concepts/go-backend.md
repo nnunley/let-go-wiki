@@ -9,7 +9,7 @@ sources:
   - "repo: nooga/let-go pkg/rt/core/ir/lower_go.lg, pkg/rt/core/ir/passes/{pipeline,entry_frame}.lg, pkg/rt/gogen/gogen.lg, scripts/lg-compile, cmd/lg-runtime/main.go, examples/aot/README.md, Makefile @ 0911118, 2026-09-05"
   - "doc: nooga/let-go docs/design/go-aot-backend.md (last-verified 2026-06-05) @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#557 (gogen embedded), #613 (direct-call natives), #658 (lg_no_http), #729 (native-entry gate + frame fix), #649 (tail-call fusion); issue #783 (lifted var nil in entry-frame binaries, open), 2026-09-05"
-  - "pr: nooga/let-go#862 (lower :int to int64 on every host), #859 (vm.Int is int64) @ eb58159, 2026-09-16"
+  - "pr: nooga/let-go#862 (lower :int to int64 on every host), #859 (vm.Int is int64) @ a044ead1, 2026-09-16"
 created: "2026-09-05"
 updated: "2026-09-16"
 status: stable

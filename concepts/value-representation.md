@@ -5,7 +5,7 @@ title: "Value Representation and Numeric Performance"
 description: "How let-go represents values in memory and optimizes numeric operations on the stack VM."
 tags: [vm, runtime, bytecode, go]
 resource: "https://github.com/nooga/let-go/blob/main/docs/design/value-representation-and-numeric-performance.md"
-sources: ["design: value-representation-and-numeric-performance.md, 2026-06-05", "repo: nooga/let-go pkg/vm/int.go @ eb58159, 2026-09-16", "pr: nooga/let-go#859 (vm.Int is int64); issue #867 (Unbox narrows on 32-bit), 2026-09-16"]
+sources: ["design: value-representation-and-numeric-performance.md, 2026-06-05", "repo: nooga/let-go pkg/vm/int.go @ a044ead1, 2026-09-16", "pr: nooga/let-go#859 (vm.Int is int64); issue #867 (Unbox narrows on 32-bit), 2026-09-16"]
 created: "2026-07-02"
 updated: "2026-09-16"
 status: stable
