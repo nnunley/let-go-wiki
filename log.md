@@ -223,3 +223,13 @@ op-catalog and bytecode-lowering: no claim moved. log: one duplicated 2026-09-06
 nooga/let-go#838 (83931029) moved lgbgen's ir.data bootstrap into compileIRForLowering, after the bundle
 is written; core_compiled.lgb 311,302 -> 273,748 bytes. §Loading Order's fourth bullet now records the
 leak as closed and re-pins at 83931029.
+
+## [2026-09-16] update | int width: :int lowers to int64, and vm.Int already is one
+
+nooga/let-go#859 (merged) made `vm.Int` an `int64` on every host; #862 (open, approved) follows it
+through the Go backend so a let-go `:int` lowers to `int64` rather than host-width `int`. go-backend:
+the proven-type list and the direct-call example signature re-spelled, with a note that the
+override-eligible boxing list keeps `int` on purpose. native-primitives: the `Subs` example and the
+scanner sentence take `int64`, plus why a scalar int parameter is declared that way (a host-width
+parameter costs the direct call). value-representation: `type Int int` corrected to `int64`, and
+`Int.Unbox()` marked as still narrowing, which is issue #867.

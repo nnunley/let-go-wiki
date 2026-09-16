@@ -9,8 +9,9 @@ sources:
   - "repo: nooga/let-go internal/primgen/*.go, cmd/lgprimgen, cmd/hoist-natives, pkg/rt/{native_prims,native_prims_lifecycle,native_direct,native_direct_install,installers}.go, pkg/rt/corefns, Makefile @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#639 (hoist 222 primitives), #640 (per-package registrar surface), #654 (in-process go/format), #613 (direct-call natives), 2026-09-05"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
+  - "pr: nooga/let-go#862 (int64 scalar params on Subs/Nth/Deref) @ eb58159, 2026-09-16"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-16"
 status: stable
 ---
 
@@ -28,7 +29,7 @@ A primitive is any exported Go function carrying `//lg:native` in its doc commen
 //
 //lg:native
 //lg:name subs
-func Subs(s string, start int) (string, error) { ... }
+func Subs(s string, start int64) (string, error) { ... }
 ```
 
 | Directive | Meaning |
@@ -39,7 +40,9 @@ func Subs(s string, start int) (string, error) { ... }
 | `//lg:private` | parsed into `primSpec.Private` but not read by the emitter, so it has no effect on registration at `0911118` |
 | `//lg:bind` | package-level marker selecting own mode for the whole package (below) |
 
-The scanner reads parameter and result types from the Go signature, so a primitive can take `string` and `int` and return `(string, error)`; the generated adapter does the boxing and the argument-count check. A variadic `...vm.Value` signature registers with arity `-1`.
+The scanner reads parameter and result types from the Go signature, so a primitive can take `string` and `int64` and return `(string, error)`; the generated adapter does the boxing and the argument-count check. A variadic `...vm.Value` signature registers with arity `-1`.
+
+Scalar integer parameters are declared `int64` rather than host-width `int` so that a lowered caller still matches the signature. The [Go backend](go-backend.md) lowers a let-go `:int` to `int64` on every host (#862); a primitive declaring `int` compiles fine but a lowered call to it falls back to the trampoline. `Subs` at both arities, `Nth` at both, and `Deref` with a timeout were converted for that reason.
 
 ## The generator
 
