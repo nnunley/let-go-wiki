@@ -243,3 +243,16 @@ that the value sits in the interface data word. Measured instead: Go's
 larger heap-allocates eight bytes (2.0 ns/0 allocs vs 8.2 ns/1 alloc, go1.26.5
 darwin/arm64). Matters because it splits a hot collection loop — masks and small
 elements box free, indices past 255 do not.
+
+## [2026-09-17] new | typed-arrays, and #796 on the go-backend defect list
+
+typed-arrays: vm.TypedArray is a kind tag plus a real Go slice, but the AOT
+lowering has no way to say "array of double" — kind-bit enumerates eight scalars
+— so aget lowers to the same rt.CoreAgetf trampoline a vector access gets, and
+every iteration re-runs a loop-invariant kind switch and type assertion. Written
+because nothing in the wiki covered arrays or the array half of #358.
+
+go-backend: the open-defect list carried #783 and #607; #796 was filed the day
+before that section was written and belongs beside them — the main-chunk replay
+that fixed the empty-namespace-table defect makes a program using the documented
+*compiling-aot* guard run twice, once interpreted and once native.

@@ -74,6 +74,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/stack-vm](concepts/stack-vm.md) — The stack-based bytecode interpreter: operand-stack frames, the fetch-decode-dispatch loop, and specialized arithmetic opcodes.
 - [concepts/structurize](concepts/structurize.md) — The pass that recovers a target-independent control tree from the IR's block-parameter CFG (if, loop, break, continue, seq, with goto as the escape hatch), which backend consumes it and which does not, the :try gap, and the keyword-cond to switch absorption.
 - [concepts/type-inference](concepts/type-inference.md) — How the let-go compiler infers types during IR lowering and uses a mergeable cache to make parallel lowering both fast and deterministic.
+- [concepts/typed-arrays](concepts/typed-arrays.md) — vm.TypedArray, the mutable Go-slice-backed array behind aget/aset, and why the AOT lowering treats it exactly like a persistent collection.
 - [concepts/value-representation](concepts/value-representation.md) — How let-go represents values in memory and optimizes numeric operations on the stack VM.
 - [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup.
 
