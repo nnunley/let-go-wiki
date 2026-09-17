@@ -5,9 +5,9 @@ title: "Value Representation and Numeric Performance"
 description: "How let-go represents values in memory and optimizes numeric operations on the stack VM."
 tags: [vm, runtime, bytecode, go]
 resource: "https://github.com/nooga/let-go/blob/main/docs/design/value-representation-and-numeric-performance.md"
-sources: ["design: value-representation-and-numeric-performance.md, 2026-06-05", "repo: nooga/let-go pkg/vm/int.go @ a044ead1, 2026-09-16", "pr: nooga/let-go#859 (vm.Int is int64); issue #867 (Unbox narrows on 32-bit), 2026-09-16"]
+sources: ["design: value-representation-and-numeric-performance.md, 2026-06-05", "repo: nooga/let-go pkg/vm/int.go @ a044ead1, 2026-09-16", "pr: nooga/let-go#859 (vm.Int is int64); issue #867 (Unbox narrows on 32-bit), 2026-09-16", "bench: interface-boxing allocs for type Int int64, go1.26.5 darwin/arm64, 2026-09-17"]
 created: "2026-07-02"
-updated: "2026-09-16"
+updated: "2026-09-17"
 status: stable
 ---
 
@@ -22,7 +22,14 @@ The core abstraction is simple:
 - **`Value` interface** (`pkg/vm/value.go`): defines `Type() ValueType`, `Unbox() interface{}`, and `String()` methods.
 - **Numeric type `Int`** (`pkg/vm/int.go`): defined as `type Int int64` and implements `Value` using value receivers. It was host-width `int` until #859; widening it made let-go integers 64-bit on 32-bit targets (wasm, `linux/386`, `linux/arm`) as well.
 
-When an `Int` is stored in an interface, Go does **not allocate**—the int is stored directly in the interface data word. This is the key: small scalars are cheap to box and unbox.
+Storing an `Int` in an interface allocates, but only above a threshold. Go keeps a static array of boxed small integers (`runtime.staticuint64s`), so boxing an `Int` in 0-255 costs nothing; any larger value heap-allocates eight bytes. Measured on go1.26.5 darwin/arm64:
+
+| boxed value | ns/op | allocs/op |
+|---|---|---|
+| `Int(i % 256)` | 2.0 | 0 |
+| `Int(i + 100000)` | 8.2 | 1 (8 B) |
+
+This page previously said boxing never allocates, on the reasoning that the int sits in the interface data word directly. That is not how Go stores non-pointer types in an interface. The practical consequence is that small-integer work boxes free while indices and counters past 255 do not, which is exactly the shape a hot loop over a long collection has.
 
 ## Boxing and Unboxing Paths
 

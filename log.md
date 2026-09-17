@@ -233,3 +233,12 @@ override-eligible boxing list keeps `int` on purpose. native-primitives: the `Su
 scanner sentence take `int64`, plus why a scalar int parameter is declared that way (a host-width
 parameter costs the direct call). value-representation: `type Int int` corrected to `int64`, and
 `Int.Unbox()` marked as still narrowing, which is issue #867.
+
+## [2026-09-17] edit | value-representation: boxing an Int allocates above 255
+
+The page said storing an `Int` in an interface never allocates, on the reasoning
+that the value sits in the interface data word. Measured instead: Go's
+`runtime.staticuint64s` covers 0-255, so a small `Int` boxes free and anything
+larger heap-allocates eight bytes (2.0 ns/0 allocs vs 8.2 ns/1 alloc, go1.26.5
+darwin/arm64). Matters because it splits a hot collection loop — masks and small
+elements box free, indices past 255 do not.
