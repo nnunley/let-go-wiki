@@ -259,3 +259,21 @@ empty-namespace-table defect also made a program using the documented
 before this landed, so it is recorded as resolved by #902, which added
 lg -c -entry-frame-entry and left *compiling-aot* false at runtime. #783 and
 #607 were re-checked at 36b13f79 and are still open.
+
+## [2026-09-20] update | compiling-aot: -entry-frame-entry keeps a guarded entry from running once too often
+
+`*compiling-aot*` is documented as true during `-c`/`-b`/`-w` and false at
+runtime, which is what `pkg/cli/cli.go` does, but no page recorded how that
+holds in an AOT native-entry binary, which is where a reader of
+`docs/guide/usage.md` most needs it. The frame replays the program's top-level
+forms before it calls the entry, with the var false, so the guard the guide
+recommends for exactly this case used to fire and the program ran twice, once
+interpreted and once native (#796). #902 closed that in v1.13.0 by building the
+frame's bytecode with `lg -c -entry-frame-entry ns/-main`, which omits only the
+selected entry call and leaves every other top-level form, including guarded
+initialization in required namespaces, running with the var false. Both bundle
+shapes re-read at `36b13f79`: `lg -c` emits an empty namespace table only for a
+single-file program, so once a program requires another namespace the top level
+runs inside `LoadProgramNamespaces` and the main-chunk replay returns early.
+wasm-compilation gains the mechanism, guide-usage a corrected takeaway,
+pr-native-entry-gate a follow-up bullet beside #783.
