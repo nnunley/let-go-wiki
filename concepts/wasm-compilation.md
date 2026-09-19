@@ -5,9 +5,9 @@ title: "WASM Compilation"
 description: "Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup."
 tags: [wasm, compiler, runtime]
 resource: "https://github.com/nooga/let-go/tree/main/wasm"
-sources: ["repo: nooga/let-go wasm/, docs/guide/usage.md, pkg/bundle, 2026-07-02", "repo: nooga/let-go pkg/cli/cli.go, docs/guide/usage.md @ 638b4a6a, 2026-09-07"]
+sources: ["repo: nooga/let-go wasm/, docs/guide/usage.md, pkg/bundle, 2026-07-02", "repo: nooga/let-go pkg/cli/cli.go, docs/guide/usage.md @ 638b4a6a, 2026-09-07", "repo: nooga/let-go pkg/rt/run.go, pkg/rt/core/ir/passes/entry_frame.lg @ 8f65bf68, 2026-09-19", "issue: nooga/let-go#796; pr #902 (open), 2026-09-19"]
 created: "2026-07-02"
-updated: "2026-09-07"
+updated: "2026-09-19"
 status: stable
 ---
 
@@ -52,6 +52,8 @@ When `index.html` loads, it:
 Programs can branch on compilation target:
 - `*compiling-aot*` is `true` while `lg` compiles with `-c`, `-b`, or `-w`, and `false` at runtime (useful for skipping side effects at compile time). It is set in `pkg/cli/cli.go` wherever any of the three output flags is given, so a guard written for WASM builds also fires for bytecode and bundle compiles.
 - `*in-wasm*` is `true` when running inside a WASM build; `false` for native.
+
+The runtime half of that promise does not hold in an AOT native-entry binary. `lg-compile --entry-frame` emits a frame that replays the program's top-level forms (through `rt.LoadProgramNamespaces`, then `rt.RunProgramMainChunk`) before it calls the entry, and `*compiling-aot*` is false throughout. So the guard `docs/guide/usage.md` recommends for exactly this situation, `(when-not *compiling-aot* (-main))`, passes during the replay and the binary enters the program twice: once on the VM, then once natively (#796). Which half of the prologue runs the top level depends on the bundle. `lg -c` emits an empty namespace table only for a single-file program; once the program requires another namespace, `MainChunk` is one of the `NSOrder` chunks, so the top level runs during the namespace load and the main-chunk replay no-ops by design. #902 proposes bracketing both halves with the var set; the semantics question it raises, whether `*compiling-aot*` may also mean "this pass over the top level is not the program's run", is open.
 
 Use `:lg` reader conditionals to guard WASM-only or native-only code:
 ```clojure

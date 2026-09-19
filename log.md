@@ -223,3 +223,18 @@ op-catalog and bytecode-lowering: no claim moved. log: one duplicated 2026-09-06
 nooga/let-go#838 (83931029) moved lgbgen's ir.data bootstrap into compileIRForLowering, after the bundle
 is written; core_compiled.lgb 311,302 -> 273,748 bytes. §Loading Order's fourth bullet now records the
 leak as closed and re-pins at 83931029.
+
+## [2026-09-19] update | compiling-aot: the guard does not hold in an entry-frame binary
+
+`*compiling-aot*` was documented as true during `-c`/`-b`/`-w` and false at runtime,
+which is what `pkg/cli/cli.go` does, but no page recorded that the runtime half of
+that promise fails in an AOT native-entry binary. The frame replays the program's
+top-level forms before it calls the entry, with the var false, so the guard
+`docs/guide/usage.md` recommends for exactly this case fires and the program runs
+twice — once interpreted, once native (#796). Reproduced both bundle shapes at
+`8f65bf68`: `lg -c` emits an empty namespace table only for a single-file program,
+so once a program requires another namespace the top level runs inside
+`LoadProgramNamespaces` and the main-chunk replay no-ops. wasm-compilation gains the
+mechanism, guide-usage a caveat on its takeaway, pr-native-entry-gate a follow-up
+bullet beside #783. #902 is open against it; its semantics question is not settled
+here.
