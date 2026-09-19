@@ -5,9 +5,9 @@ title: "let-go usage guide"
 description: "Operational guide for running, compiling, and distributing let-go programs."
 tags: [tooling, bytecode, wasm, compiler, reference]
 resource: "https://github.com/nooga/let-go/blob/main/docs/guide/usage.md"
-sources: ["repo: nooga/let-go docs/guide/usage.md, 2026-07-03"]
+sources: ["repo: nooga/let-go docs/guide/usage.md, 2026-07-03", "repo: nooga/let-go docs/guide/usage.md @ 8f65bf68, 2026-09-19", "issue: nooga/let-go#796, 2026-09-19"]
 created: "2026-07-03"
-updated: "2026-07-03"
+updated: "2026-09-19"
 status: stable
 ---
 
@@ -29,7 +29,7 @@ The guide documents the complete lifecycle of a let-go program:
 - let-go supports interactive (REPL) and compiled (-c bytecode, -b binary, -w WASM) distribution modes
 - Standalone binaries are portable copies of the `lg` runtime with bytecode appended—no let-go installation required at runtime
 - WASM output includes a service worker for GitHub Pages compatibility and xterm.js for terminal programs
-- The `*compiling-aot*` flag separates compile-time setup from runtime execution
+- The `*compiling-aot*` flag separates compile-time setup from runtime execution — with one exception the guide does not carry: in an `lg-compile --entry-frame` binary the flag is false while the frame replays the top level, so the guard the guide recommends runs the entry a second time (#796; see [wasm-compilation](../concepts/wasm-compilation.md))
 - lgx provides a git-based, multi-file project workflow with scaffolding and task running
 
 ## Derived pages
