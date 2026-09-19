@@ -228,11 +228,12 @@ leak as closed and re-pins at 83931029.
 
 nooga/let-go#859 (merged) made `vm.Int` an `int64` on every host; #862 (merged 2026-09-16 as a044ead1) follows it
 through the Go backend so a let-go `:int` lowers to `int64` rather than host-width `int`. go-backend:
-the proven-type list and the direct-call example signature re-spelled, with a note that the
-override-eligible boxing list keeps `int` on purpose. native-primitives: the `Subs` example and the
-scanner sentence take `int64`, plus why a scalar int parameter is declared that way (a host-width
-parameter costs the direct call). value-representation: `type Int int` corrected to `int64`, and
-`Int.Unbox()` marked as still narrowing, which is issue #867.
+the proven-type list, the direct-call example signature and the override-eligible boxing list
+re-spelled — #862 moved that list to `int64` as well, mirroring `box-as-value`. native-primitives:
+the `Subs` example and the scanner sentence take `int64`, plus why a scalar int parameter is
+declared that way (a host-width parameter costs the direct call). value-representation:
+`type Int int` corrected to `int64`, and `Int.Unbox()` marked as still narrowing, which is
+issue #867.
 
 ## [2026-09-17] edit | value-representation: boxing an Int allocates above 255
 
