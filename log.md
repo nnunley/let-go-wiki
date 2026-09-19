@@ -223,3 +223,23 @@ op-catalog and bytecode-lowering: no claim moved. log: one duplicated 2026-09-06
 nooga/let-go#838 (83931029) moved lgbgen's ir.data bootstrap into compileIRForLowering, after the bundle
 is written; core_compiled.lgb 311,302 -> 273,748 bytes. §Loading Order's fourth bullet now records the
 leak as closed and re-pins at 83931029.
+
+## [2026-09-16] update | int width: :int lowers to int64, and vm.Int already is one
+
+nooga/let-go#859 (merged) made `vm.Int` an `int64` on every host; #862 (merged 2026-09-16 as a044ead1) follows it
+through the Go backend so a let-go `:int` lowers to `int64` rather than host-width `int`. go-backend:
+the proven-type list, the direct-call example signature and the override-eligible boxing list
+re-spelled — #862 moved that list to `int64` as well, mirroring `box-as-value`. native-primitives:
+the `Subs` example and the scanner sentence take `int64`, plus why a scalar int parameter is
+declared that way (a host-width parameter costs the direct call). value-representation:
+`type Int int` corrected to `int64`, and `Int.Unbox()` marked as still narrowing, which is
+issue #867.
+
+## [2026-09-17] edit | value-representation: boxing an Int allocates above 255
+
+The page said storing an `Int` in an interface never allocates, on the reasoning
+that the value sits in the interface data word. Measured instead: Go's
+`runtime.staticuint64s` covers 0-255, so a small `Int` boxes free and anything
+larger heap-allocates eight bytes (2.0 ns/0 allocs vs 8.2 ns/1 alloc, go1.26.5
+darwin/arm64). Matters because it splits a hot collection loop — masks and small
+elements box free, indices past 255 do not.

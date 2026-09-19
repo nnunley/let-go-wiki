@@ -9,8 +9,9 @@ sources:
   - "repo: nooga/let-go pkg/rt/core/ir/lower_go.lg, pkg/rt/core/ir/passes/{pipeline,entry_frame}.lg, pkg/rt/gogen/gogen.lg, scripts/lg-compile, cmd/lg-runtime/main.go, examples/aot/README.md, Makefile @ 0911118, 2026-09-05"
   - "doc: nooga/let-go docs/design/go-aot-backend.md (last-verified 2026-06-05) @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#557 (gogen embedded), #613 (direct-call natives), #658 (lg_no_http), #729 (native-entry gate + frame fix), #649 (tail-call fusion); issue #783 (lifted var nil in entry-frame binaries, open), 2026-09-05"
+  - "pr: nooga/let-go#862 (lower :int to int64 on every host), #859 (vm.Int is int64) @ a044ead1, 2026-09-16"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-16"
 status: stable
 ---
 
@@ -20,7 +21,7 @@ The design in `docs/design/go-aot-backend.md` proposed two tiers: embed bytecode
 
 ## What the lowering produces
 
-Each lowered `defn` becomes a Go function whose first parameter is the `*vm.ExecContext` and whose remaining parameters and result are either `vm.Value` or a Go type that [type inference](type-inference.md) proved (`int`, `int64`, `float64`, `bool`, `string`). Block-parameter control flow from `structurize` becomes mutable locals with labels and gotos; arithmetic on proven types stays unboxed; self-recursion (`:recur-fn`) lowers to a labelled loop. #649's `TAIL_CALL` fusion is a bytecode-lowerer optimization with no counterpart here. The header of `lower_go.lg` lists the supported ops and the two modes: strict, where an unsupported op or shape throws, and bridge, where an unsupported function falls back at whole-function granularity and stays on bytecode.
+Each lowered `defn` becomes a Go function whose first parameter is the `*vm.ExecContext` and whose remaining parameters and result are either `vm.Value` or a Go type that [type inference](type-inference.md) proved (`int64`, `float64`, `bool`, `string`). A let-go `:int` lowers to `int64` on every host, not to host-width `int` (#862): on a 32-bit target the two disagree, and `vm.Int` is itself `int64` since #859. Host-width `int` survives only where a [native primitive](native-primitives.md) declares such a parameter itself. Block-parameter control flow from `structurize` becomes mutable locals with labels and gotos; arithmetic on proven types stays unboxed; self-recursion (`:recur-fn`) lowers to a labelled loop. #649's `TAIL_CALL` fusion is a bytecode-lowerer optimization with no counterpart here. The header of `lower_go.lg` lists the supported ops and the two modes: strict, where an unsupported op or shape throws, and bridge, where an unsupported function falls back at whole-function granularity and stays on bytecode.
 
 Source text is not built with string templates. The `gogen` namespace constructs `go/ast` nodes from let-go: a `(gquote (func ...))` form expands at macro time into constructor calls, those evaluate to boxed AST nodes, and `gogen/render` prints them with `go/format.Node`, so every generated file is gofmt-canonical. `gogen` is embedded in shipped binaries as an auxiliary source outside the core lowering universe (#557); see [generated artifacts](generated-artifacts.md) for why it must stay outside.
 
@@ -28,8 +29,8 @@ Source text is not built with string templates. The `gogen` namespace constructs
 
 The point of the backend is that lowered code can call other lowered code, and native primitives, as plain Go calls. Whether a function qualifies is decided per function:
 
-- **Direct-callable** (`override-coercible?` in `lower_go.lg`): non-variadic, and every parameter and result type is one a call site can coerce soundly. A typed sibling such as `func F(ec, x int) int` is recorded with its actual specs, so a caller with a proven-`int` argument emits `F(ec, intval)` with no boxing; a caller that cannot prove the type falls back to the trampoline for that call.
-- **Override-eligible**: the shape that gets an override wrapper registered on the var, so interpreted code calling the var lands on the Go function: uniform `vm.Value` in and out, or `vm.Value` parameters with a primitive return the wrapper can box (`bool`, `int`, `float64`, `string`, `vm.Char`).
+- **Direct-callable** (`override-coercible?` in `lower_go.lg`): non-variadic, and every parameter and result type is one a call site can coerce soundly. A typed sibling such as `func F(ec, x int64) int64` is recorded with its actual specs, so a caller with a proven-`:int` argument emits `F(ec, intval)` with no boxing; a caller that cannot prove the type falls back to the trampoline for that call.
+- **Override-eligible**: the shape that gets an override wrapper registered on the var, so interpreted code calling the var lands on the Go function: uniform `vm.Value` in and out, or `vm.Value` parameters with a primitive return the wrapper can box (`bool`, `int64`, `float64`, `string`, `vm.Char`). #862 re-spelled that list too: it mirrors `box-as-value`'s constructor set, which routes `int64` to `vm.Int` and carries no host-width `int` case.
 
 Everything else, variadic functions above all, goes through `rt.CachedVarFn` and `ec.Invoke`: a var lookup, a boxed argument slice, and a dynamic dispatch. The per-namespace direct-call registry is seeded from the [native primitive](native-primitives.md) registry and from lowered siblings, and `lower-all-ns-to-go` merges every package's exports into a cross-package registry so a call into another lowered package resolves to `pkg.LG_<name>(ec, ...)` with the matching import.
 
