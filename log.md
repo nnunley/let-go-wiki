@@ -305,3 +305,34 @@ absent. That second half of the old sentence was right and is kept.
 Deliberately not in this pass: perf-ratchet still omits the timeline explorer
 (#880), which is added content rather than a status correction. Tracked on #28.
 
+## [2026-09-20] update | VM and format: opcode counts, the frame, and -strip with -w
+
+Second batch off the v1.13.0 sweep, all re-counted against origin/main at
+36b13f79 rather than taken from the release notes.
+
+stack-vm said "~37 opcodes". It is 47: opcodeNames has 47 entries and init()
+panics unless that equals OP_COUNT, which is a sentinel and not an opcode, and
+lg -v on 1.13.0 prints "opcodes: 47 (signature 7cf8f862cf5ba1e5)". The roles
+list gained the unchecked trio (#811) and a bitwise bullet it had always
+omitted. The Frame listing was seven fields out of date, missing parent, which
+is the field the rest of the correction hangs on: since #645 a contiguous span
+of direct bytecode calls runs as child frames inside one dispatch loop, and
+releaseFailedFrames walks the parent chain offering the error to each suspended
+handler, so "cross-frame propagation does unwind Go frames" is only true once
+the call leaves bytecode for ec.Invoke. The overflow paragraph gained the
+*unchecked-math* caveat (#839).
+
+op-catalog's "39 at 0911118" was CORRECT and is kept as the prior value. A grep
+for op rows misses the Invalid row, which is written on a '[[ line rather than
+a [" line; counting it gives 39 then and 42 now. Recording that here because
+the miscount has now been made twice.
+
+debug-info and lgb-bytecode-format both said the -w/WASI paths are not stripped.
+#800 made -strip compose with -w. lgb also carried an illustrative "runtime has
+44" tied to 0911118, now the real 47 and signature, and its capability section
+now names #811 as the second deliberate opcode-set break after OP_DIV.
+
+let-go-source-code said /pkg holds thirteen packages. It holds 18; the five
+newer ones are named, with #773's CLI move called out because it is the one that
+changes an import for anyone building their own lg.
+

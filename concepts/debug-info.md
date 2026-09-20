@@ -10,7 +10,7 @@ sources:
   - "repo: nooga/let-go pkg/bytecode/{strip,debug_companion}.go, pkg/rt/run.go, pkg/vm/errfmt.go @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#624 (split debug companion), 2026-09-05"
 created: "2026-07-02"
-updated: "2026-09-05"
+updated: "2026-09-20"
 status: active
 ---
 
@@ -54,7 +54,7 @@ What the companion is:
 - **Digest-bound.** A companion whose digest does not match the artifact is rejected rather than symbolizing a trace with the wrong tables. This is the build-id matching the Tier 1 design asked for, applied to Tier 0 data.
 - **Optional at run time.** `lg app.lgb`, a standalone bundle, and `lg-runtime` load `<artifact>.debug` from beside the artifact when it exists; `LG_DEBUG_FILE=<path>` loads one from elsewhere, and `LG_DEBUG_FILE=` (empty) disables loading. Without a companion the program runs and reports frames without source locations.
 
-What it is not: it contains no source text and no forms index, so it symbolizes to file, function, and line, not to highlighted form context. The embedded core and the `-w`/WASI paths are not stripped.
+What it is not: it contains no source text and no forms index, so it symbolizes to file, function, and line, not to highlighted form context. The embedded core is not stripped. `-w` was refused until #800, which made `-strip` compose with it; the companion is written beside the bundle directory, and `-debug-output` is refused when it names that directory.
 
 ## Tier 1: Opt-In — Forms Index, Source Text, Build-ID Matching (Design)
 
