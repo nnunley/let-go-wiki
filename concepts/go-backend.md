@@ -8,10 +8,10 @@ resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower_go.lg"
 sources:
   - "repo: nooga/let-go pkg/rt/core/ir/lower_go.lg, pkg/rt/core/ir/passes/{pipeline,entry_frame}.lg, pkg/rt/gogen/gogen.lg, scripts/lg-compile, cmd/lg-runtime/main.go, examples/aot/README.md, Makefile @ 0911118, 2026-09-05"
   - "doc: nooga/let-go docs/design/go-aot-backend.md (last-verified 2026-06-05) @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#557 (gogen embedded), #613 (direct-call natives), #658 (lg_no_http), #729 (native-entry gate + frame fix), #649 (tail-call fusion); issue #783 (lifted var nil in entry-frame binaries, open), #796 (entry runs twice when the program carries the top-level guard, open), 2026-09-05; #796 checked @ a044ead1, 2026-09-17"
+  - "pr: nooga/let-go#557 (gogen embedded), #613 (direct-call natives), #658 (lg_no_http), #729 (native-entry gate + frame fix), #649 (tail-call fusion); issue #783 (lifted var nil in entry-frame binaries, open), 2026-09-05; #796 (entry ran twice when the program carried the top-level guard) closed by #902, checked @ 36b13f79, 2026-09-20"
   - "pr: nooga/let-go#862 (lower :int to int64 on every host), #859 (vm.Int is int64) @ a044ead1, 2026-09-16"
 created: "2026-09-05"
-updated: "2026-09-17"
+updated: "2026-09-20"
 status: stable
 ---
 
@@ -50,7 +50,7 @@ One escape hatch keeps direct calls honest: `*direct-calls-disabled?*`, bound at
 
 `make native-entry-gate` (#729) proves that lowered entries execute as generated Go rather than through a silent fallback. Each fixture under `test/native-entry/` carries an exact `.expect` stdout and a structural `.goexpect.json` contract, and a missing sidecar fails rather than skips. Building the gate found a real defect: for a single-file program `lg -c` emits a bundle with an empty namespace table, so the frame's namespace load ran nothing and every namespace-level var stayed undefined, which only worked while every reachable callee lowered to a direct call. The frame now runs the main chunk after loading namespaces, idempotently.
 
-Open at 2026-09-05: #783, a lowered function whose own inline lambda is lambda-lifted (`mapv (fn [f] (f)) fs`) emits `ec.Deref(rt.LookupVar(ns, "fn__lifted0"))`, and in an entry-frame binary that var is nil at first deref, so the binary panics where the VM runs the same program. The reported cause is the same empty-namespace-table path: the lifted var's override is queued but never drained before use. Also #607, an AOT bundle rejected by its own runtime over a capability-mask mismatch, tracked separately. And #796: the main-chunk replay that fixed the empty-namespace-table defect runs a program's top-level forms, so the documented `(when-not *compiling-aot* (-main))` guard from `docs/guide/usage.md` fires on the VM before the frame calls the lowered entry, and such a program runs twice — once interpreted, once native.
+Open at 2026-09-05: #783, a lowered function whose own inline lambda is lambda-lifted (`mapv (fn [f] (f)) fs`) emits `ec.Deref(rt.LookupVar(ns, "fn__lifted0"))`, and in an entry-frame binary that var is nil at first deref, so the binary panics where the VM runs the same program. The reported cause is the same empty-namespace-table path: the lifted var's override is queued but never drained before use. Also #607, an AOT bundle rejected by its own runtime over a capability-mask mismatch, tracked separately. #796 was the third: the main-chunk replay that fixed the empty-namespace-table defect also ran a program's top-level forms, so the documented `(when-not *compiling-aot* (-main))` guard from `docs/guide/usage.md` fired on the VM before the frame called the lowered entry, and such a program ran twice, once interpreted and once native. #902 closed it in v1.13.0 by adding `lg -c -entry-frame-entry ns/-main`, which omits the selected top-level entry call from the bytecode because the native frame calls it; `*compiling-aot*` stays false at runtime, so guarded initialization in required namespaces still runs.
 
 ## Citations
 
