@@ -146,7 +146,11 @@ def _resolve_letgo_repo(root: Path) -> Path | None:
     env = os.environ.get("LETGO_SOURCE_REPO") or os.environ.get("LETGO_REPO")
     if env:
         candidates.append(Path(env).expanduser())
-    candidates.append(root.parent / "let-go")
+    # resolve() first: every invocation in this repo passes `.` (Makefile,
+    # lgx.edn, ci.yml), and `Path(".").parent` is `.`, so the sibling candidate
+    # was `./let-go` and never matched. The checkout-relative fallback had
+    # therefore never fired for anyone running it the documented way.
+    candidates.append(root.resolve().parent / "let-go")
     candidates.append(Path("~/development/let-go").expanduser())
     for c in candidates:
         if (c / ".git").exists():
