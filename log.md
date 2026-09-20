@@ -370,3 +370,29 @@ Also: split follows Pattern.split (#843), line-seq surfaces read errors (#855),
 json string keys write as text (#820). The 5621/5621 suite figure is kept but
 dated, since it predates #863 and wants re-measuring.
 
+## [2026-09-20] update | bindings: the "process-global" caveat was right
+
+Fourth batch off the v1.13.0 sweep, and the finding is that there was nothing to
+fix. The sweep listed go-interop and nrepl-server as asserting a falsehood,
+because both say the binding stack is process-global while concurrency-model
+says dynamic bindings are thread-local. Reading the code at 36b13f79, both are
+correct and describing different APIs.
+
+Var.PushBinding and PopBinding delegate to RootExecContext, which holds the one
+globalBindingStack. LetGo.Run uses exactly those to install *out*, *err* and
+*emit*, and pkg/nrepl/server.go uses outVar.PushBinding for its eval capture. So
+concurrent Run calls and concurrent evals really do interleave on one stack. A
+(binding ...) inside let-go code is a different path and is per-ExecContext.
+concurrency-model already recorded this at its "No global registry" bullet: each
+ExecContext is stack-local, the root context is process-global.
+
+So both caveats are kept and the mechanism is named on each, which is what makes
+the two pages readable side by side. Anyone comparing them without the API
+distinction reasonably concludes one is wrong; that is the actual defect here.
+
+nrepl-server also had its sources as absolute /Users/ndn paths into a gitignored
+docs/superpowers directory, which cite nothing a reader can follow. Replaced
+with the public code they can be re-grounded in, and the page picks up the three
+v1.13.0 host changes it was missing: CompilerContext (#803), eval in the
+caller's context (#853), and the completion crash fix (#710, #713).
+

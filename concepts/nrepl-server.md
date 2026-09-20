@@ -5,9 +5,12 @@ title: "nREPL Server"
 description: "A TCP server exposing let-go's compiler and runtime over the nREPL protocol for editor tooling and interactive development."
 tags: [tooling, interop, runtime]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/nrepl/server.go"
-sources: ["/Users/ndn/development/let-go/docs/superpowers/specs/2026-06-14-incremental-lowering-nrepl-server-design.md", "/Users/ndn/development/let-go/docs/superpowers/specs/2026-06-29-browser-inspector-nrepl-bridge-design.md"]
+sources:
+  - "design: nnunley's incremental-lowering nREPL server and browser-inspector bridge notes (2026-06-14, 2026-06-29); not public, so the claims below are re-grounded in the code cited next"
+  - "repo: nooga/let-go pkg/nrepl/server.go, pkg/api/api.go, pkg/vm/var.go @ 36b13f79, 2026-09-20"
+  - "pr: nooga/let-go#803 (CompilerContext accessor), #710/#713 (completion crash on a cyclic refer graph), #853 (eval in the caller's execution context), all merged for v1.13.0, 2026-09-20"
 created: "2026-07-03"
-updated: "2026-07-03"
+updated: "2026-09-20"
 status: speculative
 ---
 
@@ -60,7 +63,13 @@ Responses are also bencode dictionaries streamed back to the client. The protoco
 
 The `eval` operation captures stdout by binding `*out*` to a per-eval `bytes.Buffer`, executed on the call stack (not OS-level file descriptor swapping). This avoids cross-platform I/O decoupling issues that plagued earlier implementations.
 
-**Concurrency caveat:** The binding stack is process-global, not per-goroutine. Concurrent evals interleave bindings, so stdout from parallel evals can mix. Suitable for interactive single-client loops; not suitable for a multi-client production server without serialization.
+**Concurrency caveat:** the capture uses `outVar.PushBinding` (`pkg/nrepl/server.go`), and that host-side API targets `RootExecContext`'s `globalBindingStack` rather than a per-goroutine one. Concurrent evals therefore interleave bindings, so stdout from parallel evals can mix. Suitable for interactive single-client loops; not suitable for a multi-client production server without serialization. A `(binding [...] ...)` inside evaluated let-go code is per-`ExecContext` and does not interleave — see [concurrency model](concurrency-model.md).
+
+## What v1.13.0 changed for hosts
+
+- **`api.LetGo.CompilerContext()`** (#803) returns the embedded runtime's live `compiler.Context`, so a host nREPL server evaluates in the application's own namespace state instead of constructing a disconnected second one. This is the release's headline nREPL change, and it is what makes the "shares the application's state" story above real rather than aspirational.
+- **`eval` runs in the caller's execution context** (#853), so `binding` and `with-out-str` reach the evaluated form. An in-editor REPL needs that to capture what a form *prints*, not only what it returns.
+- **Tab completion no longer crashes on a cyclic refer graph** (#710, with #713 making `FuzzySymbolLookup`'s refer walk one level). The 1.12.x REPL could overflow on a namespace graph that refers back to itself.
 
 ## Future Extensions (Design Phase)
 
