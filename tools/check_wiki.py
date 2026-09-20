@@ -300,6 +300,50 @@ def validate_page(
             errors.append(f"{path}: unknown tag '{t}' (not in taxonomy)")
     return errors
 
+# --- Freshness: ADVISORY ONLY -------------------------------------------
+# These never fail the build. AGENTS.md asks a code-backed claim to name the
+# commit or release it was checked against, but 33 of 53 `stable` pages carry
+# no pin as of 2026-09-20, so enforcing it would fail every run on day one and
+# teach everyone to ignore the output. Warnings first; a gate can follow once
+# the backlog is worked down.
+
+_FRESHNESS_PREVIEW = 10
+_PIN_RE = re.compile(r"@\s*[0-9a-f]{7,}|\bv?1\.\d+\.\d+")
+
+
+def _newest_letgo_release(repo: Path | None) -> tuple[str, str] | None:
+    """(tag, YYYY-MM-DD) of the newest let-go release tag, or None."""
+    if repo is None:
+        return None
+    import subprocess
+
+    r = subprocess.run(
+        ["git", "for-each-ref", "--sort=-creatordate", "--count=1",
+         "--format=%(refname:short) %(creatordate:short)", "refs/tags/v*"],
+        cwd=repo, capture_output=True, text=True)
+    if r.returncode != 0 or not r.stdout.strip():
+        return None
+    parts = r.stdout.split()
+    return (parts[0], parts[1]) if len(parts) >= 2 else None
+
+
+def freshness_warnings(path: Path, fm: dict, release: tuple[str, str] | None) -> list[str]:
+    """One advisory note per stale `stable` page, or []. Never errors."""
+    if fm.get("status") != "stable":
+        return []
+    reasons = []
+    sources = fm.get("sources")
+    blob = " ".join(sources) if isinstance(sources, list) else str(sources or "")
+    if not _PIN_RE.search(blob):
+        reasons.append("no commit or release pin")
+    updated = fm.get("updated")
+    if release and isinstance(updated, str) and updated < release[1]:
+        reasons.append(f"updated {updated}, before {release[0]} ({release[1]})")
+    if not reasons:
+        return []
+    return [f"{path}: {'; '.join(reasons)}"]
+
+
 def validate_tree(root: Path) -> dict[str, list[str]]:
     tags = _load_taxonomy_tags(root)
     letgo_repo = _resolve_letgo_repo(root)
@@ -312,8 +356,30 @@ def validate_tree(root: Path) -> dict[str, list[str]]:
                 out[str(md.relative_to(root))] = errs
     return out
 
+
+def tree_freshness_warnings(root: Path) -> list[str]:
+    """Advisory freshness notes across the tree. Never affects exit status."""
+    letgo_repo = _resolve_letgo_repo(root)
+    release = _newest_letgo_release(letgo_repo)
+    content_dirs = ("concepts", "entities", "ideas", "projects", "sources", "references")
+    notes: list[str] = []
+    for d in content_dirs:
+        for md in sorted((root / d).rglob("*.md")):
+            if md.name in RESERVED:
+                continue
+            m = _FM_RE.match(md.read_text(encoding="utf-8"))
+            if not m:
+                continue
+            try:
+                fm = yaml.safe_load(m.group(1)) or {}
+            except yaml.YAMLError:
+                continue
+            notes += freshness_warnings(md.relative_to(root), fm, release)
+    return notes
+
 def main(argv: list[str]) -> int:
-    root = Path(argv[1]) if len(argv) > 1 else Path.cwd()
+    args = [a for a in argv[1:] if not a.startswith("--")]
+    root = Path(args[0]) if args else Path.cwd()
     results = validate_tree(root)
     orphans = find_orphans(root)
 
@@ -328,6 +394,21 @@ def main(argv: list[str]) -> int:
         for orphan in orphans:
             orphan_rel = orphan.relative_to(root) if root in orphan.parents or orphan.parent == root else orphan
             print(f"{orphan_rel}: orphan page (no inbound links; add it to index.md)")
+
+    warnings = tree_freshness_warnings(root)
+    if warnings:
+        # Capped by default: on the day a release lands this fires for nearly
+        # every stable page, and a wall of output is output nobody reads.
+        show_all = "--freshness" in argv
+        shown = warnings if show_all else warnings[:_FRESHNESS_PREVIEW]
+        print()
+        for w in shown:
+            print(f"advisory: {w}")
+        hidden = len(warnings) - len(shown)
+        if hidden:
+            print(f"advisory: ... and {hidden} more (--freshness lists them all)")
+        print(f"advisory: {len(warnings)} stable page(s) want re-checking. "
+              f"These never fail the check.")
 
     if not results and not orphans:
         print("check_wiki: OK")

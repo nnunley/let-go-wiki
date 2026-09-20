@@ -5,7 +5,7 @@ title: "Go Interop"
 description: "Two-way Go ↔ let-go interoperability: calling Go from let-go, embedding let-go in Go, struct/channel roundtripping, and code generation."
 tags: [go, interop, runtime]
 resource: "https://github.com/nooga/let-go/tree/main/pkg/api"
-sources: ["repo: nooga/let-go pkg/api, pkg/vm (struct registration), docs/guide/embedding-in-go.md, 2026-07-02"]
+sources: ["repo: nooga/let-go pkg/api, pkg/vm (struct registration), docs/guide/embedding-in-go.md, 2026-07-02", "repo: nooga/let-go pkg/vm/var.go, pkg/vm/exec_context.go, pkg/api/api.go @ 36b13f79, 2026-09-20"]
 created: "2026-07-02"
 updated: "2026-09-20"
 status: stable
