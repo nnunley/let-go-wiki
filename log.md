@@ -396,3 +396,36 @@ with the public code they can be re-grounded in, and the page picks up the three
 v1.13.0 host changes it was missing: CompilerContext (#803), eval in the
 caller's context (#853), and the completion crash fix (#710, #713).
 
+## [2026-09-20] update | testing-conformance: the plan mostly shipped
+
+Last content page off the v1.13.0 sweep. The page was written in 2026-07 as a
+summary of a design document and was future tense throughout — "let-go will
+provide a clojure.test-compatible API", "the planned test runner". Checked
+against 36b13f79, nearly all of it exists.
+
+Shipped: the clojure.test layer (#863, with #754/#671/#798), the conformance
+runner test/zz_compat_test.go with its portability.lg shims, and the
+test.check-style layer in check.lg, which turns out to be the second-largest
+namespace under pkg/rt/core after clojure.core. knownFailing exists and is an
+EMPTY map, which is the machine-readable form of the 5621/5621 figure.
+
+Not shipped, and now said so plainly: there is no lg test command, and no TAP or
+JUnit encoders anywhere in pkg/ or test/. The perf guardrails exist but not as
+the benchstat-per-branch scheme described; the page now points at perf-ratchet
+as the real reference.
+
+Added the #929 trap, which belongs on this page more than anywhere: since #863 a
+bare (run-tests) runs only the current namespace, reports zero tests and exits
+0, so a green run can mean nothing ran. run-all-tests is the one that walks
+every loaded namespace.
+
+Its sources were two /Users/ndn absolute paths into a gitignored directory,
+replaced with the public code. Section headings were kept verbatim so
+enhance.regressed stays empty; it flagged both the renames and the citation drop
+on the first attempt.
+
+Also, from checking namespace names while fixing the enrich config: the
+clojure-compat namespace table listed clojure.core.async, which does not
+resolve. The namespace is async — let-go's own examples/async.lg requires it
+that way. Row corrected.
+
