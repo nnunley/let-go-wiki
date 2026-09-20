@@ -7,7 +7,7 @@ tags: [go, interop, runtime]
 resource: "https://github.com/nooga/let-go/tree/main/pkg/api"
 sources: ["repo: nooga/let-go pkg/api, pkg/vm (struct registration), docs/guide/embedding-in-go.md, 2026-07-02"]
 created: "2026-07-02"
-updated: "2026-07-02"
+updated: "2026-09-20"
 status: stable
 ---
 
@@ -138,7 +138,9 @@ Each option is pushed as a dynamic binding during `Run()` and popped afterward. 
 
 ### Concurrency Caveat
 
-let-go's `Var` bindings are stored in a process-global binding stack. If two goroutines call `Run` on different `LetGo` instances concurrently, their I/O bindings will interleave on the same stack. For deterministic isolation, serialize `Run` calls or run instances in separate processes.
+The host-side binding API is process-global. `Var.PushBinding`/`PopBinding`, which is what `LetGo.Run` uses to install `*out*`, `*err*`, `*emit*` and friends, delegate to `RootExecContext` and so share one `globalBindingStack`. If two goroutines call `Run` on different `LetGo` instances concurrently, their I/O bindings interleave on that stack. For deterministic isolation, serialize `Run` calls or run instances in separate processes.
+
+This is not in tension with the per-execution binding stacks described in [concurrency model](concurrency-model.md): a `(binding [...] ...)` evaluated *inside* let-go code lives on its own `ExecContext`, and goroutine boundaries propagate it explicitly. It is the Go-host entry points that target the root context, which that page also records as the one process-global context.
 
 ## lginterop Code Generator
 
