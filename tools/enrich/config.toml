@@ -1,5 +1,65 @@
 # Source files to enumerate for the let-go stdlib. Paths are relative to
 # --source-root (the let-go checkout). Add more as coverage grows.
+#
+# `ns` is the name `require` accepts, verified on lg 1.13.0. Nine of these
+# namespaces answer to a `clojure.*` name as well as their internal short one
+# (the alias table is `alias->internal-ns` in pkg/rt/core/ir/lower_go.lg, plus
+# pprint); the remaining five are short-name only, so `(require '[async ...])`
+# works where `clojure.core.async` does not.
+
 [[source]]
 file = "pkg/rt/core/core.lg"
 ns = "clojure.core"
+
+[[source]]
+file = "pkg/rt/core/test.lg"
+ns = "clojure.test"
+
+[[source]]
+file = "pkg/rt/core/string.lg"
+ns = "clojure.string"
+
+[[source]]
+file = "pkg/rt/core/set.lg"
+ns = "clojure.set"
+
+[[source]]
+file = "pkg/rt/core/walk.lg"
+ns = "clojure.walk"
+
+[[source]]
+file = "pkg/rt/core/edn.lg"
+ns = "clojure.edn"
+
+[[source]]
+file = "pkg/rt/core/zip.lg"
+ns = "clojure.zip"
+
+[[source]]
+file = "pkg/rt/core/data.lg"
+ns = "clojure.data"
+
+[[source]]
+file = "pkg/rt/core/pprint.lg"
+ns = "clojure.pprint"
+
+# Short-name only: no clojure.* alias resolves for these.
+[[source]]
+file = "pkg/rt/core/async.lg"
+ns = "async"
+
+[[source]]
+file = "pkg/rt/core/check.lg"
+ns = "check"
+
+[[source]]
+file = "pkg/rt/core/graph.lg"
+ns = "graph"
+
+[[source]]
+file = "pkg/rt/core/hash.lg"
+ns = "hash"
+
+[[source]]
+file = "pkg/rt/core/io.lg"
+ns = "io"
