@@ -2,43 +2,96 @@
 type: Reference
 category: reference
 title: "Testing & Clojure Conformance"
-description: "How let-go validates correctness through unit tests, conformance suites, property testing, and performance guardrails."
+description: "How let-go validates correctness: the clojure.test layer #863 shipped, the jank conformance runner, property testing, and the performance guardrails — with what is still only planned marked as such."
 tags: [clojure, tooling, runtime]
 resource: "https://github.com/nooga/let-go/blob/main/docs/testing-and-conformance.md"
 sources:
-  - "/Users/ndn/development/let-go/docs/testing-and-conformance.md"
-  - "/Users/ndn/development/let-go/docs/clojure-test-suite.md"
+  - "doc: nooga/let-go docs/testing-and-conformance.md, docs/clojure-test-suite.md @ 36b13f79, 2026-09-20"
+  - "repo: nooga/let-go pkg/rt/core/test.lg, pkg/rt/core/check.lg, test/zz_compat_test.go, test/compat/clojure/core-test/portability.lg @ 36b13f79, 2026-09-20"
+  - "pr: nooga/let-go#863 (clojure.test ported), #754/#671 (thrown?, run-test-var), #798 (run-tests restores the caller's ns); issue #929 (bare run-tests runs nothing, open), 2026-09-20"
 created: "2026-07-03"
-updated: "2026-07-03"
+updated: "2026-09-20"
 status: active
 ---
 
 ## Testing and Conformance Strategy
 
-[let-go](../entities/let-go.md) is designed to validate correctness through a multi-layer testing approach: a `clojure.test`-compatible test layer for user code, conformance measured against the jank-lang clojure-test-suite (~230 core functions, ~5000 assertions), property testing with shrinking, and CI-gated performance benchmarks. The goal is to prove Clojure compatibility across core semantics, persistent data structures, seq behavior, and runtime stability.
+[let-go](../entities/let-go.md) validates correctness in layers: a
+`clojure.test`-compatible layer for user code, conformance measured against the
+jank-lang clojure-test-suite, property testing, and CI-gated performance
+guardrails.
+
+This page was written in 2026-07 against a design document, in future tense
+throughout. Most of it has since shipped. Each section below says what exists at
+`36b13f79` and what is still only planned.
 
 ## Test Framework and CLI
 
-let-go will provide a `clojure.test`-compatible API (macros like `deftest`, `testing`, `is`, `are`, `use-fixtures`) with output formats including human-readable logs, TAP, and JUnit XML for CI integration. The `lg test` command will support namespace globs, file selection, `--watch` for file changes, `--fail-fast`, and `--seed` for randomized/property tests. Implementation targets core test macros under `pkg/rt/core/test.lg` with the runner in Go (`pkg/rt/lang.go`) for performance, exposing JUnit/TAP encoders to let-go code via native functions.
+**Shipped.** [#863](https://github.com/nooga/let-go/pull/863) replaced the
+partial namespace with a real port: the report, assert, fixture and runner
+contract, in `pkg/rt/core/test.lg`. `deftest`, `testing`, `is`, `are` and
+`use-fixtures` are there, with `thrown?`, `thrown-with-msg?`, `run-test-var` and
+`run-test` from #754 and #671, and #798 made `run-tests` restore the caller's
+namespace instead of throwing.
+
+**Not shipped.** There is no `lg test` command: no namespace globs, `--watch`,
+`--fail-fast` or `--seed`, and `lg -h` lists nothing for it. The TAP and JUnit
+XML encoders the design called for do not exist either — a search across `pkg/`
+and `test/` finds neither format. CI consumes Go's own test output instead.
+
+**A trap worth knowing.** Since #863, a bare `(run-tests)` runs only the
+*current* namespace, which in a script that has just loaded its suites is
+usually none of them: it reports zero tests and exits 0, so a green run can mean
+nothing ran. `(run-all-tests)` is the one that walks every loaded namespace.
+Tracked as [#929](https://github.com/nooga/let-go/issues/929), open.
 
 ## Conformance: The Clojure Test Suite
 
-let-go's conformance strategy targets running the [jank-lang/clojure-test-suite](https://github.com/jank-lang/clojure-test-suite), a cross-dialect test suite with ~105 test files and ~5000 assertions. The planned test runner (`test/zz_compat_test.go`) will compile upstream `.cljc` files through let-go and execute assertions, with safety guards: 5-second timeout per test, 512MB memory limit, and panic recovery. Portability shims in `test/compat/clojure/core-test/portability.lg` will provide predicates like `when-var-exists` and `thrown?` that the upstream tests expect. Namespace aliases (e.g., `clojure.test` → `test`) and resolver improvements (`.cljc` extension support, underscore→hyphen path mapping) will enable upstream code to load transparently.
+**Shipped.** `test/zz_compat_test.go` compiles upstream `.cljc` files through
+let-go and runs their assertions, with the per-test timeout, memory cap and
+panic recovery the design described.
+`test/compat/clojure/core-test/portability.lg` supplies the predicates the
+upstream tests expect. The namespace aliasing and resolver work that lets
+upstream code load transparently is in place.
 
-The runner will track expected failures in a `knownFailing` list; tests that pass but are listed are flagged as "graduated" so contributors can remove them. When complete, the suite will track 105 files with pass/fail/skipped metrics to guide priority fixes (reader issues unlock the most assertions, followed by resolver fixes, then missing builtins and behavioral corrections).
+The `knownFailing` list exists and is **empty** — `var knownFailing =
+map[string]bool{}`. That is the machine-readable form of the 5621 / 5621 figure
+on [clojure compatibility](clojure-compat.md): nothing is being excused. Both
+numbers predate #863's rewrite and are worth re-measuring.
 
 ## Property Testing, Fuzzing, and Guardrails
 
-let-go is designed to include a minimal `test.check`-style property-testing library with generators and `prop/for-all` for properties like vector append/assoc invariants, HAMT idempotence, and equality/hash consistency. Planned fuzzing will occur at two levels: reader fuzzing with Go's `testing/fuzz` for literals and nested collections, and differential tests comparing VM vs Go AOT results on random inputs. Performance tests will use `go test -bench` microbenchmarks covering VM call arities, TCO recursion, vector/HAMT ops, numeric arithmetic, transducers, and image load time. Benchstat thresholds in CI will alert on >10% regressions; baselines will be stored per branch and refreshed with manual approval.
+**Shipped.** `pkg/rt/core/check.lg` is the `test.check`-style layer, and it is
+substantial: 41 enumerated concepts, the second-largest namespace under
+`pkg/rt/core/` after `clojure.core` itself.
+
+**Shipped, differently than planned.** The performance guardrails exist but not
+as the benchstat-threshold-per-branch scheme described here. What runs is the
+anchor-relative ratchet with a one-way baseline and deterministic allocation
+bars — see [performance ratchet](../concepts/perf-ratchet.md), which is the
+current reference for how regressions are actually gated.
+
+**Unverified.** The reader fuzzing and VM-versus-AOT differential testing this
+page projected were not checked for this pass.
 
 ## Phase 0–1 Acceptance Criteria
 
-The Phase 0–1 goals include: a working `clojure.test`-compatible layer and `lg test` CLI with human-readable and JUnit output; a conformance seed suite running in CI for core semantics (seq coercion, `count nil`, `conj` semantics, basic equality); initial property tests for vectors and numeric operations; and a bench harness wired with call-arity and numeric microbenchmarks. CI will run a matrix across macOS/Linux/Windows and the latest two Go versions, including `go vet`, `staticcheck`, unit/integration/property/fuzz tests, and benchmarks, with artifacts (JUnit XML, TAP logs, coverage, perf CSV) published for review.
+Kept as a record of what was aimed at. The `clojure.test` layer and the
+conformance suite in CI are met; the `lg test` CLI with JUnit and TAP output is
+not, and nothing currently in the tree is working toward it.
 
 # Citations
 
-**Resource (Public)**: [docs/testing-and-conformance.md](https://github.com/nooga/let-go/blob/main/docs/testing-and-conformance.md) — Testing and Conformance — framework, CI, and compatibility strategy.
+**Resource (Public)**: [docs/testing-and-conformance.md](https://github.com/nooga/let-go/blob/main/docs/testing-and-conformance.md) — framework, CI, and compatibility strategy.
 
-**Sources**:
-- `/Users/ndn/development/let-go/docs/testing-and-conformance.md` — goals, test framework, conformance strategy, property testing, performance guardrails, CI integration, and Phase 0–1 acceptance.
-- `/Users/ndn/development/let-go/docs/clojure-test-suite.md` — Clojure Test Suite workflow, runner architecture, safety, knownFailing list, coverage prioritization, and common pitfalls.
+**Also public**: [docs/clojure-test-suite.md](https://github.com/nooga/let-go/blob/main/docs/clojure-test-suite.md) — runner architecture, safety limits, the `knownFailing` list, and coverage prioritisation.
+
+**Code this page was re-grounded in** (the 2026-07 version cited two local paths under a gitignored directory, which a reader cannot follow):
+
+- [pkg/rt/core/test.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/test.lg) — the `clojure.test` layer, including `run-tests` and `run-all-tests`.
+- [pkg/rt/core/check.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/check.lg) — the property-testing layer.
+- [test/zz_compat_test.go](https://github.com/nooga/let-go/blob/main/test/zz_compat_test.go) — the conformance runner and its `knownFailing` list.
+
+---
+
+See also: [clojure compatibility](clojure-compat.md), [performance ratchet](../concepts/perf-ratchet.md)

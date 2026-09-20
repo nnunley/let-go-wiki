@@ -5,7 +5,7 @@ title: "Clojure Compatibility"
 description: "Where let-go IS and ISN'T compatible with Clojure JVM: known limitations, feature parity, and behavioral differences."
 tags: [clojure, lisp, runtime]
 resource: "https://github.com/nooga/let-go/blob/main/docs/guide/clojure-compatibility.md"
-sources: ["docs/guide/clojure-compatibility.md", "docs/clojure-compat-roadmap.md", "repo: nooga/let-go docs/known-divergences.md, test/map_order_test.lg @ ebd9a7bd, 2026-09-09", "pr: nooga/let-go#770 (data readers), #762 (reify Object), #758 (invokable symbols), #840 (Math/* JVM semantics), #841 (canonical dot form), #901 (Thread/currentThread, %n), #843 (split), #854 (edn reads data), #839 (*unchecked-math*), #787 (StringBuilder), #820 (json string keys), #855 (line-seq errors), #711 (clojure.data), #668 (clojure.repl), #863 (clojure.test) all merged for v1.13.0, 2026-09-20", "lg -e transcripts on lg 1.13.0 (369e2a69): every behaviour in the JVM-interop and numerics sections re-probed, 2026-09-20"]
+sources: ["docs/guide/clojure-compatibility.md", "docs/clojure-compat-roadmap.md", "repo: nooga/let-go docs/known-divergences.md, test/map_order_test.lg @ ebd9a7bd, 2026-09-09", "pr: nooga/let-go#770 (data readers), #762 (reify Object), #758 (invokable symbols), #840 (Math/* JVM semantics), #841 (canonical dot form), #901 (Thread/currentThread, %n), #843 (split), #854 (edn reads data), #839 (*unchecked-math*), #787 (StringBuilder), #820 (json string keys), #855 (line-seq errors), #711 (clojure.data), #668 (clojure.repl), #863 (clojure.test) all merged for v1.13.0, 2026-09-20", "lg -e transcripts on lg 1.13.0 (369e2a69): every behaviour in the JVM-interop and numerics sections re-probed, plus require of every core namespace short and clojure.* name, 2026-09-20"]
 created: "2026-07-02"
 updated: "2026-09-20"
 status: stable
@@ -28,7 +28,7 @@ let-go is a Clojure dialect, not a drop-in JVM Clojure replacement. Most idiomat
 | `clojure.test` | `deftest`, `is`, `testing`, `are`, fixtures; #863 replaced the partial namespace with the report, assert, fixture and runner contract |
 | `clojure.data` | `diff` (structural projection, #711) |
 | `clojure.repl` | `doc` and friends, with a Var-metadata bundle round trip (#668) |
-| `clojure.core.async` | Channels, `go`/`go-loop`, `alts!`, `mult`/`pub`, `pipe`/`merge`/`split` (real goroutines, not IOC) |
+| `async` | Channels, `go`/`go-loop`, `alts!`, `mult`/`pub`, `pipe`/`merge`/`split` (real goroutines, not IOC). Required as `[async ...]`; `clojure.core.async` does not resolve |
 | `io` | Polymorphic readers/writers, `slurp`/`spit`, lazy line-seq, encoding, URLs, `with-open`, `resource` |
 | `http` | Ring-style server and client, streaming responses |
 | `json` | `read-json`, `write-json` (float-preserving, record-aware); since #820 a string map key is written as text, so `{"key" "value"}` emits `{"key":"value"}` rather than the double-quoted EDN reading |
