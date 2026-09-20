@@ -1,7 +1,8 @@
 from pathlib import Path
 import textwrap
 from tools.check_wiki import (
-    validate_page, extract_links, find_orphans, _letgo_url_problem, _letgo_ref)
+    validate_page, extract_links, find_orphans, _letgo_url_problem, _letgo_ref,
+    freshness_warnings)
 
 REQUIRED = {"type", "category", "title", "description", "tags", "status"}
 
@@ -253,3 +254,42 @@ def test_untracked_worktree_file_does_not_satisfy_the_check(tmp_path):
     (repo / "pkg" / "local_only.go").write_text("package x\n", encoding="utf-8")
     url = "https://github.com/nooga/let-go/blob/main/pkg/local_only.go"
     assert _letgo_url_problem(url, repo) is not None
+
+
+# --- freshness advisories: warn, never fail ------------------------------
+
+REL = ("v1.13.0", "2026-09-20")
+
+def test_freshness_ignores_non_stable_pages():
+    fm = {"status": "speculative", "sources": ["no pin here"], "updated": "2026-01-01"}
+    assert freshness_warnings(Path("c.md"), fm, REL) == []
+
+def test_freshness_flags_a_stable_page_with_no_pin():
+    fm = {"status": "stable", "sources": ["docs/guide/x.md"], "updated": "2026-09-21"}
+    [note] = freshness_warnings(Path("c.md"), fm, REL)
+    assert "no commit or release pin" in note
+
+def test_a_sha_pin_satisfies_the_pin_check():
+    fm = {"status": "stable", "sources": ["repo: x @ 36b13f79, 2026-09-20"],
+          "updated": "2026-09-21"}
+    assert freshness_warnings(Path("c.md"), fm, REL) == []
+
+def test_a_release_pin_satisfies_the_pin_check():
+    fm = {"status": "stable", "sources": ["lg 1.13.0 transcripts"], "updated": "2026-09-21"}
+    assert freshness_warnings(Path("c.md"), fm, REL) == []
+
+def test_freshness_flags_a_page_older_than_the_release():
+    fm = {"status": "stable", "sources": ["repo: x @ 36b13f79"], "updated": "2026-07-02"}
+    [note] = freshness_warnings(Path("c.md"), fm, REL)
+    assert "before v1.13.0" in note
+
+def test_both_reasons_collapse_to_one_line():
+    """One note per page. Two notes per page across 40+ pages is a wall."""
+    fm = {"status": "stable", "sources": ["nothing"], "updated": "2026-07-02"}
+    notes = freshness_warnings(Path("c.md"), fm, REL)
+    assert len(notes) == 1
+    assert "no commit or release pin" in notes[0] and "before v1.13.0" in notes[0]
+
+def test_freshness_is_silent_without_a_known_release():
+    fm = {"status": "stable", "sources": ["repo: x @ 36b13f79"], "updated": "2026-07-02"}
+    assert freshness_warnings(Path("c.md"), fm, None) == []
