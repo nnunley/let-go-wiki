@@ -75,7 +75,7 @@ Decoupling I/O enables:
 - **Composability**: A TUI library, analytics layer, or shell can wrap the writer seam without touching the runtime.
 - **Client ownership**: Projects like xsofy can provide their own shells and I/O backends without patches to let-go.
 
-The pattern generalizes: peer capabilities (graphics, audio, input) follow the same shape—guest-named, host-supplied, decoupled.
+The pattern generalizes: peer capabilities (graphics, audio, input) follow the same shape—guest-named, host-supplied, decoupled. Graphics is now a shipped instance of it: see [glplat graphics](glplat-graphics.md), which landed experimentally in #744 with its host-capability seam still an open design question.
 
 # Citations
 

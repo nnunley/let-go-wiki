@@ -429,3 +429,34 @@ clojure-compat namespace table listed clojure.core.async, which does not
 resolve. The namespace is async — let-go's own examples/async.lg requires it
 that way. Row corrected.
 
+## [2026-09-20] new | three pages for subsystems that had none
+
+The v1.13.0 sweep found three subsystems with zero coverage anywhere in the
+wiki. These are deliberately minimal first passes rather than finished pages:
+each says what it was written from, and each ends with an explicit list of what
+is missing. Something beats nothing, and an empty subject is harder for the next
+person than a provisional page with its gaps named.
+
+glplat-graphics (speculative): two backends behind build tags, the font tag as a
+third and independent one, and the untagged build where the namespace loads but
+every native reports "no backend registered" — probed, not inferred. Natives are
+Go-cased because they come through lginterop from the Go API. Kept speculative
+deliberately: docs/design/glplat-backend-contract.md is status planning and
+carries a decision requested from nnunley on §2 and §3, and adopting §2 may
+rename natives and change Init's signature.
+
+http-and-net (active): the owned-listener split of http/serve into start, wait
+and stop, streaming bodies, the three named client timeout scopes, scope
+cancellation reaching in-flight requests, and net/listen, accept and
+local-address. Every name resolves on lg 1.13.0; checked rather than copied from
+the release notes, because an earlier pass in this sweep found a namespace label
+that did not resolve.
+
+quality-tooling (active): lint.lg with R1-R6, including why R5 is segregated and
+never gated and why R1 covers .lg only; quality.lg and its cost catalog; and
+spec-evidence, with the LG_SOURCE_PATHS=scripts prefix its helper namespaces
+need.
+
+io-host-decoupling's "peer capabilities follow the same shape" line now links
+glplat as the shipped instance of exactly that.
+
