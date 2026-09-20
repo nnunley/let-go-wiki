@@ -277,3 +277,31 @@ single-file program, so once a program requires another namespace the top level
 runs inside `LoadProgramNamespaces` and the main-chunk replay returns early.
 wasm-compilation gains the mechanism, guide-usage a corrected takeaway,
 pr-native-entry-gate a follow-up bullet beside #783.
+
+## [2026-09-20] update | status drift: four pages called merged PRs open
+
+v1.13.0 shipped 179 PRs and the wiki's dominant staleness was not code drift but
+pages describing PRs as open that had merged. Four, all re-checked against
+origin/main at 36b13f79:
+
+go-backend and compiler-namespace-architecture called #735 open and in revision.
+It merged 2026-09-10; lg.compiler lives at pkg/rt/core/lg/compiler.lg and is
+embedded, so lowering needs no checkout on disk. It merged without acting on the
+eager-bundling answer, so the skip stands: isBundleSkippedTool covers ir.* and
+lg.compiler.* by prefix. #786 is still open and its references are unchanged.
+
+perf-ratchet described deterministic bars as gated against the global minimum
+across every profile. #900 (merged 2026-09-19) replaced that with the newest
+provenance per benchmark, ties broken by the minimum, which is what had been
+producing phantom regressions: a stale amd64 row held 7,041 allocs/op for
+InitFromLGB while newer rows held 13,995 to 26,428. It also called bench-baton
+open; #795 merged the same day.
+
+reader said there is no *data-readers*. #770 merged 2026-09-12. Probed on lg
+1.13.0: the var defaults to {}, a bound reader is applied, and with no entry a
+tag still returns its form unchanged, because *default-data-reader-fn* is still
+absent. That second half of the old sentence was right and is kept.
+
+Deliberately not in this pass: perf-ratchet still omits the timeline explorer
+(#880), which is added content rather than a status correction. Tracked on #28.
+
