@@ -5,9 +5,9 @@ title: let-go Source Tree
 description: "The core packages of the let-go bytecode compiler and stack VM."
 tags: [runtime, vm, compiler, bytecode, reference]
 resource: "https://github.com/nooga/let-go/tree/main/pkg"
-sources: ["repo: nooga/let-go pkg/, 2026-07-03"]
+sources: ["repo: nooga/let-go pkg/, 2026-07-03", "repo: nooga/let-go pkg/ (18 packages) @ 36b13f79; pr #773 (CLI into pkg/cli), #741 (pkg/gomod), #744 (pkg/glplat), 2026-09-20"]
 created: "2026-07-03"
-updated: "2026-07-03"
+updated: "2026-09-20"
 status: stable
 ---
 
@@ -15,7 +15,7 @@ The let-go project is a Clojure dialect compiled to bytecode and executed on a s
 
 ## What the source is
 
-The `/pkg` directory holds thirteen main packages forming the compilation pipeline and runtime:
+The `/pkg` directory holds 18 packages forming the compilation pipeline and runtime. The thirteen described below are the ones this page was written against; `cli`, `gomod`, `glplat`, `complete` and `wasmhost` arrived later, `cli` most consequentially: #773 moved the CLI out of the root package into `pkg/cli`, so a third-party module importing root-package symbols now imports that instead.
 
 **Compilation pipeline:**
 - **`compiler/`** — the Clojure/Lisp reader and compiler. Parses source code into an AST, performs variable scoping and closure analysis, compiles forms to bytecode instructions emitted into code chunks. Handles macros, special forms, and error reporting.
@@ -66,5 +66,5 @@ The `/pkg` directory holds thirteen main packages forming the compilation pipeli
 ## Citations
 
 **Resource**: https://github.com/nooga/let-go/tree/main/pkg  
-**Repo path**: `/pkg` (13 main packages)  
+**Repo path**: `/pkg` (18 packages at `36b13f79`; 13 described here)  
 **Date accessed**: 2026-07-03

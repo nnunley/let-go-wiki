@@ -11,7 +11,7 @@ sources:
   - "repo: nooga/let-go pkg/bytecode/tags.go @ ee55803 (re-verified for #781), 2026-09-06"
   - "design: docs/superpowers/specs/2026-05-23-lgb-v2-design.md (local, 2026-07-02)"
 created: "2026-07-02"
-updated: "2026-09-06"
+updated: "2026-09-20"
 status: stable
 ---
 
@@ -63,13 +63,13 @@ Bits are positional in declaration order, and each version admits only the flags
 
 The capability mask reserves bits for features a decoder must understand to run the bundle at all. One bit is defined:
 
-- `CapOpcodeSet` (bit 0, since v1.12.0): the mask is followed by the producer's opcode count and an FNV-64a hash of the opcode mnemonics in enum order. The decoder compares it with the running VM's `vm.OpcodeSetSignature()` and rejects a mismatch:
+- `CapOpcodeSet` (bit 0, since v1.12.0): the mask is followed by the producer's opcode count and an FNV-64a hash of the opcode mnemonics in enum order. The decoder compares it with the running VM's `vm.OpcodeSetSignature()` and rejects a mismatch. v1.13.0 is the second release to trip this deliberately: #811 appended `OP_UNCHECKED_ADD`, `OP_UNCHECKED_SUB` and `OP_UNCHECKED_MUL`, so a `.lgb` built by an older `lg` is rejected by it, the same trade the release that added `OP_DIV` made.
 
 ```
 opcode set mismatch: bundle compiled with 52 opcodes (signature 8c6f19e2a4b07d31), runtime has 44 (ecde554a791d0f51) — recompile the bundle with a matching lg
 ```
 
-(The bundle side is illustrative; the runtime side is what `lg -v` reports at `0911118`.)
+(The bundle side is illustrative. At v1.13.0 `lg -v` reports `opcodes: 47 (signature 7cf8f862cf5ba1e5)`.)
 
 Unknown capability bits are rejected too. The message names the unsupported bits (known ones with the `lg` release that introduced them, unknown ones as `unknown bit N`), then the runtime's supported set, then the minimum `lg` version when one is known, so a "recompile or upgrade" decision can be made from the error alone. `lg -v` and `lg-runtime -v` print the supported mask and the local opcode signature.
 
@@ -105,7 +105,7 @@ The embedded core bundle can be compressed the same way at `lgbgen` time; that i
 
 The companion (`LGD\x01`, version 1) stores the SHA-256 of the exact stripped payload, a string table, and per chunk the source-map entries (`StartIP`, file, line, column, end line, end column) and local-variable `(slot, name)` pairs. A companion whose digest does not match is rejected rather than producing misleading tracebacks. `SplitDebug` also re-decodes the stripped output and checks chunk count, code, and `maxStack` against the original before emitting a companion.
 
-At load time `lg app.lgb`, a standalone bundle, and `lg-runtime` look for `<artifact>.debug` beside the artifact; `LG_DEBUG_FILE=<path>` loads one from elsewhere, and `LG_DEBUG_FILE=` (empty) disables loading. Without a companion the stripped artifact runs and reports frames without source locations. Stripping applies to program bytecode from `-c` and `-b`; the embedded core and the `-w`/WASI paths are not stripped. See [debug info](debug-info.md) for what the tables hold.
+At load time `lg app.lgb`, a standalone bundle, and `lg-runtime` look for `<artifact>.debug` beside the artifact; `LG_DEBUG_FILE=<path>` loads one from elsewhere, and `LG_DEBUG_FILE=` (empty) disables loading. Without a companion the stripped artifact runs and reports frames without source locations. Stripping applies to program bytecode from `-c`, `-b` and, since #800, `-w`; the embedded core is not stripped. See [debug info](debug-info.md) for what the tables hold.
 
 ## Implementation
 

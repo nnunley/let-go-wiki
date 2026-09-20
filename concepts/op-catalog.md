@@ -9,14 +9,15 @@ sources:
   - "repo: nooga/let-go pkg/ir/ir_ops.lg, pkg/ir/op_generated.go, pkg/rt/core/ir/{ops,form_heads,lower_go}.lg @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#612 (catalog-driven op dispatch, generated OpByKeyword switch), #667 (form-head catalog + coherence check), #666 (per-op needs-rt contribution rules), #712 (fn shape through accessors); issue #268 (the consolidation epic), 2026-09-05"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
+  - "repo: nooga/let-go pkg/ir/ir_ops.lg (42 op rows, counting the Invalid row) @ 36b13f79; pr #811 (unchecked arithmetic ops), #642 (RecurFn), 2026-09-20"
 created: "2026-09-05"
-updated: "2026-09-05"
+updated: "2026-09-20"
 status: stable
 ---
 
 # Op Catalog
 
-The [IR](indexed-rpn-ir.md) has a small vocabulary of ops (39 at `0911118`), and each op has facts: how many operands it pops, whether it pushes a result, whether it is pure, whether it terminates a block, which bytecode it maps to, how it is typed, how it lowers to Go. Norman's 2026 refactors (#612, #666, #667, #712, under the consolidation epic #268) moved those facts out of the `cond` arms in `build.lg`, `lower.lg`, `lower_go.lg`, and `typeinfer.lg` into catalogs that every consumer queries, and added checks that fail the build when a catalog and a consumer disagree. The design rule they share: a fact about an op lives in one column, and a consumer that needs it asks rather than repeating it.
+The [IR](indexed-rpn-ir.md) has a small vocabulary of ops (42 at `36b13f79`, up from 39 at `0911118`: #811 added the three unchecked-arithmetic ops), and each op has facts: how many operands it pops, whether it pushes a result, whether it is pure, whether it terminates a block, which bytecode it maps to, how it is typed, how it lowers to Go. Norman's 2026 refactors (#612, #666, #667, #712, under the consolidation epic #268) moved those facts out of the `cond` arms in `build.lg`, `lower.lg`, `lower_go.lg`, and `typeinfer.lg` into catalogs that every consumer queries, and added checks that fail the build when a catalog and a consumer disagree. The design rule they share: a fact about an op lives in one column, and a consumer that needs it asks rather than repeating it.
 
 ## The op table
 
