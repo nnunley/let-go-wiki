@@ -7,11 +7,12 @@ tags: [compiler, clojure, lisp]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/compiler/reader.go"
 sources:
   - "repo: nooga/let-go pkg/compiler/reader.go, pkg/compiler/eval.go (read-string, read-all-string, load-string, set-read-clj!, set-read-bb!), docs/guide/clojure-compatibility.md @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#736 (set literals as data, open), #770 (custom data readers, open), #768 (raw #go fragments, open), 2026-09-05"
+  - "pr: nooga/let-go#736 (set literals as data, open), #768 (raw #go fragments, open), 2026-09-05; #770 (custom data readers) merged 2026-09-12, 2026-09-20"
+  - "lg -e transcripts on lg 1.13.0 (369e2a69): *data-readers* default, a bound reader, and an unregistered tag, 2026-09-20"
   - "issue: nooga/let-go#801 (map metadata and a discard in value position, filed 2026-09-06), 2026-09-06"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
 created: "2026-09-05"
-updated: "2026-09-08"
+updated: "2026-09-20"
 status: stable
 ---
 
@@ -42,7 +43,7 @@ The reader is the first stage of every [compile path](compile-paths.md): `LispRe
 | `#"..."` | regex |
 | `#?(...)` and `#?@(...)` | reader conditional, plain and splicing |
 | `##Inf` `##-Inf` `##NaN` | symbolic float values |
-| `#tag form` | tagged literal: `#uuid` and `#inst` are built in; any other tag returns its form unchanged |
+| `#tag form` | tagged literal: `#uuid` and `#inst` are built in; a tag bound in `*data-readers*` is applied; any other tag returns its form unchanged |
 
 `IsTokenBoundary` is exported so the REPL completer scans a line with the reader's own rule for where a symbol ends, rather than an approximation that could drift.
 
@@ -87,7 +88,7 @@ These hold at `a6763e77` (2026-09-08); three are the subject of open PRs.
 
 - **Set literals read as a call.** `'#{1 2 3}` reads as `(hash-set 3 2 1)`, so `(set? (read-string "#{1}"))` is false. Evaluation is unaffected. #736 (open) makes `#{}` read as a set, as maps and vectors already do.
 - **Metadata reads as a form.** `'^:foo bar` reads as `(with-meta bar {:foo true})` rather than the symbol `bar` carrying metadata, so `(meta (eval ''^:foo bar))` is `nil`. Consumers that need the name, such as `defn` and the wiki's own enumeration tooling, unwrap that form. #801 (2026-09-06) reports the same behaviour on map literals, where `(meta (read-string "^{:doc 1} {:a 1}"))` is `nil`, as a bug for configuration data read with `read-string`.
-- **Unknown tags pass through.** `#foo/bar 1` reads as `1`; there is no `*data-readers*` or `*default-data-reader-fn*`. #770 (open, approved 2026-09-08) adds a Clojure-compatible `*data-readers*` and a per-compiler registry for embedders, and #768 (open; depends on #770 and carries its commits, though its PR base is `main`) adds a raw `#go{...}` reader that preserves Go source verbatim.
+- **Unregistered tags pass through.** `#foo/bar 1` reads as `1`. #770 (merged 2026-09-12) added a Clojure-compatible `*data-readers*`, honoured by `read-string`, `load-string`, ordinary compilation and child eval contexts, plus a per-compiler registry for embedders: on lg 1.13.0 `*data-readers*` is `{}` by default, and binding `'foo/bar` in it makes `(read-string "#foo/bar 1")` yield the reader's value. There is still no `*default-data-reader-fn*`, so a tag with no entry keeps returning its form unchanged rather than erroring. #768 (open; depends on #770 and carries its commits, though its PR base is `main`) adds a raw `#go{...}` reader that preserves Go source verbatim.
 - **Namespaced map syntax is not supported.** `#:a{:b 1}` fails with `invalid hash macro`.
 - **Duplicate map keys do not throw.** `'{:a 1 :a 2}` reads as `{:a 2}`; Clojure rejects the literal.
 - **A leading zero that is not valid octal falls through to decimal.** `08` reads as `8`; Clojure rejects it.

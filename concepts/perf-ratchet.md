@@ -8,9 +8,10 @@ resource: "https://github.com/nooga/let-go/blob/main/docs/perf/ratchet.md"
 sources:
   - "doc: nooga/let-go docs/perf/ratchet.md (last-verified 2026-08-04), scripts/ir-stress.md @ 0911118, 2026-09-05"
   - "repo: nooga/let-go cmd/bench-ratchet, docs/perf/{baseline.json,ir-stress-baseline.edn}, .pre-commit-config.yaml, Makefile, .github/workflows/perf-timeline.yml @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#561/#564 (median sampling), #740 (per-release baseline), #780 (deterministic rebaseline, Go 1.26.5 baseline, pre-push gate), #579 (lowering-shape ratchet), #795 (bench-baton, open), #794 (PrepareCall allocation-free, merged 2026-09-06 as 3ae0a08); issue #791 (the regression the gate caught), 2026-09-05"
+  - "pr: nooga/let-go#561/#564 (median sampling), #740 (per-release baseline), #780 (deterministic rebaseline, Go 1.26.5 baseline, pre-push gate), #579 (lowering-shape ratchet), #795 (bench-baton, merged 2026-09-19), #794 (PrepareCall allocation-free, merged 2026-09-06 as 3ae0a08); issue #791 (the regression the gate caught, still open), 2026-09-05"
+  - "pr: nooga/let-go#900 (deterministic metrics judged by newest provenance, not the global minimum) merged 2026-09-19 @ 36b13f79, 2026-09-20"
 created: "2026-09-05"
-updated: "2026-09-08"
+updated: "2026-09-20"
 status: stable
 ---
 
@@ -33,7 +34,7 @@ The default scope is narrow on purpose: the anchor; the Clojure test-suite exec 
 
 ### Deterministic bars
 
-Allocations and bytes per operation do not depend on the machine, so they are gated as absolute bars against the global minimum across every profile in the baseline, at a fixed 2% (`allocBudget` in `cmd/bench-ratchet/main.go`), the bar #791 reports `IRCompile` bytes/op crossing. A forced rebaseline resets these bars too since #780; before that a `-force` update carried stale bars forward.
+Allocations and bytes per operation do not depend on the machine, so they are gated as absolute bars at a fixed 2% (`allocBudget` in `cmd/bench-ratchet/main.go`), the bar #791 reports `IRCompile` bytes/op crossing. Since #900 the reference per benchmark is the entry with the newest provenance among the profiles that carry it (its `best_since` stamp, else the profile's `captured_at`), ties broken by the minimum so the bar still ratchets within one commit, and the regression line names the commit its reference came from. It was the global minimum across every profile before that, which compared today's code against whichever tier happened to allocate least, however old: a stale `amd64` row held 7,041 allocs/op for `InitFromLGB` while every newer row held 13,995 to 26,428, so main measuring 11,900 was reported as +69%. A forced rebaseline resets these bars too since #780; before that a `-force` update carried stale bars forward.
 
 ### The baseline and the ratchet
 
@@ -49,7 +50,7 @@ The active baseline is seeded from CI (`seed-baseline`). Since #684 (merged 2026
 | PR CI, opt-in | `perf-pr.yml` runs the A/B only when the PR carries the `perf` label and touches `pkg/**` or `cmd/**` |
 | `main` | `perf-timeline.yml` snapshots every non-docs push to the `perf-data` branch; `pages.yml` fetches that branch on deploy and renders the "are we fast yet" page with `cmd/perf-page` from the committed baseline, the historical files, and the timeline |
 
-A run needs a quiet machine. `cmd/bench-baton` (#795, open at the time of writing) is a per-machine lease with an exclusive `bench` lane and a shared `build` lane, so a test suite running beside the ratchet cannot produce a number the gate mistakes for a regression.
+A run needs a quiet machine. `cmd/bench-baton` (#795, merged 2026-09-19) is a per-machine lease with an exclusive `bench` lane and a shared `build` lane, so a test suite running beside the ratchet cannot produce a number the gate mistakes for a regression.
 
 ### What it caught
 
