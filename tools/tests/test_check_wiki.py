@@ -1,7 +1,7 @@
 from pathlib import Path
 import textwrap
 from tools.check_wiki import (
-    validate_page, extract_links, find_orphans, _letgo_url_problem)
+    validate_page, extract_links, find_orphans, _letgo_url_problem, _letgo_ref)
 
 REQUIRED = {"type", "category", "title", "description", "tags", "status"}
 
@@ -202,3 +202,54 @@ def test_source_type_not_flagged(tmp_path):
     # Every page under sources/ uses this, but AGENTS.md did not list it.
     p = _write(tmp_path / "c.md", _OK_FM.replace("type: Concept", "type: Source"))
     assert not any("type '" in e for e in validate_page(p, tags={"go"}))
+
+
+# --- blob/main URLs are checked against the ref they name, not the worktree ---
+
+def _git_repo(tmp_path: Path) -> Path:
+    """A tiny git repo with a main branch and one tracked file."""
+    import subprocess
+    repo = tmp_path / "letgo"
+    repo.mkdir()
+
+    def run(*a):
+        subprocess.run(a, cwd=repo, capture_output=True, check=True)
+
+    run("git", "init", "-q", "-b", "main")
+    run("git", "config", "user.email", "t@example.com")
+    run("git", "config", "user.name", "T")
+    (repo / "pkg").mkdir()
+    (repo / "pkg" / "kept.go").write_text("package kept\n", encoding="utf-8")
+    run("git", "add", "-A")
+    run("git", "commit", "-q", "-m", "seed")
+    return repo
+
+def test_letgo_ref_prefers_a_real_ref(tmp_path):
+    assert _letgo_ref(_git_repo(tmp_path)) == "main"
+
+def test_letgo_ref_is_none_without_one(tmp_path):
+    d = tmp_path / "plain"
+    d.mkdir()
+    assert _letgo_ref(d) is None
+
+def test_path_on_the_ref_is_accepted(tmp_path):
+    repo = _git_repo(tmp_path)
+    url = "https://github.com/nooga/let-go/blob/main/pkg/kept.go"
+    assert _letgo_url_problem(url, repo) is None
+
+def test_path_absent_from_the_ref_is_flagged(tmp_path):
+    repo = _git_repo(tmp_path)
+    url = "https://github.com/nooga/let-go/blob/main/pkg/gone.go"
+    assert "no such path on main" in _letgo_url_problem(url, repo)
+
+def test_untracked_worktree_file_does_not_satisfy_the_check(tmp_path):
+    """The regression this change exists for.
+
+    A file present on disk but absent from the ref used to pass, because the
+    old check asked the filesystem. A citation to a path deleted upstream but
+    still lying around locally would sail through.
+    """
+    repo = _git_repo(tmp_path)
+    (repo / "pkg" / "local_only.go").write_text("package x\n", encoding="utf-8")
+    url = "https://github.com/nooga/let-go/blob/main/pkg/local_only.go"
+    assert _letgo_url_problem(url, repo) is not None

@@ -154,6 +154,25 @@ def _resolve_letgo_repo(root: Path) -> Path | None:
     return None
 
 
+def _letgo_ref(repo: Path) -> str | None:
+    """The ref a blob/main URL should be checked against.
+
+    A URL says `blob/main`, so `origin/main` is what it claims — not whatever
+    the local checkout happens to have on disk. A feature branch or a stale
+    working tree would otherwise report a merged path as missing, or a deleted
+    one as present. Falls back through `main` to None (filesystem check).
+    """
+    import subprocess
+
+    for ref in ("origin/main", "main"):
+        r = subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", ref + "^{commit}"],
+            cwd=repo, capture_output=True, text=True)
+        if r.returncode == 0:
+            return ref
+    return None
+
+
 def _letgo_url_problem(url: str, repo: Path | None) -> str | None:
     """Reason a let-go GitHub URL is non-public, or None if it looks fine."""
     m = _LETGO_URL_RE.match(url)
@@ -166,6 +185,17 @@ def _letgo_url_problem(url: str, repo: Path | None) -> str | None:
     if repo is not None:
         import subprocess
 
+        ref = _letgo_ref(repo)
+        if ref is not None:
+            r = subprocess.run(
+                ["git", "cat-file", "-e", f"{ref}:{rel}"],
+                cwd=repo, capture_output=True, text=True)
+            if r.returncode != 0:
+                return (f"no such path on {ref} in the let-go repo — "
+                        f"cite an existing public source")
+            # A path present on the ref is tracked there by definition, so the
+            # gitignore question is already answered.
+            return None
         if not (repo / rel).exists():
             return "no such path in the let-go repo — cite an existing public source"
         r = subprocess.run(
