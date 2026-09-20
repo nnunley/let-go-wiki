@@ -14,12 +14,13 @@ Which path a function takes, and what falls back to what: [Compile Paths](concep
 
 Compiler architecture (the 2026 refactors): [Op Catalog](concepts/op-catalog.md) → [Structurize](concepts/structurize.md) → [Bytecode Lowering](concepts/bytecode-lowering.md) · [Block Interface and Liveness](concepts/block-interface-and-liveness.md); where it is going: [IR representation roadmap](ideas/ir-representation-roadmap.md) · [lg.compiler namespaces](ideas/compiler-namespace-architecture.md)
 
-Build and measure: [Generated Artifacts](concepts/generated-artifacts.md) · [Native Primitives](concepts/native-primitives.md) · [Performance Ratchet](concepts/perf-ratchet.md)
+Build and measure: [Generated Artifacts](concepts/generated-artifacts.md) · [Native Primitives](concepts/native-primitives.md) · [Performance Ratchet](concepts/perf-ratchet.md) · [Quality Tooling](concepts/quality-tooling.md)
 
-Runtime internals: [Namespaces and Vars](concepts/namespaces-and-vars.md) · [Value Representation](concepts/value-representation.md) · [Exec Context](concepts/exec-context.md) · [Concurrency Model](concepts/concurrency-model.md) · [Runtime Image](concepts/runtime-image.md) · [Type Inference](concepts/type-inference.md) · [deftype & Protocols](concepts/deftype-and-protocols.md) · [Debug Info](concepts/debug-info.md) · [.lgb Format](concepts/lgb-bytecode-format.md) · [I/O Host Decoupling](concepts/io-host-decoupling.md)
+Runtime internals: [Namespaces and Vars](concepts/namespaces-and-vars.md) · [Value Representation](concepts/value-representation.md) · [Exec Context](concepts/exec-context.md) · [Concurrency Model](concepts/concurrency-model.md) · [Runtime Image](concepts/runtime-image.md) · [Type Inference](concepts/type-inference.md) · [deftype & Protocols](concepts/deftype-and-protocols.md) · [Debug Info](concepts/debug-info.md) · [.lgb Format](concepts/lgb-bytecode-format.md) · [I/O Host Decoupling](concepts/io-host-decoupling.md) · [glplat Graphics](concepts/glplat-graphics.md)
 
 ## Using let-go — building programs
 - **Interop:** [Go Interop](concepts/go-interop.md) · [lginterop](concepts/lginterop.md) · [Go Structs](concepts/go-structs.md) · [Native Primitives](concepts/native-primitives.md)
+- **Networking:** [HTTP and Networking](concepts/http-and-net.md)
 - **Build & run:** [lg-compile](concepts/lg-compile.md) · [WASM Compilation](concepts/wasm-compilation.md) · [nREPL Server](concepts/nrepl-server.md) · [Pods](concepts/pods.md) · [lgx build tool](projects/lgx.md)
 - **Compatibility & stdlib:** [Clojure Compatibility](references/clojure-compat.md) · [clojure.core reference](references/clojure.core/map.md)
 
@@ -51,9 +52,11 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/deftype-and-protocols](concepts/deftype-and-protocols.md) — Custom types and protocol-based polymorphism in let-go, unifying Clojure's deftype/defprotocol with native Go lowering.
 - [concepts/exec-context](concepts/exec-context.md) — How the ExecContext carries execution state (scopes and dynamic bindings) through the VM, threaded rather than stored in goroutine-local maps.
 - [concepts/generated-artifacts](concepts/generated-artifacts.md) — The seven generated outputs the runtime loads instead of source (core_compiled.lgb, core_go_lowered/, the IR op and data tables, the primitive registrars), the content-hash manifest that decides what is stale, and the bootstrap build tag that keeps regeneration independent of the running binary.
+- [concepts/glplat-graphics](concepts/glplat-graphics.md) — The experimental graphics platform layer: two backends behind build tags, a default build where every native reports no backend, and the backend contract Norman has not settled yet.
 - [concepts/go-backend](concepts/go-backend.md) — The shipped Go backend as distinct from its design proposal: how ir.lower-go emits Go through the gogen layer, what makes a function direct-callable, the entry frame that turns a program into a standalone native binary, the runtime-only lg-runtime, and the gates and open defects around it.
 - [concepts/go-interop](concepts/go-interop.md) — Two-way Go ↔ let-go interoperability: calling Go from let-go, embedding let-go in Go, struct/channel roundtripping, and code generation.
 - [concepts/go-structs](concepts/go-structs.md) — Defining and using Go structs from let-go via compile-time code generation.
+- [concepts/http-and-net](concepts/http-and-net.md) — The http and net namespaces: the owned-listener server surface, streaming response bodies, the three named client timeout scopes, and how scope cancellation reaches an in-flight request.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
 - [concepts/io-host-decoupling](concepts/io-host-decoupling.md) — How the runtime decouples I/O operations from the host platform, enabling the same runtime to run natively, in WASM, and on exotic hosts.
 - [concepts/ir-optimizations](concepts/ir-optimizations.md) — Lambda lifting and higher-order specialization to eliminate dynamic dispatch and closure allocation in combinator-based code.
@@ -69,6 +72,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/op-catalog](concepts/op-catalog.md) — The single-source catalogs behind the IR: the op table in ir_ops.lg that generates the Go op enum and drives per-op facets, the form-head catalog for build-list dispatch, the load-time coherence checks that make a missing row a red build, and the accessor seam that hides the function's shape.
 - [concepts/perf-ratchet](concepts/perf-ratchet.md) — How let-go catches regressions without same-machine benchmarking: the anchor-normalized bench-ratchet, its one-way baseline, the deterministic allocation bars, the lowering-coverage and lowering-shape ratchets, and where each one gates.
 - [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
+- [concepts/quality-tooling](concepts/quality-tooling.md) — The contributor-facing quality tools written in let-go itself: the comment linter and its six rules, the static complexity scorer, and spec-evidence for keeping a spec and its conformance tests in step.
 - [concepts/reader](concepts/reader.md) — How let-go turns text into forms: the dispatch tables, reader conditionals with the :lg/:clj/:bb feature switches, the VOID sentinel for no-value forms, number literals, tagged literals, and the places its behaviour diverges from Clojure's reader.
 - [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.
 - [concepts/stack-vm](concepts/stack-vm.md) — The stack-based bytecode interpreter: operand-stack frames, the fetch-decode-dispatch loop, and specialized arithmetic opcodes.
