@@ -336,3 +336,37 @@ let-go-source-code said /pkg holds thirteen packages. It holds 18; the five
 newer ones are named, with #773's CLI move called out because it is the one that
 changes an import for anyone building their own lg.
 
+## [2026-09-20] update | clojure-compat: v1.13.0 closed two "not implemented" rows
+
+Third batch off the v1.13.0 sweep. Every behaviour below was re-probed on lg
+1.13.0 (369e2a69) rather than read off the release notes.
+
+Two rows in the Not implemented table were wrong. Custom tagged literals: #770
+landed *data-readers*, so the row is now about *default-data-reader-fn* alone,
+which really is still absent, and that is why a tag with no entry returns its
+form unchanged instead of erroring. Java-style method bodies: #762 added the
+Object overrides toString, hashCode and equals, so the row is narrowed to other
+host methods.
+
+The namespace table gained clojure.data (#711) and clojure.repl (#668), and
+notes on clojure.test's real port (#863) and edn reading data rather than code
+(#854).
+
+A new JVM-shaped interop surface section collects what libraries actually reach
+for, each with a probed value: Math/round -2.5 is -2 rather than Go's -3 (#840),
+(. "abc" toUpperCase) compiles (#841), Thread/currentThread and %n (#901),
+symbols invoke as lookups (#758), and the StringBuilder shim (#787) with the
+caveat that str on one gives #<java.lang.StringBuilder> and .toString is what
+returns the contents.
+
+Numerics gained *unchecked-math* (#839) with the nuance the release notes do not
+state: it is a COMPILE-TIME flag, as on the JVM. A runtime binding around
+already-compiled code changes nothing. Probed both ways — via eval inside the
+binding it wraps to -2, compiled outside it still throws integer overflow. The
+first probe of this was written wrong for exactly that reason, so it is recorded
+here.
+
+Also: split follows Pattern.split (#843), line-seq surfaces read errors (#855),
+json string keys write as text (#820). The 5621/5621 suite figure is kept but
+dated, since it predates #863 and wants re-measuring.
+
