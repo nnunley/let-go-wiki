@@ -15,10 +15,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The let-go checkout is what turns the blob/main URL check from a static
+      # prefix match into a real path-existence check. Without it
+      # _resolve_letgo_repo returns None and every citation to a path that
+      # moved or was deleted upstream passes silently. Shallow and blobless:
+      # only the tree is needed, and only for origin/main.
+      - name: Check out let-go for citation checking
+        uses: actions/checkout@v4
+        with:
+          repository: nooga/let-go
+          ref: main
+          path: .letgo-src
+          fetch-depth: 1
+          filter: blob:none
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
       - run: pip install -r requirements.txt
       - name: Validate wiki pages
+        env:
+          LETGO_SOURCE_REPO: ${{ github.workspace }}/.letgo-src
         run: python tools/check_wiki.py .
       - name: Lint authored Python (check only; `make lint` autofixes locally)
         run: ruff check tools/check_wiki.py tools/build_site.py tools/viz/render_viz.py tools/tests
