@@ -10,7 +10,8 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 
     ---
     type: Concept            # OKF-required; capitalized kind (Concept/Entity/Function/
-                             #   Macro/Namespace/Package/Reference/Project/Idea)
+                             #   Macro/Namespace/Package/Reference/Project/Idea/
+                             #   Source/Var)
     category: concept        # llm_wiki: concept|entity|idea|project|source|reference
     title: "Stack VM"
     description: "One sentence; used verbatim in index.md."

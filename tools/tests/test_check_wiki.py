@@ -193,3 +193,12 @@ def test_multiline_description_flagged(tmp_path):
           'description: |\n  line one\n  line two\ntags: [go]\nstatus: stable')
     p = _write(tmp_path / "c.md", fm)
     assert any("description must be a single-line string" in e for e in validate_page(p, tags={"go"}))
+
+def test_bad_type_vocab_flagged(tmp_path):
+    p = _write(tmp_path / "c.md", _OK_FM.replace("type: Concept", "type: Thing"))
+    assert any("type 'Thing'" in e for e in validate_page(p, tags={"go"}))
+
+def test_source_type_not_flagged(tmp_path):
+    # Every page under sources/ uses this, but AGENTS.md did not list it.
+    p = _write(tmp_path / "c.md", _OK_FM.replace("type: Concept", "type: Source"))
+    assert not any("type '" in e for e in validate_page(p, tags={"go"}))
