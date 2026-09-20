@@ -3,6 +3,7 @@ import textwrap
 from tools.check_wiki import (
     validate_page, extract_links, find_orphans, _letgo_url_problem, _letgo_ref,
     freshness_warnings)
+from tools.check_wiki import _resolve_letgo_repo
 
 REQUIRED = {"type", "category", "title", "description", "tags", "status"}
 
@@ -293,3 +294,18 @@ def test_both_reasons_collapse_to_one_line():
 def test_freshness_is_silent_without_a_known_release():
     fm = {"status": "stable", "sources": ["repo: x @ 36b13f79"], "updated": "2026-07-02"}
     assert freshness_warnings(Path("c.md"), fm, None) == []
+
+
+def test_sibling_letgo_resolves_from_a_relative_root(tmp_path, monkeypatch):
+    """The regression: `check_wiki.py .` must still find ../let-go.
+
+    Every invocation in this repo passes `.`, and Path(".").parent is ".", so
+    the sibling candidate used to be "./let-go" and never matched.
+    """
+    monkeypatch.delenv("LETGO_SOURCE_REPO", raising=False)
+    monkeypatch.delenv("LETGO_REPO", raising=False)
+    (tmp_path / "let-go" / ".git").mkdir(parents=True)
+    wiki = tmp_path / "wiki"
+    wiki.mkdir()
+    monkeypatch.chdir(wiki)
+    assert _resolve_letgo_repo(Path(".")) == (tmp_path / "let-go").resolve()
