@@ -460,3 +460,20 @@ need.
 io-host-decoupling's "peer capabilities follow the same shape" line now links
 glplat as the shipped instance of exactly that.
 
+## [2026-10-17] update | typed arrays lower natively (#1057, #1058, #1060)
+typed-arrays (active -> stable): rewritten for the merged array stack. The
+struct now keeps one typed slice per kind, so the AtFloat64-style accessors
+inline; the lattice has [:array K], declared by constructors and ^doubles-style
+hints, never inferred; a hinted sum-arr lowers to arg0.AtFloat64(i) on a
+*vm.TypedArray with a native float64 accumulator, checked against lg-compile
+output at 8673d88a. The old "what the lowering does: nothing" and "why it stops
+there" sections described the pre-#1057 state and are replaced by the shipped
+behaviour and what it still does not cover (boxed index, nested aget,
+*ir-compile* bytecode, the vector half of #358).
+
+go-backend: *vm.TypedArray joins the proven Go types; registry entries carry
+lattice :param-types so an array param's kind is checked at the call site; and
+qualified core heads (clojure.core/+, core/<) build as builtin ops since #1060.
+
+stack-vm: 49 opcodes (lg -v at 8673d88a), the AGET/ASET family, and the
+fast-opcode gate's core-var identity check from #1058.
