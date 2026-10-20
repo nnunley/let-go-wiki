@@ -80,7 +80,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/type-inference](concepts/type-inference.md) — How the let-go compiler infers types during IR lowering and uses a mergeable cache to make parallel lowering both fast and deterministic.
 - [concepts/typed-arrays](concepts/typed-arrays.md) — vm.TypedArray, the mutable Go-slice-backed array behind aget/aset: its one-slice-per-kind layout, the [:array K] lattice kind that lets AOT lowering index it natively, and the VM's AGET/ASET opcodes.
 - [concepts/value-representation](concepts/value-representation.md) — How let-go represents values in memory and optimizes numeric operations on the stack VM.
-- [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup.
+- [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to WebAssembly pages with bytecode, terminal emulation, and fast startup.
 
 ## References
 - [references/clojure-compat](references/clojure-compat.md) — Where let-go IS and ISN'T compatible with Clojure JVM: known limitations, feature parity, and behavioral differences.

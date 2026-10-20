@@ -2,18 +2,18 @@
 type: Concept
 category: concept
 title: "WASM Compilation"
-description: "Compiling let-go programs to self-contained WebAssembly pages with bytecode, terminal emulation, and fast startup."
+description: "Compiling let-go programs to WebAssembly pages with bytecode, terminal emulation, and fast startup."
 tags: [wasm, compiler, runtime]
 resource: "https://github.com/nooga/let-go/tree/main/wasm"
-sources: ["repo: nooga/let-go wasm/, docs/guide/usage.md, pkg/bundle, 2026-07-02", "repo: nooga/let-go pkg/cli/cli.go, docs/guide/usage.md @ 638b4a6a, 2026-09-07", "repo: nooga/let-go pkg/cli/cli.go, pkg/rt/core/ir/passes/entry_frame.lg, docs/guide/usage.md @ 36b13f79, 2026-09-20", "issue: nooga/let-go#796 closed by pr #902, in v1.13.0, 2026-09-20"]
+sources: ["repo: nooga/let-go wasm/, docs/guide/usage.md, pkg/bundle, 2026-07-02", "repo: nooga/let-go pkg/cli/cli.go, docs/guide/usage.md @ 638b4a6a, 2026-09-07", "repo: nooga/let-go pkg/cli/cli.go, pkg/rt/core/ir/passes/entry_frame.lg, docs/guide/usage.md @ 36b13f79, 2026-09-20", "issue: nooga/let-go#796 closed by pr #902, in v1.13.0, 2026-09-20", "run: lg dev (b825882) at nooga/let-go b82588292b, lg -w output index.html 8.4 MB + coi-serviceworker.js, 2026-10-20"]
 created: "2026-07-02"
-updated: "2026-09-20"
+updated: "2026-10-20"
 status: stable
 ---
 
 # WASM Compilation
 
-let-go compiles itself to WebAssembly, enabling programs to run in the browser from the same source as native binaries. A single `lg -w site app.lg` command produces a self-contained `index.html` file (~6MB, inlined and gzipped) that boots the let-go runtime and your bytecode in ~10ms—well within a 60fps frame budget at 16ms per frame.
+let-go compiles itself to WebAssembly, enabling programs to run in the browser from the same source as native binaries. A single `lg -w site app.lg` command produces an `index.html` with the WASM module inlined and gzipped (8.4 MB for a small app at b82588292b; the upstream guide says ~6MB), plus a `coi-serviceworker.js` beside it, that boots the let-go runtime and your bytecode in ~10ms—well within a 60fps frame budget at 16ms per frame.
 
 ## Build Process
 
@@ -23,7 +23,7 @@ let-go compiles itself to WebAssembly, enabling programs to run in the browser f
 
 2. **WASM Bundling** (`pkg/bundle`): The bytecode is embedded into the WASM blob. Resource files (templates, assets) specified by `-resource-paths` are collected and archived alongside the bytecode using the bundle trailer format.
 
-3. **HTML Generation**: The WASM binary (inlined and gzipped), the bytecode, and a `LetGoHost` JavaScript harness are embedded into a single `index.html` file. No external assets are required; the page is self-contained and can be copied anywhere (including served from GitHub Pages).
+3. **HTML Generation**: The WASM binary (inlined and gzipped), the bytecode, and a `LetGoHost` JavaScript harness are embedded into a single `index.html` file, written next to `coi-serviceworker.js`. Copy both files together (for example to GitHub Pages). The default terminal shell loads xterm.js and its CSS from cdn.jsdelivr.net, so the page is not usable offline.
 
 4. **Service Worker**: A service worker is included to provide COOP/COEP headers needed for SharedArrayBuffer support (required by the let-go runtime for goroutines and channels). The service worker intercepts fetch requests transparently.
 

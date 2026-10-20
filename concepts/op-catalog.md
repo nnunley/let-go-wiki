@@ -10,14 +10,16 @@ sources:
   - "pr: nooga/let-go#612 (catalog-driven op dispatch, generated OpByKeyword switch), #667 (form-head catalog + coherence check), #666 (per-op needs-rt contribution rules), #712 (fn shape through accessors); issue #268 (the consolidation epic), 2026-09-05"
   - "lg -e transcripts on lg 1.12.3-0.20260904132133 (0911118), 2026-09-05"
   - "repo: nooga/let-go pkg/ir/ir_ops.lg (42 op rows, counting the Invalid row) @ 36b13f79; pr #811 (unchecked arithmetic ops), #642 (RecurFn), 2026-09-20"
+  - "repo: nooga/let-go pkg/ir/ir_ops.lg (42 op rows, unchanged since 36b13f79), pkg/ir/op_generated.go, pkg/rt/core/ir/{ops,form_heads,lower_go,build}.lg @ b82588292b, 2026-10-19"
+  - "pr: nooga/let-go#994 (stop printing form-heads and build load lines; commit d435406fd), 2026-10-19"
 created: "2026-09-05"
-updated: "2026-09-20"
+updated: "2026-10-19"
 status: stable
 ---
 
 # Op Catalog
 
-The [IR](indexed-rpn-ir.md) has a small vocabulary of ops (42 at `36b13f79`, up from 39 at `0911118`: #811 added the three unchecked-arithmetic ops), and each op has facts: how many operands it pops, whether it pushes a result, whether it is pure, whether it terminates a block, which bytecode it maps to, how it is typed, how it lowers to Go. Norman's 2026 refactors (#612, #666, #667, #712, under the consolidation epic #268) moved those facts out of the `cond` arms in `build.lg`, `lower.lg`, `lower_go.lg`, and `typeinfer.lg` into catalogs that every consumer queries, and added checks that fail the build when a catalog and a consumer disagree. The design rule they share: a fact about an op lives in one column, and a consumer that needs it asks rather than repeating it.
+The [IR](indexed-rpn-ir.md) has a small vocabulary of ops (42 at `b82588292b`, unchanged since `36b13f79`; up from 39 at `0911118`: #811 added the three unchecked-arithmetic ops), and each op has facts: how many operands it pops, whether it pushes a result, whether it is pure, whether it terminates a block, which bytecode it maps to, how it is typed, how it lowers to Go. Norman's 2026 refactors (#612, #666, #667, #712, under the consolidation epic #268) moved those facts out of the `cond` arms in `build.lg`, `lower.lg`, `lower_go.lg`, and `typeinfer.lg` into catalogs that every consumer queries, and added checks that fail the build when a catalog and a consumer disagree. The design rule they share: a fact about an op lives in one column, and a consumer that needs it asks rather than repeating it.
 
 ## The op table
 
@@ -34,7 +36,7 @@ The [IR](indexed-rpn-ir.md) has a small vocabulary of ops (42 at `36b13f79`, up 
 | `local-carry?` | the Go lowering materializes its result into a Go local (#612 §1) |
 | `infer?`, `lower?` | the op's type-inference and Go-lowering facets are reified on an `ir.ops` op-type |
 
-Running the file generates `pkg/ir/op_generated.go` (a [generated artifact](generated-artifacts.md)): the `Op` type, the `iota` constant block, `opInfo`, `opTable`, and the `Op` methods, all built through `gogen`'s `gquote`. #612 §2b added a generated `opByKeywordExact` string switch so the canonical keyword-to-op lookup is a `switch` rather than a scan; the PR measured it at 57 ns to 2.1 ns and allocation-free, with non-canonical spellings falling through to the lenient scan.
+Running the file generates `pkg/ir/op_generated.go` (a [generated artifact](generated-artifacts.md)): the `Op` type, the `iota` constant block, `opInfo`, `opTable`, and the `Op` methods, all built through `gogen`'s `gquote`. The generator also emits the keyword list (`OpKeywords`), the bytecode mapping in both directions (`irOpToBytecode`, `bytecodeToIROp`), `isCheapMaterializeOp`, and the facet accessors (`LocalCarrying`, `InferFacet`, `LowerFacet`) (`pkg/ir/op_generated.go` at `b82588292b`). #612 §2b added a generated `opByKeywordExact` string switch so the canonical keyword-to-op lookup is a `switch` rather than a scan; the PR measured it at 57 ns to 2.1 ns and allocation-free, with non-canonical spellings falling through to the lenient scan.
 
 ## Reified op facets
 
@@ -46,13 +48,7 @@ Coherence is enforced at load time: the facet columns are the closed member set,
 
 ## The form-head catalog
 
-The source side has its own catalog. `form_heads.lg` lists the 14 special-form heads `build-list` handles, each with whether `free-vars` and `captures-of` need an explicit handler for it (#667). `build-list` dispatches through a catalog-keyed handler lookup instead of a hardcoded `cond` chain, and the two scope functions derive their membership sets from catalog queries, precomputed once at load. The coherence check is bidirectional: a form missing from the catalog, or a catalogued form without a handler, fails generation naming the form. The check announces itself whenever the pipeline loads:
-
-```
-$ lg -e "(require 'ir.passes.pipeline)"
-ir.form-heads catalog loaded (catalog validation passed)
-ir.form-heads catalog loaded (bidirectional coherence check passed)
-```
+The source side has its own catalog. `form_heads.lg` lists the 14 special-form heads `build-list` handles, each with whether `free-vars` and `captures-of` need an explicit handler for it (#667). `build-list` dispatches through a catalog-keyed handler lookup instead of a hardcoded `cond` chain, and the two scope functions derive their membership sets from catalog queries, precomputed once at load. The coherence check (`assert-form-head-coherence!` in `build.lg`) runs at load time and is bidirectional: a catalogued form with no handler, or a handler with no catalog row, throws an `ex-info` naming the forms. On success it is silent. Earlier, `ir.form-heads` and `ir.build` each printed a "catalog loaded" line on every load, so every `lg compile` run opened with two lines of stdout noise; #994 removed both prints (commit `d435406fd`), since the checks throw on failure and the success lines carried no information. At `b82588292b` neither `form_heads.lg` nor `build.lg` prints on load, so the load-time output of `lg -e "(require 'ir.passes.pipeline)"` should be empty when the catalog is coherent. `-e` then prints the value of its expression: `require` returns `vm.NIL` (`CoreRequiref` in `pkg/rt/lang.go`), and `printResult` in `pkg/cli/cli.go` prints it as the line `nil` (`Nil.String` in `pkg/vm/nil.go`). The full stdout is therefore the single line `nil`. For a clean value, wrap the form, for example `lg -e "(do (require 'ir.passes.pipeline) :ok)"`, which should print `:ok`. This is read from the source; a run has not yet confirmed it.
 
 ## The accessor seam
 

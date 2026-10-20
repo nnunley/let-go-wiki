@@ -8,8 +8,16 @@ resource: "https://github.com/abogoyavlensky/lgx/blob/master/docs/ARCHITECTURE.m
 sources:
   - "repo: abogoyavlensky/lgx README.md, 2026-07-05"
   - "repo: abogoyavlensky/lgx docs/ARCHITECTURE.md, 2026-07-05"
+  - "repo: nooga/let-go pkg/rt/os.go @ b82588292b, 2026-10-19"
+  - "repo: nooga/let-go pkg/rt/iort.go @ b82588292b, 2026-10-19"
+  - "repo: nooga/let-go pkg/compiler/reader.go @ b82588292b, 2026-10-19"
+  - "repo: nooga/let-go pkg/resolver/resolver.go @ b82588292b, 2026-10-19"
+  - "repo: chzyer/readline v1.5.1 utils_unix.go:52, runebuf.go:454, operation.go:388 @ let-go b82588292b (go.mod pin), 2026-10-19"
+  - "repo: chzyer/readline v0.0.0-20180603132655-2972be24d48e utils_unix.go:52, runebuf.go:454, operation.go:388 (let-go v1.13.0 go.mod pin), 2026-10-19"
+  - "repo: nooga/let-go git history: 098f55bb3 (v1.10.0), 5b158eac9 (v1.13.0, #611 stdStreamWriter), 36d57e369 (main, in no tag), 2026-10-19"
+  - "run: lg dev (b825882) at nooga/let-go b82588292b, 2026-10-20 (lgx run, repl and os/exec* checks; installed lgx 0.1.0-rc2 and lg v1.13.0)"
 created: "2026-07-05"
-updated: "2026-07-05"
+updated: "2026-10-19"
 status: stable
 ---
 
@@ -57,7 +65,7 @@ This separation decouples lgx's release cycle from let-go's: upgrading let-go do
 
 ### Source and Resource Path Resolution
 
-For commands that run or test (`lgx run`, `lgx test`, `lgx repl`, `lgx nrepl`), lgx:
+For commands that run or test (`lgx run`, `lgx test`, `lgx nrepl`, and `lgx repl` where the installed lgx has it; lgx 0.1.0-rc2 answers `lgx: 'repl' is not a lgx command. See 'lgx --help'.`), lgx:
 
 1. Resolves `:paths` from `lgx.edn` (project source directories, relative to project root) to absolute paths. Missing entries print a warning but are still passed to `lg`.
 2. Appends the gitlibs cache paths from all resolved dependencies, maintaining project-first precedence (project namespaces shadow library namespaces).
@@ -72,9 +80,9 @@ Similarly, `:resource-paths` (asset roots for `io/resource "…"`) are resolved 
 - If args contain `--` before any positional, the user is driving `lg` (e.g., `lgx run other.lg` or `lgx run -e '(...)'`); `:main` is not injected.
 - If no `--` and `:main` is set, lgx injects `:main` and any postional args become `*command-line-args*` in the script.
 - If no `--`, no `:main`, and args remain, lgx errors (`lgx run: -- forwards args to :main, but no :main is set …`).
-- If bare `lgx run` with no `:main`, lgx errors and suggests `lgx repl`.
+- If bare `lgx run` with no `:main`, the source-derived behavior is an error that suggests `lgx repl`. The installed lgx (0.1.0-rc2) did not error: it started the lg REPL under both lg builds tested (run: lg dev (b825882) at nooga/let-go b82588292b, 2026-10-20).
 
-lgx execs `lg -source-paths <paths> -resource-paths <roots> [args...]` via inherited stdio (using let-go ≥ 1.10.0's `os/exec*`), so live output and interactive programs (REPL, prompts) work. The spawned process sees `LGX_RUN=1`, allowing code to detect dev mode.
+lgx execs `lg -source-paths <paths> -resource-paths <roots> [args...]` via inherited stdio, using let-go's `os/exec*` (added in let-go 1.10.0, [#154](https://github.com/nooga/let-go/pull/154); `pkg/rt/os.go` at `b82588292b`). Whether an interactive child (REPL, prompt, TUI) gets the terminal depends on the let-go build. On the `v1.10.0` tag, `os/exec*` gave the child `os.Stdout` and `os.Stderr` directly. On the `v1.13.0` tag (the releases in between were not checked), `os/exec*` passed the child a pipe for stdout and stderr whenever `*out*`/`*err*` were the std-stream handles that [#611](https://github.com/nooga/let-go/pull/611) wrapped in a writer that defers to the current `os.Stdout`/`os.Stderr` (so `exec.Cmd` no longer saw an `*os.File`). A child `lg` saw no tty on its outputs (observed on v1.13.0, with `os/exec*` evaluated inside a live REPL, 2026-10-20), and its REPL would drop prompt, echo and editing (source-derived; a nested REPL as the child was not run): the `chzyer/readline` dependency (go.mod pin) uses its interactive path only when stdin is a terminal and stdout or stderr is one (`DefaultIsTerminal` in `utils_unix.go`, v1.5.1 and v0.0.0-20180603132655-2972be24d48e), so a pipe on both outputs disables it, and `Refresh` returns early without drawing the prompt. [#956](https://github.com/nooga/let-go/pull/956) fixed this on main: `IOHandle.ProcessWriter` (`pkg/rt/iort.go`) hands file-backed std streams to the child as the process's own descriptors. That fix is not in any tag as of 2026-10-19, so a child `lg` gets a terminal from `os/exec*` only on a let-go build from main at `b82588292b` or later. Whether lgx's `nrepl` path goes through `os/exec*` was not checked here. The bare `lgx run` REPL kept its prompt and line editing under both builds in a scripted run on 2026-10-20. The spawned process sees `LGX_RUN=1`, allowing code to detect dev mode.
 
 ### Build and Bundling
 
@@ -152,7 +160,7 @@ Deps follow last-wins precedence (a higher layer's coord replaces a lower one's)
 lgx depends on:
 
 - **`git` on `PATH`**: Used for clone, fetch, and checkout operations. lgx never bundles git.
-- **`lg` binary**: On `PATH` or `LGX_LG`. `lgx run` fails loudly if `lg` is missing; `lgx install` does not require it. lgx sets `LG_READ_CLJ=1` before every `lg` invocation to enable `.clj` library file resolution and Clojure reader conditionals.
+- **`lg` binary**: On `PATH` or `LGX_LG`. `lgx run` fails loudly if `lg` is missing; `lgx install` does not require it. lgx sets `LG_READ_CLJ=1` before every `lg` invocation. In let-go, `LG_READ_CLJ` controls only reader conditionals: it makes `#?(:clj ...)` branches match alongside `:lg` and `:default` (`pkg/compiler/reader.go`, `matchCljConditional`, at `b82588292b`). `.clj` library files are found by the namespace resolver whether or not the variable is set; it tries `.lg`, `.cljc` and `.clj` candidates on each path entry (`pkg/resolver/resolver.go` at `b82588292b`).
 - **Default template repo**: `lgx new` pulls from `https://github.com/abogoyavlensky/lgx-template-base` (sha-pinned), overridable via `LGX_TEMPLATE_BASE_URL` and `LGX_TEMPLATE_BASE_SHA`.
 
 ## Component Architecture
