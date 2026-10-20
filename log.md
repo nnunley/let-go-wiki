@@ -492,3 +492,15 @@ allowlist or resource limits are implemented.
 clojure-compat: *default-data-reader-fn* and the no-handler throw, the edn
 options, exact JSON integers (#995), fn-literal sharing (#1009) and
 reflection warnings (#964).
+
+## [2026-10-20] update | perf-ratchet, docs-perf-ratchet, quality-tooling at b82588292b
+perf-ratchet and its source page: the pre-push bench-ratchet gate runs only
+when the pushed range touches the IR/VM closure (#952); a forced update keeps
+worse allocs/bytes and is gated on the global bar unless -accept-deterministic
+is passed (#930); BENCH_WRAP wraps ratchet runs in caffeinate on macOS (#911);
+the bench-ratchet tool itself still runs in opt-in PR CI and on main.
+
+quality-tooling: quality.lg needs LG_SOURCE_PATHS=scripts when run by hand
+(the Makefile sets it), --generated needs the lowered tree to exist, lint
+--gate takes kinds, and make lint runs the comment linter (#917). Checked by
+running the scripts at b82588292b.
