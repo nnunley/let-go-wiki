@@ -43,6 +43,23 @@ def extract_links(markdown_body: str) -> list[str]:
     extract_from_tokens(tokens)
     return links
 
+_WIKILINK_RE = re.compile(r"\[\[[^\[\]\n]+\]\]")
+
+def extract_wikilinks(markdown_body: str) -> list[str]:
+    """`[[slug]]` wikilinks in prose. They render as plain text on the site and
+    on GitHub, and the orphan check does not count them (#39). Code spans and
+    fences are skipped: Clojure vectors such as `[[:y]]` live there."""
+    found: list[str] = []
+    for token in MarkdownIt().parse(markdown_body):
+        for child in token.children or []:
+            if child.type == "text":
+                found += _WIKILINK_RE.findall(child.content)
+    return found
+
+def _wikilink_errors(path, body: str) -> list[str]:
+    return [f"{path}: wikilink '{w}' — use a file-relative markdown link"
+            for w in extract_wikilinks(body)]
+
 def find_orphans(root: Path) -> list[Path]:
     """Find pages with no inbound links from index.md or other content pages."""
     content_dirs = ("concepts", "entities", "ideas", "projects", "sources", "references")
@@ -267,6 +284,7 @@ def validate_page(
         errors.append(f"{path}: unbalanced code fence (odd number of ``` markers)")
     for lm in _ABS_LINK_RE.finditer(body):
         errors.append(f"{path}: absolute link '{lm.group(1)}' — use a file-relative link")
+    errors += _wikilink_errors(path, body)
 
     # Check for broken relative .md links
     links = extract_links(body)
@@ -364,6 +382,13 @@ def validate_tree(root: Path) -> dict[str, list[str]]:
             errs = validate_page(md, tags, letgo_repo)
             if errs:
                 out[str(md.relative_to(root))] = errs
+    # index.md is reserved (no frontmatter rules), but its links are what the
+    # orphan check reads, so a wikilink there must fail here instead.
+    index = root / "index.md"
+    if index.exists():
+        errs = _wikilink_errors(index, index.read_text(encoding="utf-8"))
+        if errs:
+            out["index.md"] = errs
     return out
 
 
