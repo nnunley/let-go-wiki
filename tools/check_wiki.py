@@ -161,14 +161,20 @@ def _resolve_letgo_repo(root: Path) -> Path | None:
 def _letgo_ref(repo: Path) -> str | None:
     """The ref a blob/main URL should be checked against.
 
-    A URL says `blob/main`, so `origin/main` is what it claims — not whatever
-    the local checkout happens to have on disk. A feature branch or a stale
-    working tree would otherwise report a merged path as missing, or a deleted
-    one as present. Falls back through `main` to None (filesystem check).
+    A URL says `blob/main` on nooga/let-go, so that remote's `main` is what it
+    claims — not whatever the local checkout happens to have on disk. A feature
+    branch or a stale working tree would otherwise report a merged path as
+    missing, or a deleted one as present. The remote is found by URL, because a
+    contributor's `origin` is often their fork, which can be weeks behind.
+    Falls back through `origin/main` and `main` to None (filesystem check).
     """
     import subprocess
 
-    for ref in ("origin/main", "main"):
+    remotes = subprocess.run(
+        ["git", "remote", "-v"], cwd=repo, capture_output=True, text=True).stdout
+    nooga = [line.split()[0] for line in remotes.splitlines()
+             if re.search(r"github\.com[:/]nooga/let-go(\.git)?$", line.split()[1])]
+    for ref in [f"{r}/main" for r in dict.fromkeys(nooga)] + ["origin/main", "main"]:
         r = subprocess.run(
             ["git", "rev-parse", "--verify", "--quiet", ref + "^{commit}"],
             cwd=repo, capture_output=True, text=True)

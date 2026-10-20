@@ -229,6 +229,31 @@ def _git_repo(tmp_path: Path) -> Path:
 def test_letgo_ref_prefers_a_real_ref(tmp_path):
     assert _letgo_ref(_git_repo(tmp_path)) == "main"
 
+def _add_remote(repo: Path, name: str, url: str) -> None:
+    """Point `<name>/main` at main without fetching (no network in tests)."""
+    import subprocess
+    subprocess.run(["git", "remote", "add", name, url], cwd=repo, check=True)
+    subprocess.run(["git", "update-ref", f"refs/remotes/{name}/main", "main"],
+                   cwd=repo, check=True)
+
+def test_letgo_ref_prefers_the_nooga_remote_over_a_fork_origin(tmp_path):
+    """A contributor's clone often has their fork as `origin`, which can be
+    weeks behind. blob/main URLs name nooga/let-go, so check that remote."""
+    repo = _git_repo(tmp_path)
+    _add_remote(repo, "origin", "git@github.com:someone/let-go.git")
+    _add_remote(repo, "upstream", "git@github.com:nooga/let-go.git")
+    assert _letgo_ref(repo) == "upstream/main"
+
+def test_letgo_ref_matches_an_https_nooga_remote(tmp_path):
+    repo = _git_repo(tmp_path)
+    _add_remote(repo, "nooga", "https://github.com/nooga/let-go")
+    assert _letgo_ref(repo) == "nooga/main"
+
+def test_letgo_ref_falls_back_to_origin_without_a_nooga_remote(tmp_path):
+    repo = _git_repo(tmp_path)
+    _add_remote(repo, "origin", "git@github.com:someone/let-go.git")
+    assert _letgo_ref(repo) == "origin/main"
+
 def test_letgo_ref_is_none_without_one(tmp_path):
     d = tmp_path / "plain"
     d.mkdir()
