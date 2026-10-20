@@ -504,3 +504,23 @@ quality-tooling: quality.lg needs LG_SOURCE_PATHS=scripts when run by hand
 (the Makefile sets it), --generated needs the lowered tree to exist, lint
 --gate takes kinds, and make lint runs the comment linter (#917). Checked by
 running the scripts at b82588292b.
+
+## [2026-10-20] update | build and compile pages: lg compile, lgb format, entry frame at b82588292b
+lg-compile, go-backend, compile-paths, guide-usage: `lg compile` is the
+shipped native build (#977, with -module/-import from #1016 and #1037);
+scripts/lg-compile is a shim over lg.compiler; ^:dynamic and ^:redef defns
+are not direct-linked (#1017); Go overrides keep the existing Var (#1006);
+the entry frame carries the compiler (#1008). lg-compile and lg compile runs
+at b82588292b confirmed the output lines.
+
+compile-paths: the ir-stress census was re-measured at b82588292b (lower 87%,
+335/2658 failing; lower-go 0/2658) alongside the dated 2026-07-24 figures,
+and the :try fallback transcript now shows the #error map it prints.
+
+lgb-bytecode-format: typed constants (#1061), NS ranges and lazy namespace
+decode (#984), new tag IDs. op-catalog: #994 removed the load-time prints.
+lgx-build-model: os/exec* gives the child a tty only on main (#956, observed);
+lgx 0.1.0-rc2 has no `repl` subcommand. pr-native-entry-gate: the make target
+delegates to make test (#959). wasm-compilation and guide-usage: lg -w writes
+index.html (8.4 MB for a small app) plus coi-serviceworker.js, and the default
+shell loads xterm.js from a CDN, so the page is not self-contained.

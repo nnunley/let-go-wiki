@@ -9,9 +9,11 @@ sources:
   - "repo: nooga/let-go pkg/bytecode/{tags,encoder,decoder,capabilities,strip,debug_companion}.go @ 0911118, 2026-09-05"
   - "pr: nooga/let-go#443 (opcode-set capability), #608/#622 (capability reject messages, lg -v), #501 (DEFLATE body), #502 (compressed embedded core), #745 (func chunk identity), #624 (split debug), #781 (TagDefMetaPairs, the first version-1 tag, merged 2026-09-06), 2026-09-05"
   - "repo: nooga/let-go pkg/bytecode/tags.go @ ee55803 (re-verified for #781), 2026-09-06"
+  - "repo: nooga/let-go pkg/bytecode/{tags,encoder,decoder,capabilities,deferred}.go and cmd/lgbgen/main.go @ b82588292b, 2026-10-19"
+  - "pr: nooga/let-go#1061 (CapTypedConstants, TagRecordTypeNS, TagRecordNS, TagDTypeInstance), #984 (FlagNSRanges, DecodeBundle), 2026-10-19"
   - "design: docs/superpowers/specs/2026-05-23-lgb-v2-design.md (local, 2026-07-02)"
 created: "2026-07-02"
-updated: "2026-09-20"
+updated: "2026-10-19"
 status: stable
 ---
 
@@ -42,7 +44,7 @@ Everything in the header stays plaintext, including in compressed bundles, so ve
 | Version | Written when | Adds |
 |---|---|---|
 | 1 | never (read only) | original encoding; decoded by a frozen `decodeToExecUnitV1` path |
-| 2 | default | per-tag versioning, batch collection decode, local-variable tables |
+| 2 | default | per-tag versioning, batch collection decode, local-variable tables, namespace ranges (`FlagNSRanges`, [#984](https://github.com/nooga/let-go/pull/984)) |
 | 3 | `-z` is passed | compressed-body framing; the body is one DEFLATE stream |
 
 The encoder picks the lowest version that admits the module's flags, so a plain bundle stays byte-identical to what a pre-compression `lg` wrote. `lg -v` reports both numbers: `lgb: format 2 (default write), 3 (max)`.
@@ -58,12 +60,14 @@ Bits are positional in declaration order, and each version admits only the flags
 | `FlagLocalVars` | v2 | per-chunk local-variable tables follow the NS table |
 | `FlagCompressed` | v3 | the body after the header is a declared-size, codec-tagged compressed stream |
 | `FlagDebugSplit` | v3 | source maps and local-variable tables were moved to an external `.debug` companion |
+| `FlagNSRanges` | v2 | a namespace-ranges section follows the string table; a decoder may leave the namespaces it lists undecoded until they are required (see [Body](#body)) |
 
 ### Capability mask and opcode-set signature
 
-The capability mask reserves bits for features a decoder must understand to run the bundle at all. One bit is defined:
+The capability mask reserves bits for features a decoder must understand to run the bundle at all. Two bits are defined (`KnownCapabilities` in `pkg/bytecode/capabilities.go`; `SupportedCapabilities` is their union):
 
 - `CapOpcodeSet` (bit 0, since v1.12.0): the mask is followed by the producer's opcode count and an FNV-64a hash of the opcode mnemonics in enum order. The decoder compares it with the running VM's `vm.OpcodeSetSignature()` and rejects a mismatch. v1.13.0 is the second release to trip this deliberately: #811 appended `OP_UNCHECKED_ADD`, `OP_UNCHECKED_SUB` and `OP_UNCHECKED_MUL`, so a `.lgb` built by an older `lg` is rejected by it, the same trade the release that added `OP_DIV` made.
+- `CapTypedConstants` (bit 1, since v1.14.0, [#1061](https://github.com/nooga/let-go/pull/1061)): set only on a bundle whose constants include a record or deftype instance that names its defining namespace (`TagRecordTypeNS`, `TagRecordNS`, `TagDTypeInstance`; see [Tag encoding](#tag-encoding)). An older runtime rejects such a bundle at the header instead of failing partway through the constants. Bundles without those constants leave the bit clear and load on older runtimes as before.
 
 ```
 opcode set mismatch: bundle compiled with 52 opcodes (signature 8c6f19e2a4b07d31), runtime has 44 (ecde554a791d0f51) — recompile the bundle with a matching lg
@@ -78,16 +82,21 @@ Unknown capability bits are rejected too. The message names the unsupported bits
 Sections in order:
 
 1. **String table**: deduplicated string pool; later sections reference strings by index.
-2. **Chunks**: one entry per `CodeChunk` with its instruction words, `maxStack`, and source map.
-3. **Consts**: value constants (literals, functions, types). A function constant names its chunk by index; the encoder uses the module builder's live `*vm.CodeChunk` pointer index for that mapping, because two functions can have identical bytecode and different source metadata (#745).
-4. **NS table**: namespace name to chunk index, in load order.
-5. **Local-variable tables** (only with `FlagLocalVars`): per chunk, `(slot, name)` pairs in chunk-index order.
+2. **NS ranges** (only with `FlagNSRanges`): for each namespace the encoder proved self-contained, the run of chunks and constants that only that namespace's code reaches. It is written before the chunks: the source comment reads "Before the chunks: a decoder decides per chunk whether to decode it" (`writeBody`, `pkg/bytecode/encoder.go:137`). Only `ModuleBuilder.BuildDeferrable` (`encoder.go:478`) sets the flag, and only when at least one namespace qualifies. `EncodeBundleDeferrable` (`encoder.go:260`) calls it with the ranges that the core bundle generator passes (`writeBundle`, `cmd/lgbgen/main.go:620-625`). `EncodeBundleOrderedCompressed` (`encoder.go:244`, used by `pkg/cli/cli.go`) passes nil ranges, so a plain compilation never sets it. The decoder reads the section when the flag is set (`decoder.go:341`, `decoder.go:601`), and `DecodeBundle` defers the listed namespaces.
+3. **Chunks**: one entry per `CodeChunk` with its instruction words, `maxStack`, and source map.
+4. **Consts**: value constants (literals, functions, types). A function constant names its chunk by index; the encoder uses the module builder's live `*vm.CodeChunk` pointer index for that mapping, because two functions can have identical bytecode and different source metadata (#745).
+5. **NS table**: namespace name to chunk index, in load order.
+6. **Local-variable tables** (only with `FlagLocalVars`): per chunk, `(slot, name)` pairs in chunk-index order.
+
+Without `FlagNSRanges` the body is the five sections above minus item 2, the layout bundles had before #984.
 
 ### Tag encoding
 
 Each value's tag byte is `0bVV_TTTTTT`: two bits of tag version and a six-bit tag ID. Every tag was version 0, byte-identical to v1, until #781 (merged 2026-09-06, b0397f6) added the first version-1 tag: `TagDefMetaPairs = TagIDMap | TagVer1` carries a var's metadata as alternating keys and values in the map payload shape, so the decoder can keep the pairs and build the map on first use instead of eagerly at load. A v2 decoder from before #781 sees the non-zero version bits and rejects the byte rather than reading the pairs as an ordinary map. That is what the version bits are for: when a tag's semantics change, its version increments, and an old decoder fails instead of misreading the payload.
 
-Tag IDs: scalars `0x00`–`0x0C` (nil, true, false, int, float, string, keyword, symbol, char, big-int, void, UUID, instant), code `0x10`–`0x11` (func, var-ref), collections `0x20`–`0x24` (empty-list, list, vector, map, set), user types `0x30`–`0x33` (record-type, record, regex, atom). `0x34`–`0x3F` are reserved (`TagIDReserved0`–`TagIDReserved11`).
+Two more version-1 tags followed in [#1061](https://github.com/nooga/let-go/pull/1061): `TagRecordTypeNS = TagIDRecordType | TagVer1` and `TagRecordNS = TagIDRecord | TagVer1` lead a defrecord payload with the namespace that defines the type, so the decoder resolves the constant to the live type (`vm.ResolveRecordType`) instead of making a new one. `tagVersionSupported` accepts version 1 for the map, record-type and record IDs only. A v2 decoder from before #1061 rejects those bytes, which is why such bundles also set `CapTypedConstants`. The deftype instance tag `TagDTypeInstance` (`TagIDDTypeInstance | TagVer0`) is new in the same change and is marked by the same capability bit.
+
+Tag IDs: scalars `0x00`–`0x0C` (nil, true, false, int, float, string, keyword, symbol, char, big-int, void, UUID, instant), code `0x10`–`0x11` (func, var-ref), collections `0x20`–`0x24` (empty-list, list, vector, map, set), user types `0x30`–`0x34` (record-type, record, regex, atom, deftype instance; `0x34` is `TagIDDTypeInstance`, added by [#1061](https://github.com/nooga/let-go/pull/1061)). `0x35`–`0x3F` are reserved (`TagIDReserved1`–`TagIDReserved11`, `pkg/bytecode/tags.go`).
 
 ### Batch collection construction (v2)
 
@@ -113,6 +122,7 @@ The [bytecode package](https://github.com/nooga/let-go/tree/main/pkg/bytecode) p
 
 - `Encode(w, m *Module)` and `Decode(r) (*Module, error)`: serialize and deserialize.
 - `DecodeToExecUnit(r, resolve VarResolver) (*ExecUnit, error)`: decode ready to run.
+- `DecodeBundle(data, resolve, deferNS)`: decode an in-memory bundle, leaving a namespace that carries a `FlagNSRanges` entry and that `deferNS` accepts undecoded until it is first required (`pkg/bytecode/deferred.go`). The runtime boots the core bundle this way (`pkg/rt/coreload.go`).
 - `StripDebug` and `SplitDebug`: produce the stripped artifact and its companion; `HasSplitDebug` is the cheap header probe the loaders use.
 - `DescribeCapabilities` and `FormatVersionReport`: the human-readable capability and version text used by reject errors and `lg -v`.
 
@@ -124,10 +134,12 @@ The [bytecode package](https://github.com/nooga/let-go/tree/main/pkg/bytecode) p
 **Related:**
 - [pkg/bytecode/encoder.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/encoder.go): version selection, section order, compressed framing
 - [pkg/bytecode/decoder.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/decoder.go): per-version flag admission, dual v1/v2 paths, batch collection decode
+- [cmd/lgbgen/main.go](https://github.com/nooga/let-go/blob/main/cmd/lgbgen/main.go): `writeBundle`, the core bundle generator that calls `EncodeBundleDeferrable` with namespace ranges
 - [pkg/bytecode/capabilities.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/capabilities.go): capability registry and `lg -v` report
+- [pkg/bytecode/deferred.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/deferred.go): `DecodeBundle` and namespace deferral under `FlagNSRanges`
 - [pkg/bytecode/strip.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/strip.go) and [debug_companion.go](https://github.com/nooga/let-go/blob/main/pkg/bytecode/debug_companion.go): split debug
 - [pkg/rt/run.go](https://github.com/nooga/let-go/blob/main/pkg/rt/run.go): `LoadDebugCompanion` and `LG_DEBUG_FILE`
 - [docs/guide/usage.md](https://github.com/nooga/let-go/blob/main/docs/guide/usage.md): `-z`, `-strip`, `-debug-output`
-- PRs: [#443](https://github.com/nooga/let-go/pull/443) opcode-set signature, [#608](https://github.com/nooga/let-go/pull/608) and [#622](https://github.com/nooga/let-go/pull/622) capability reject messages, [#501](https://github.com/nooga/let-go/pull/501) compression, [#502](https://github.com/nooga/let-go/pull/502) compressed embedded core, [#745](https://github.com/nooga/let-go/pull/745) chunk identity, [#624](https://github.com/nooga/let-go/pull/624) split debug
+- PRs: [#443](https://github.com/nooga/let-go/pull/443) opcode-set signature, [#608](https://github.com/nooga/let-go/pull/608) and [#622](https://github.com/nooga/let-go/pull/622) capability reject messages, [#501](https://github.com/nooga/let-go/pull/501) compression, [#502](https://github.com/nooga/let-go/pull/502) compressed embedded core, [#745](https://github.com/nooga/let-go/pull/745) chunk identity, [#624](https://github.com/nooga/let-go/pull/624) split debug, [#781](https://github.com/nooga/let-go/pull/781) `TagDefMetaPairs`, [#984](https://github.com/nooga/let-go/pull/984) namespace ranges, [#1061](https://github.com/nooga/let-go/pull/1061) typed constants
 
 **Design doc:** the v2 design spec (`docs/superpowers/specs/2026-05-23-lgb-v2-design.md`, local) covers format versioning, migration from v1, and the allocation and startup success criteria.
