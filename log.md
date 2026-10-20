@@ -524,3 +524,15 @@ lgx 0.1.0-rc2 has no `repl` subcommand. pr-native-entry-gate: the make target
 delegates to make test (#959). wasm-compilation and guide-usage: lg -w writes
 index.html (8.4 MB for a small app) plus coi-serviceworker.js, and the default
 shell loads xterm.js from a CDN, so the page is not self-contained.
+
+## [2026-10-20] update | concurrency-model, namespaces-and-vars, value-representation at b82588292b
+concurrency-model: cancellation is the Cancelled condition (#924): sleep, <!
+and >! raise it, alts! returns nil, and go* absorbs it; conveyance goes
+through ec.Child() and the scope.
+
+namespaces-and-vars: Intern keeps the existing Var (#1020); host-class
+namespaces refer clojure.core (#974); var metadata carries :ns (#863); the
+core-shadow warning fires (re-run at b82588292b).
+
+value-representation: NativeFn boxes the fast call shapes in one allocation
+(#1001); numeric ops no longer read operands through Unbox.
