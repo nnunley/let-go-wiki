@@ -477,3 +477,18 @@ qualified core heads (clojure.core/+, core/<) build as builtin ops since #1060.
 
 stack-vm: 49 opcodes (lg -v at 8673d88a), the AGET/ASET family, and the
 fast-opcode gate's core-var identity check from #1058.
+
+## [2026-10-20] update | reader, pods, clojure-compat: data reading and tag policy at b82588292b
+reader: unregistered tags now throw "No reader function for tag" (#985);
+set literals read as sets (#736); read-string and read-all-string read data,
+so metadata attaches to the value (#819); clojure.edn takes :readers,
+:default and :eof (#986); a #! first line is skipped (#967); #go moved to
+pkg/gofragments (#768). The lg -e transcripts were re-run at b82588292b.
+
+pods: the protocol is bencode over stdio, not EDN lines; only load-pod and
+invoke exist; EDN replies decode with the pod's readers (#987); no timeout,
+allowlist or resource limits are implemented.
+
+clojure-compat: *default-data-reader-fn* and the no-handler throw, the edn
+options, exact JSON integers (#995), fn-literal sharing (#1009) and
+reflection warnings (#964).
