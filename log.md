@@ -541,3 +541,19 @@ value-representation: NativeFn boxes the fast call shapes in one allocation
 The TAP reporter exists (pkg/rt/core/test/tap.lg, #863); JUnit output and an
 `lg test` command are still absent (lg -h at b82588292b lists none). Added the
 experimental go test adapter (#936) and the conformance spec (#793).
+
+## [2026-10-20] update | freshness: 21 stable pages re-checked against let-go b82588292b
+Twenty pages that check_wiki flagged as possibly stale (stable, and either
+updated before v1.13.0 or carrying no commit pin) were audited claim by claim
+against nooga/let-go main at b82588292b, corrected where the source differs,
+and pinned to that commit. Each edit was checked twice by a separate reader.
+Corrections include: exec-context's native-fn call-site counts (121 lines in 17
+files, not 196 in 57); bytecode-lowering's tail-call fusion attributed to
+b3f68d62d (#625) instead of #649, which never merged, and the single-use
+fn-literal rule to #975; block-interface-and-liveness's ceilings cited to
+test/ir_lower_stack_discipline_test.lg instead of the ir-stress baseline file.
+
+wasm-compilation and xsofy (#20): the go command and wasm_exec.js come from the
+same GOROOT (#837); a cached or relocated lg falls back to the active go on
+PATH; inline and external (-w-wasm external) output; the LetGoHost API;
+xsofy's external-WASM deployment links back to the page.
