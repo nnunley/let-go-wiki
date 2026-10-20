@@ -34,7 +34,7 @@ Codex, Cursor, Gemini all read it (CLAUDE.md just points here).
 (one page per ingested source), `references/` (OKF reference docs).
 
 ## Bookkeeping
-- `index.md` = catalog by category; add one line per page: `[[path/slug]] — summary`.
+- `index.md` = catalog by category; add one line per page: `- [path/slug](path/slug.md) — summary` (a markdown link; `check_wiki.py` rejects `[[slug]]` wikilinks, which render as plain text and do not count as inbound links).
 - `log.md` = append-only; entries start `## [YYYY-MM-DD] <op> | <subject>`.
 - Validate before commit: `python tools/check_wiki.py` (or `lgx doctor`).
 
