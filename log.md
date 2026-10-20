@@ -536,3 +536,8 @@ core-shadow warning fires (re-run at b82588292b).
 
 value-representation: NativeFn boxes the fast call shapes in one allocation
 (#1001); numeric ops no longer read operands through Unbox.
+
+## [2026-10-20] update | testing-conformance at b82588292b
+The TAP reporter exists (pkg/rt/core/test/tap.lg, #863); JUnit output and an
+`lg test` command are still absent (lg -h at b82588292b lists none). Added the
+experimental go test adapter (#936) and the conformance spec (#793).
