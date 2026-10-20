@@ -5,9 +5,9 @@ title: "Stack VM"
 description: "The stack-based bytecode interpreter: operand-stack frames, the fetch-decode-dispatch loop, and specialized arithmetic opcodes."
 tags: [vm, bytecode, runtime, compiler]
 resource: "https://github.com/nooga/let-go/tree/main/pkg/vm"
-sources: ["repo: nooga/let-go pkg/vm/vm.go (opcodes, CodeChunk, Frame, Frame.Run), 2026-07-05", "repo: nooga/let-go pkg/vm/vm.go (opcodeNames, Frame, releaseFailedFrames) @ 36b13f79, 2026-09-20", "lg -v on lg 1.13.0 (369e2a69): opcodes 47 (signature 7cf8f862cf5ba1e5), 2026-09-20", "pr: nooga/let-go#645 (explicit frame chain), #811 (unchecked arithmetic ops), #839 (*unchecked-math*), #642 (OP_RECUR_FN), 2026-09-20"]
+sources: ["repo: nooga/let-go pkg/vm/vm.go (opcodes, CodeChunk, Frame, Frame.Run), 2026-07-05", "repo: nooga/let-go pkg/vm/vm.go (opcodeNames, Frame, releaseFailedFrames) @ 36b13f79, 2026-09-20", "lg -v on lg 1.13.0 (369e2a69): opcodes 47 (signature 7cf8f862cf5ba1e5), 2026-09-20", "pr: nooga/let-go#645 (explicit frame chain), #811 (unchecked arithmetic ops), #839 (*unchecked-math*), #642 (OP_RECUR_FN), 2026-09-20", "lg -v and lg -e at 8673d88a: opcodes 49 (signature d51dbe85cea9e31b); pr: nooga/let-go#1058 (OP_AGET/OP_ASET, fast-opcode gate checks the core var), 2026-10-17"]
 created: "2026-07-01"
-updated: "2026-09-20"
+updated: "2026-10-17"
 status: stable
 ---
 
@@ -45,7 +45,7 @@ Only the low byte of the opcode word is the opcode — `inst & 0xff`. The high 1
 
 # Opcode families
 
-The 47 opcodes group into a small number of roles. `OP_COUNT` is a sentinel rather than an opcode, so the enum has one more entry than that; `lg -v` prints the authoritative count and the signature the [lgb format](lgb-bytecode-format.md) compares against.
+The 49 opcodes group into a small number of roles. `OP_COUNT` is a sentinel rather than an opcode, so the enum has one more entry than that; `lg -v` prints the authoritative count and the signature the [lgb format](lgb-bytecode-format.md) compares against.
 
 - **Loads** — `LOAD_CONST` (constant pool), `LOAD_ARG` (argument vector), `LOAD_VAR` / `SET_VAR` (var roots), `LOAD_CLOSEDOVER` (captured value).
 - **Stack shuffling** — `POP`, `POP_N` (save top, drop n), `DUP_NTH` (duplicate the nth-from-top).
@@ -55,6 +55,7 @@ The 47 opcodes group into a small number of roles. `OP_COUNT` is a sentinel rath
 - **Exceptions** — `TRY_PUSH`, `TRY_POP`, `THROW`.
 - **Bitwise and shifts** — `BIT_AND`, `BIT_OR`, `BIT_XOR`, `BIT_AND_NOT`, `BIT_NOT`, `BIT_SHIFT_LEFT`, `BIT_SHIFT_RIGHT`, `UNSIGNED_BIT_SHIFT_RIGHT`.
 - **Specialized arithmetic/comparison** — `ADD`, `SUB`, `MUL`, `LT`, `LTE`, `GT`, `GTE`, `EQ`, `INC`, `DEC`, `QUOT`, `DIV`, plus `UNCHECKED_ADD`, `UNCHECKED_SUB` and `UNCHECKED_MUL` since #811 (see below).
+- **Typed-array access** — `AGET` and `ASET` since #1058, for two-argument `aget` and three-argument `aset` on a [typed array](typed-arrays.md).
 
 # The frame
 
@@ -113,7 +114,7 @@ for {
 
 # Specialized fast-path opcodes
 
-The compiler emits the dedicated arithmetic/comparison opcodes for known binary calls to core operators, so hot code skips generic function dispatch. Each inlines the `int64` path and falls back to the boxed numeric tower only for other types. `OP_ADD`:
+The compiler emits the dedicated arithmetic/comparison opcodes for known binary calls to core operators, so hot code skips generic function dispatch. "Core operator" is checked by identity (#1058): the head must resolve to the `clojure.core` var itself, whether written unqualified and not shadowed by a local, qualified as `clojure.core/+` or `core/+` (the form syntax-quote emits, so macro-written arithmetic gets the opcodes too), or through an alias. A namespace that excludes and redefines `+` gets its own fn. The opcode is bound at compile time, so redefining the core var after a caller compiled does not reach it. Each inlines the `int64` path and falls back to the boxed numeric tower only for other types. `OP_ADD`:
 
 ```go
 case OP_ADD:
@@ -134,6 +135,8 @@ case OP_ADD:
 ```
 
 These opcodes avoid `NativeFn.Invoke`, interface boxing, and panic-based error recovery on the common path. The `int64` path is overflow-checked, but overflow does **not** promote: `ADD`, `SUB`, `MUL`, `INC`, and `DEC` raise an `"integer overflow"` error. Under a `*unchecked-math*` binding (#839) the compiler emits the wrapping forms instead, which is what `UNCHECKED_ADD`/`SUB`/`MUL` exist for. Promotion to the wider numeric tower happens only when an operand is not an `Int`, via the generic `NumXxx` fallback.
+
+`AGET` and `ASET` follow the same shape: assert `*TypedArray` and `Int`, bounds-check, index the typed slice. Every other input produces the error the core fn would, with the same text, so a program cannot tell which path ran. `ASET` leaves the value as given, as `aset` returns it.
 
 # Recursion, tail calls, and exceptions
 
