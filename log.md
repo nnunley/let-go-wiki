@@ -541,3 +541,9 @@ value-representation: NativeFn boxes the fast call shapes in one allocation
 The TAP reporter exists (pkg/rt/core/test/tap.lg, #863); JUnit output and an
 `lg test` command are still absent (lg -h at b82588292b lists none). Added the
 experimental go test adapter (#936) and the conformance spec (#793).
+
+## [2026-11-14] update | lgb-bytecode-format: the opcode-set check at c0a93f0d
+#1058's OP_AGET/OP_ASET change the opcode-set signature (47 to 49), so main
+and v1.13.0 reject each other's bundles; checked both ways with lg -c and
+lg -z -c. The CapTypedConstants bullet no longer says bit-clear bundles load
+on older runtimes. Added the migration registry (#407), which has one entry.
