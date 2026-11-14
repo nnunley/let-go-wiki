@@ -11,9 +11,11 @@ sources:
   - "repo: nooga/let-go pkg/bytecode/tags.go @ ee55803 (re-verified for #781), 2026-09-06"
   - "repo: nooga/let-go pkg/bytecode/{tags,encoder,decoder,capabilities,deferred}.go and cmd/lgbgen/main.go @ b82588292b, 2026-10-19"
   - "pr: nooga/let-go#1061 (CapTypedConstants, TagRecordTypeNS, TagRecordNS, TagDTypeInstance), #984 (FlagNSRanges, DecodeBundle), 2026-10-19"
+  - "lg -c and lg -z -c bundles exchanged between lg 1.13.0 (369e2a69) and main @ c0a93f0d, both directions rejected with opcode set mismatch (47 vs 49), 2026-11-14"
+  - "repo: nooga/let-go pkg/bytecode/{decoder,opcode_migration}.go @ c0a93f0d (resolveOpcodeSet, migrationRegistry); pr: nooga/let-go#407, #1058, 2026-11-14"
   - "design: docs/superpowers/specs/2026-05-23-lgb-v2-design.md (local, 2026-07-02)"
 created: "2026-07-02"
-updated: "2026-10-19"
+updated: "2026-11-14"
 status: stable
 ---
 
@@ -66,14 +68,14 @@ Bits are positional in declaration order, and each version admits only the flags
 
 The capability mask reserves bits for features a decoder must understand to run the bundle at all. Two bits are defined (`KnownCapabilities` in `pkg/bytecode/capabilities.go`; `SupportedCapabilities` is their union):
 
-- `CapOpcodeSet` (bit 0, since v1.12.0): the mask is followed by the producer's opcode count and an FNV-64a hash of the opcode mnemonics in enum order. The decoder compares it with the running VM's `vm.OpcodeSetSignature()` and rejects a mismatch. v1.13.0 is the second release to trip this deliberately: #811 appended `OP_UNCHECKED_ADD`, `OP_UNCHECKED_SUB` and `OP_UNCHECKED_MUL`, so a `.lgb` built by an older `lg` is rejected by it, the same trade the release that added `OP_DIV` made.
-- `CapTypedConstants` (bit 1, since v1.14.0, [#1061](https://github.com/nooga/let-go/pull/1061)): set only on a bundle whose constants include a record or deftype instance that names its defining namespace (`TagRecordTypeNS`, `TagRecordNS`, `TagDTypeInstance`; see [Tag encoding](#tag-encoding)). An older runtime rejects such a bundle at the header instead of failing partway through the constants. Bundles without those constants leave the bit clear and load on older runtimes as before.
+- `CapOpcodeSet` (bit 0, since v1.12.0): the mask is followed by the producer's opcode count and an FNV-64a hash of the opcode mnemonics in enum order. The decoder compares it with the running VM's `vm.OpcodeSetSignature()` and rejects a mismatch, unless a migration is registered for the bundle's signature (`pkg/bytecode/opcode_migration.go`, [#407](https://github.com/nooga/let-go/pull/407)); the only one registered is for the opcode set from before `OP_TRACE_ENABLE` and `OP_TRACE_DISABLE` were removed. v1.13.0 is the second release to trip this deliberately: #811 appended `OP_UNCHECKED_ADD`, `OP_UNCHECKED_SUB` and `OP_UNCHECKED_MUL`, so a `.lgb` built by an older `lg` is rejected by it, the same trade the release that added `OP_DIV` made. The release after v1.13.0 will be the third: [#1058](https://github.com/nooga/let-go/pull/1058) appended `OP_AGET` and `OP_ASET`, and at `c0a93f0d` a `.lgb` compiled by v1.13.0 is rejected by `main` and one compiled by `main` is rejected by v1.13.0, for both `lg -c` and `lg -z -c` output.
+- `CapTypedConstants` (bit 1, since v1.14.0, [#1061](https://github.com/nooga/let-go/pull/1061)): set only on a bundle whose constants include a record or deftype instance that names its defining namespace (`TagRecordTypeNS`, `TagRecordNS`, `TagDTypeInstance`; see [Tag encoding](#tag-encoding)). An older runtime rejects such a bundle at the header instead of failing partway through the constants. Bundles without those constants leave the bit clear. That does not make them loadable by v1.13.0, which rejects them on the opcode-set signature above.
 
 ```
 opcode set mismatch: bundle compiled with 52 opcodes (signature 8c6f19e2a4b07d31), runtime has 44 (ecde554a791d0f51) — recompile the bundle with a matching lg
 ```
 
-(The bundle side is illustrative. At v1.13.0 `lg -v` reports `opcodes: 47 (signature 7cf8f862cf5ba1e5)`.)
+(The bundle side is illustrative. At v1.13.0 `lg -v` reports `opcodes: 47 (signature 7cf8f862cf5ba1e5)`; at `c0a93f0d` the runtime has 49 (`d51dbe85cea9e31b`).)
 
 Unknown capability bits are rejected too. The message names the unsupported bits (known ones with the `lg` release that introduced them, unknown ones as `unknown bit N`), then the runtime's supported set, then the minimum `lg` version when one is known, so a "recompile or upgrade" decision can be made from the error alone. `lg -v` and `lg-runtime -v` print the supported mask and the local opcode signature.
 
