@@ -7,7 +7,7 @@ tags: [compiler, bytecode, vm]
 resource: "https://github.com/nooga/let-go/blob/main/pkg/rt/core/ir/lower.lg"
 sources:
   - "repo: nooga/let-go pkg/rt/core/ir/lower.lg, pkg/rt/core/core.lg (defn), test/ir_lower_stack_discipline_test.lg @ 0911118, 2026-09-05"
-  - "pr: nooga/let-go#579 (var-load re-emission + shape ratchet), #648 (block-junk agreement, RPO, deferrable-branch guards), commit b3f68d62d (tail-call fusion, extracted from #625), #647 (def+name* seam), #580 (*ir-compile-strict* + bytecode census), #779 (fn-template consts are not rematerialised, merged 2026-09-06 as a32767d), #975 (single-use fn literals, reemittable-at-use?, b18b1fde3, 2026-10-06), 2026-09-05"
+  - "pr: nooga/let-go#579 (var-load re-emission + shape ratchet), #648 (block-junk agreement, RPO, deferrable-branch guards), #649 (tail-call fusion, merged 2026-08-18 as b3f68d62d, extracted from #625, which closed unmerged), #647 (def+name* seam), #580 (*ir-compile-strict* + bytecode census), #779 (fn-template consts are not rematerialised, merged 2026-09-06 as a32767d), #975 (single-use fn literals, reemittable-at-use?, b18b1fde3, 2026-10-06), 2026-09-05"
   - "repo: nooga/let-go pkg/rt/core/ir/lower.lg, pkg/rt/core/ir/data.lg, pkg/rt/core/ir/ops.lg, pkg/rt/core/ir/passes/pipeline.lg, pkg/rt/core/ir/lower_go.lg, pkg/rt/core/core.lg (defn), pkg/ir/ir_ops.lg, test/ir_lower_stack_discipline_test.lg, test/ir_tailcall_fusion.lg, test/ir_def_namestar_seam_test.lg @ b82588292b, 2026-10-20"
 created: "2026-09-05"
 updated: "2026-10-20"
@@ -62,7 +62,7 @@ Every other var load is re-emitted at each use, as the plain bytecode compiler d
 
 ## Tail-call fusion
 
-Commit b3f68d62d (extracted from #625 [3/4], stacked on the RPO and block-junk fixes in #648) lowers a `:return` of a single-use `:call` as `TAIL_CALL`, so the frame is reused, instead of `INVOKE` followed by `RETURN`. The fusion applies only when the call is the last live instruction of its block (every later instruction in the block is `:invalid`), so skipping it in the body walk reorders nothing. The fused call's function and arguments are materialized, then `TAIL_CALL argc` is emitted, followed by a `RETURN` that is dead but kept for parity with the plain compiler. The IR models `try` bodies as inner closures, so a fusable call is never inside a guarded region of the frame that performs it.
+#649 (commit b3f68d62d, extracted from #625 [3/4], stacked on the RPO and block-junk fixes in #648) lowers a `:return` of a single-use `:call` as `TAIL_CALL`, so the frame is reused, instead of `INVOKE` followed by `RETURN`. The fusion applies only when the call is the last live instruction of its block (every later instruction in the block is `:invalid`), so skipping it in the body walk reorders nothing. The fused call's function and arguments are materialized, then `TAIL_CALL argc` is emitted, followed by a `RETURN` that is dead but kept for parity with the plain compiler. The IR models `try` bodies as inner closures, so a fusable call is never inside a guarded region of the frame that performs it.
 
 `test/ir_tailcall_fusion.lg` covers bytecode/IR parity for tail calls, a shape check that a let-bound tail call emits `TAIL_CALL` and no `INVOKE`, and try-frame isolation (the try body is an inner function whose tail call is `TAIL_CALL`).
 ## The def+name* seam
@@ -90,6 +90,6 @@ The residual shuffle is emission order, per the test's comment: a call argument 
 - [test/ir_tailcall_fusion.lg](https://github.com/nooga/let-go/blob/main/test/ir_tailcall_fusion.lg): tail-call fusion parity and shape
 - [test/ir_def_namestar_seam_test.lg](https://github.com/nooga/let-go/blob/main/test/ir_def_namestar_seam_test.lg): the def+name* seam and its strict-mode throw
 - [pkg/rt/core/core.lg](https://github.com/nooga/let-go/blob/main/pkg/rt/core/core.lg): the `defn` hybrid fallback that catches an aborted lowering
-- PRs: [#579](https://github.com/nooga/let-go/pull/579), [#648](https://github.com/nooga/let-go/pull/648), [#625](https://github.com/nooga/let-go/pull/625) (tail-call fusion, via commit b3f68d62d), [#647](https://github.com/nooga/let-go/pull/647), [#580](https://github.com/nooga/let-go/pull/580), [#661](https://github.com/nooga/let-go/pull/661), [#779](https://github.com/nooga/let-go/pull/779), [#975](https://github.com/nooga/let-go/pull/975)
+- PRs: [#579](https://github.com/nooga/let-go/pull/579), [#648](https://github.com/nooga/let-go/pull/648), [#649](https://github.com/nooga/let-go/pull/649) (tail-call fusion, commit b3f68d62d), [#647](https://github.com/nooga/let-go/pull/647), [#580](https://github.com/nooga/let-go/pull/580), [#661](https://github.com/nooga/let-go/pull/661), [#779](https://github.com/nooga/let-go/pull/779), [#975](https://github.com/nooga/let-go/pull/975)
 
 See also: [Compile Paths](compile-paths.md), [IR Pipeline](ir-pipeline.md), [Stack VM](stack-vm.md), [let-go](../entities/let-go.md)
