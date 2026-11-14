@@ -558,3 +558,8 @@ wasm-compilation and xsofy (#20): the go command and wasm_exec.js come from the
 same GOROOT (#837); a cached or relocated lg falls back to the active go on
 PATH; inline and external (-w-wasm external) output; the LetGoHost API;
 xsofy's external-WASM deployment links back to the page.
+## [2026-11-14] update | lgb-bytecode-format: the opcode-set check at c0a93f0d
+#1058's OP_AGET/OP_ASET change the opcode-set signature (47 to 49), so main
+and v1.13.0 reject each other's bundles; checked both ways with lg -c and
+lg -z -c. The CapTypedConstants bullet no longer says bit-clear bundles load
+on older runtimes. Added the migration registry (#407), which has one entry.
