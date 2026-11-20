@@ -58,7 +58,7 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/go-structs](concepts/go-structs.md) — Defining and using Go structs from let-go via compile-time code generation.
 - [concepts/http-and-net](concepts/http-and-net.md) — The http and net namespaces: the owned-listener server surface, streaming response bodies, the three named client timeout scopes, and how scope cancellation reaches an in-flight request.
 - [concepts/indexed-rpn-ir](concepts/indexed-rpn-ir.md) — let-go's intermediate representation: an indexed-RPN (postfix) encoding — an SSA-equivalent form — with block-parameter control flow.
-- [concepts/io-host-decoupling](concepts/io-host-decoupling.md) — How the runtime decouples I/O operations from the host platform, enabling the same runtime to run natively, in WASM, and on exotic hosts.
+- [concepts/io-host-decoupling](concepts/io-host-decoupling.md) — How the runtime routes I/O through dynamic-var seams that each host binds, so one runtime runs natively, in WASM, and under Go embedders.
 - [concepts/ir-optimizations](concepts/ir-optimizations.md) — Lambda lifting and higher-order specialization to eliminate dynamic dispatch and closure allocation in combinator-based code.
 - [concepts/ir-passes](concepts/ir-passes.md) — Lisp-implemented optimization passes that transform the semantic IR to improve runtime performance.
 - [concepts/ir-pipeline](concepts/ir-pipeline.md) — let-go's compiler IR framework, written in let-go itself: building, optimizing, and lowering to bytecode.
@@ -74,13 +74,13 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [concepts/pods](concepts/pods.md) — Babashka-compatible external process integration for let-go: loading pods and accessing libraries like SQLite, AWS, Docker, and file watching.
 - [concepts/quality-tooling](concepts/quality-tooling.md) — The contributor-facing quality tools written in let-go itself: the comment linter and its six rules, the static complexity scorer, and spec-evidence for keeping a spec and its conformance tests in step.
 - [concepts/reader](concepts/reader.md) — How let-go turns text into forms: the dispatch tables, reader conditionals with the :lg/:clj/:bb feature switches, the VOID sentinel for no-value forms, number literals, tagged literals, and the places its behaviour diverges from Clojure's reader.
-- [concepts/runtime-image](concepts/runtime-image.md) — Precompiled runtime images for fast cold startup and reproducible deployments, including the standard library cache.
+- [concepts/runtime-image](concepts/runtime-image.md) — Embedded LGB bytecode bundle of the core library, decoded at boot, and the planned runtime image design.
 - [concepts/stack-vm](concepts/stack-vm.md) — The stack-based bytecode interpreter: operand-stack frames, the fetch-decode-dispatch loop, and specialized arithmetic opcodes.
 - [concepts/structurize](concepts/structurize.md) — The pass that recovers a target-independent control tree from the IR's block-parameter CFG (if, loop, break, continue, seq, with goto as the escape hatch), which backend consumes it and which does not, the :try gap, and the keyword-cond to switch absorption.
-- [concepts/type-inference](concepts/type-inference.md) — How the let-go compiler infers types during IR lowering and uses a mergeable cache to make parallel lowering both fast and deterministic.
+- [concepts/type-inference](concepts/type-inference.md) — How the let-go compiler infers types during IR lowering, why the Go lowering step moved from a wall-clock budget to an unbounded fixpoint run (with a drain-count bound on other callers), and the proposed mergeable type cache for parallel lowering.
 - [concepts/typed-arrays](concepts/typed-arrays.md) — vm.TypedArray, the mutable Go-slice-backed array behind aget/aset: its one-slice-per-kind layout, the [:array K] lattice kind that lets AOT lowering index it natively, and the VM's AGET/ASET opcodes.
 - [concepts/value-representation](concepts/value-representation.md) — How let-go represents values in memory and optimizes numeric operations on the stack VM.
-- [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to WebAssembly pages with bytecode, terminal emulation, and fast startup.
+- [concepts/wasm-compilation](concepts/wasm-compilation.md) — Compiling let-go programs to WebAssembly pages with lg -w, bytecode, and xterm.js terminal emulation.
 
 ## References
 - [references/clojure-compat](references/clojure-compat.md) — Where let-go IS and ISN'T compatible with Clojure JVM: known limitations, feature parity, and behavioral differences.
@@ -112,8 +112,8 @@ Exhaustive listing by category (the LLM retrieval path; humans use the map above
 - [ideas/self-hosting-aot](ideas/self-hosting-aot.md) — Roadmap for let-go compiling itself ahead-of-time to native Go: using the IR pipeline and Go AOT backend to bootstrap a self-hosted runtime.
 
 ## Projects
-- [projects/legmacs](projects/legmacs.md) — An Emacs-flavored terminal editor written in and scripted with let-go (~4,000 lines) — same language for implementation and config, no separate plugin API.
-- [projects/let-go-lab](projects/let-go-lab.md) — Sixel graphics / terminal-UI / WASM experiments on let-go (e.g. a browser Mandelbrot renderer compiled to WASM in xterm.js).
+- [projects/legmacs](projects/legmacs.md) — An Emacs-flavored terminal editor written in and scripted with let-go (about 10,000 lines of let-go) — same language for implementation and config, no separate plugin API.
+- [projects/let-go-lab](projects/let-go-lab.md) — Sixel graphics / terminal-UI / WASM experiments on let-go (e.g. a browser Mandelbrot renderer compiled to WASM that draws to a canvas).
 - [projects/lgcr](projects/lgcr.md) — A small Linux container runtime written in let-go, built on the syscall namespace.
 - [projects/lgx](projects/lgx.md) — A git-based dependency manager, runner, build tool, test runner, scaffolder, and task runner for let-go in one binary (config in lgx.edn).
 - [projects/xsofy](projects/xsofy.md) — A browser-and-terminal roguelike written in let-go where the magic system is a Lisp.
