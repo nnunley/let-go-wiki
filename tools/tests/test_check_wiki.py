@@ -334,3 +334,28 @@ def test_sibling_letgo_resolves_from_a_relative_root(tmp_path, monkeypatch):
     wiki.mkdir()
     monkeypatch.chdir(wiki)
     assert _resolve_letgo_repo(Path(".")) == (tmp_path / "let-go").resolve()
+
+
+# --- [[slug]] wikilinks are not links here (#39) -------------------------
+
+_PAGE_FM = 'type: Concept\ncategory: concept\ntitle: "A"\ndescription: "d"\ntags: [go]\nstatus: stable'
+
+def test_wikilink_on_a_page_is_reported(tmp_path):
+    p = _write(tmp_path / "concepts" / "a.md", _PAGE_FM, body="See [[concepts/b]] for more.")
+    errs = validate_page(p)
+    assert any("wikilink '[[concepts/b]]'" in e for e in errs), errs
+
+def test_wikilink_in_code_is_not_reported(tmp_path):
+    """Clojure vectors such as [[:y]] appear in code spans and fences."""
+    body = "Reads as `[[:y]]`.\n\n```clojure\n[[g \"x\"]]\n```\n"
+    p = _write(tmp_path / "concepts" / "a.md", _PAGE_FM, body=body)
+    assert not any("wikilink" in e for e in validate_page(p))
+
+def test_wikilink_in_index_is_reported(tmp_path):
+    """The form AGENTS.md used to prescribe for index lines: it must fail
+    loudly, not surface later as an orphan whose fix the author already did."""
+    from tools.check_wiki import validate_tree
+    _write(tmp_path / "index.md", "# Index", body="- [[concepts/a]] — a summary")
+    _write(tmp_path / "concepts" / "a.md", _PAGE_FM)
+    out = validate_tree(tmp_path)
+    assert any("wikilink '[[concepts/a]]'" in e for e in out.get("index.md", [])), out
